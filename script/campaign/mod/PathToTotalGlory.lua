@@ -60,7 +60,7 @@ core:add_listener(
         local node = pttg:get_cursor()
                 
         if context:choice_key() == 'FIRST' then
-            cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory", "pttg_glory_unit_recruitment", 2)
+            cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory", "pttg_glory_unit_recruitment", 1)
             
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then
@@ -108,10 +108,7 @@ core:add_listener(
     true,
     function(context)
         pttg:set_state('cur_phase', "pttg_phase1")
-        
-        core:trigger_custom_event('pttg_reset_merc_pool', {})
-        core:trigger_custom_event('pttg_reset_shop', {})
-        
+                
         local cursor = pttg:get_cursor()
         -- Choose a path dilemma
         if #cursor.edges == 3 then
@@ -147,7 +144,7 @@ core:add_listener(
         pttg:set_state('cur_phase', "pttg_phase2")
         
         local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
-        pttg_tele:teleport_to_random_region(character)
+        pttg_tele:teleport_to_random_region(character, 100)
         
         local cursor = pttg:get_cursor()
         
@@ -168,7 +165,7 @@ core:add_listener(
         elseif cursor.class == pttg_RoomType.EventRoom then
             core:trigger_custom_event('pttg_event_room', {})
         elseif cursor.class == pttg_RoomType.ShopRoom then
-            core:trigger_custom_event('pttg_shop_room', {})
+            cm:trigger_incident(cm:get_local_faction():name(),'pttg_shop_room', true)
         elseif cursor.class == pttg_RoomType.TreasureRoom then
             core:trigger_custom_event('pttg_treasure_room', {})
         end

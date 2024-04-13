@@ -18,17 +18,20 @@ local state = {
     army_cqi = false,
     event_room_chances = { monster = 10, shop = 3, treasure = 2 },
     shop_sizes = { 
-        pttg_crafting_weapons=1, 
-        pttg_crafting_armour=1, 
-        pttg_crafting_enchanted_items=1,
-        pttg_crafting_talismans=1,
-        pttg_crafting_arcane_items=1,
-        pttg_crafting_banners=1
+        merchandise = 6,
+        units = 5
+    },
+    shop_chances = {
+        50,
+        10,
+        5,
+        2
     },
     active_shop_items = {},
-    recruit_weights = { ["core"] = 20, ["special"] = 5, ["rare"] = 1 },
+    recruit_weights = { ["core"] = 40, ["special"] = 5, ["rare"] = 1 },
     recruitable_mercs = {},
-    excluded_items = {}
+    excluded_items = {},
+    replenishment_factor = 0.3
 }
 
 local persistent_keys = {
@@ -39,10 +42,12 @@ local persistent_keys = {
     army_cqi = true,
     event_room_chances = true,
     shop_sizes = true,
+    shop_chances = true,
     active_shop_items = true,
     recruit_weights = true,
     recruitable_mercs = true,
-    excluded_items = true
+    excluded_items = true,
+    replenishment_factor = true
 }
 
 -- UTILS --
@@ -170,6 +175,11 @@ function pttg:load_state()
         state['active_shop_items'] = var
         pttg:log('[load_state] Loaded: '..'active_shop_items|'.. tostring(var))
     end
+    local var = cm:get_saved_value('shop_chances')
+    if var then
+        state['shop_chances'] = var
+        pttg:log('[load_state] Loaded: '..'shop_chances|'.. tostring(var))
+    end
     local var = cm:get_saved_value('recruit_weights')
     if var then
         state['recruit_weights'] = var
@@ -184,6 +194,11 @@ function pttg:load_state()
     if var then
         state['excluded_items'] = var
         pttg:log('[load_state] Loaded: '..'excluded_items|'.. tostring(var))
+    end
+    local var = cm:get_saved_value('replenishment_factor')
+    if var then
+        state['replenishment_factor'] = var
+        pttg:log('[load_state] Loaded: '..'replenishment_factor|'.. tostring(var))
     end
 end
 

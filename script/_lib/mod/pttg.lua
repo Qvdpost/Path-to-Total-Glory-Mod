@@ -18,7 +18,7 @@ local state = {
     army_cqi = false,
     event_room_chances = { monster = 10, shop = 3, treasure = 2 },
     shop_sizes = { 
-        merchandise = 6,
+        merchandise = 1,
         units = 5
     },
     shop_chances = {
@@ -28,16 +28,17 @@ local state = {
         2
     },
     active_shop_items = {},
-    recruit_weights = { ["core"] = 40, ["special"] = 5, ["rare"] = 1 },
+    recruit_weights = { ["core"] = 50, ["special"] = 5, ["rare"] = 1 },
     recruitable_mercs = {},
     excluded_items = {},
-    replenishment_factor = 0.3
+    replenishment_factor = 0.2,
+    excluded_event_pool = {},
+    alignment = 0
 }
 
 local persistent_keys = {
     cursor = true,
     cur_phase = true,
-    gen_seed = true,
     pending_reward = true,
     army_cqi = true,
     event_room_chances = true,
@@ -47,7 +48,9 @@ local persistent_keys = {
     recruit_weights = true,
     recruitable_mercs = true,
     excluded_items = true,
-    replenishment_factor = true
+    replenishment_factor = true,
+    excluded_event_pool = true,
+    alignment = true
 }
 
 -- UTILS --
@@ -120,7 +123,7 @@ function pttg:set_state(key, value)
     
     pttg:log("[set_state] Key persistance: " .. tostring(persistent_keys[key]))
     if persistent_keys[key] then
-        cm:set_saved_value(key, value)
+      pttg:save_state(key, value)
     end
       
     state[key] = value
@@ -137,77 +140,38 @@ function pttg:get_cursor()
     return state['cursor']
 end
 
+function pttg:save_state(key, value)
+  cm:set_saved_value("pttg_"..key, value)
+end
+
 function pttg:load_state()
-    pttg:log('[load_state] Loading state')
-    
-    local cursor = cm:get_saved_value('pttg_cursor')
-    if cursor then
-        state['cursor'] = pttg:get_state('maps')[cursor.z][cursor.y][cursor.x]
-        pttg:log('[load_state] Loaded: '..'cursor|'..pttg:get_cursor():repr())
-    end
-    local cur_phase = cm:get_saved_value('cur_phase')
-    if cur_phase then
-        state['cur_phase'] = cur_phase
-        pttg:log('[load_state] Loaded: '..'cur_phase|'..cur_phase)
-    end
-    local var = cm:get_saved_value('pending_reward')
-    if var then
-        state['pending_reward'] = var
-        pttg:log('[load_state] Loaded: '..'pending_reward|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('army_cqi')
-    if var then
-        state['army_cqi'] = var
-        pttg:log('[load_state] Loaded: '..'army_cqi|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('event_room_chances')
-    if var then
-        state['event_room_chances'] = var
-        pttg:log('[load_state] Loaded: '..'event_room_chances|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('shop_sizes')
-    if var then
-        state['shop_sizes'] = var
-        pttg:log('[load_state] Loaded: '..'shop_sizes|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('active_shop_items')
-    if var then
-        state['active_shop_items'] = var
-        pttg:log('[load_state] Loaded: '..'active_shop_items|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('shop_chances')
-    if var then
-        state['shop_chances'] = var
-        pttg:log('[load_state] Loaded: '..'shop_chances|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('recruit_weights')
-    if var then
-        state['recruit_weights'] = var
-        pttg:log('[load_state] Loaded: '..'recruit_weights|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('recruitable_mercs')
-    if var then
-        state['recruitable_mercs'] = var
-        pttg:log('[load_state] Loaded: '..'recruitable_mercs|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('excluded_items')
-    if var then
-        state['excluded_items'] = var
-        pttg:log('[load_state] Loaded: '..'excluded_items|'.. tostring(var))
-    end
-    local var = cm:get_saved_value('replenishment_factor')
-    if var then
-        state['replenishment_factor'] = var
-        pttg:log('[load_state] Loaded: '..'replenishment_factor|'.. tostring(var))
+    pttg:log('[load_state] Loading state variables: ')
+
+    for key, _ in pairs(persistent_keys) do
+      local var = cm:get_saved_value("pttg_"..key)
+      if var then
+          state[key] = var
+          pttg:log(string.format('[load_state] Loaded: %s| %s', key, tostring(var)))
+      end
     end
 end
 
+function pttg:set_seed(val)
+    pttg:log('[s_seed] Set: '..'gen_seed|'.. tostring(val))
+    state['gen_seed'] = val
+    self:save_state('gen_seed', val)
+end
+
 function pttg:load_seed()
-    local var = cm:get_saved_value('gen_seed')
+    local var = cm:get_saved_value('pttg_gen_seed')
     if var then
         state['gen_seed'] = var
         pttg:log('[load_seed] Loaded: '..'gen_seed|'.. tostring(var))
     end
+end
+
+function math:huge(number) 
+  return number + 1
 end
 
 core:add_static_object("pttg", pttg);

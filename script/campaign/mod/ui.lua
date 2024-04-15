@@ -84,6 +84,30 @@ core:add_listener(
     true
 )
 
+core:add_listener(
+    "pttg_PanelOpened",
+    "PanelOpenedCampaign",
+    true,
+    function()
+        pttg:log("[pttg_ui] panel opened.")
+
+        pttg_UI:disable_next_phase_button()
+    end,
+    true
+)
+
+core:add_listener(
+    "pttg_PanelOpened",
+    "PanelClosedCampaign",
+    true,
+    function()
+        pttg:log("[pttg_ui] panel opened.")
+
+        pttg_UI:enable_next_phase_button()
+    end,
+    true
+)
+
 pttg_UI:init()
 
 core:add_static_object("pttg_UI", pttg_UI);

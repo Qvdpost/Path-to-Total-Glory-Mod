@@ -12,8 +12,8 @@ core:add_listener(
         
         for i = 0, unit_list:num_items() - 1 do
             local unit = unit_list:item_at(i);
-            local base = unit:percentage_proportion_of_full_strength()
-            local bonus = pttg:get_state('replenishment_factor') or 0.2
+            local base = unit:percentage_proportion_of_full_strength() / 100
+            local bonus = pttg:get_state('replenishment_factor')
             pttg:log(string.format("[pttg_RestRoom] Healing %s to  %s(%s + %s).", unit:unit_key(), base+bonus, base, bonus))
             if unit:unit_class() ~= "com" then
 				---@diagnostic disable-next-line: undefined-field

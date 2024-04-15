@@ -16,7 +16,7 @@ core:add_listener(
     function(context) return context:dilemma() == "pttg_shop_room" end,
     function(context)       
         pttg:log("[pttg_ShopRoom] resolving shop: ")
-        -- TODO: implement a shop...
+
         core:trigger_custom_event('pttg_populate_shop', {})
         pttg_shop:enable_shop_button()
         core:trigger_custom_event('pttg_idle', {})

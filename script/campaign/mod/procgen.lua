@@ -680,7 +680,7 @@ cm:add_post_first_tick_callback(function()
     if pttg:get_state("gen_seed") then
         seed = pttg:get_state("gen_seed")
     else
-        pttg:set_state('gen_seed', seed)
+        pttg:set_seed(seed)
     end
     
 

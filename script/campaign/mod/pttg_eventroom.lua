@@ -1,4 +1,5 @@
 local pttg = core:get_static_object("pttg");
+local pttg_events = core:get_static_object("pttg_event_pool")
 
 core:add_listener(
     "pttg_EventRoomChosen",
@@ -29,8 +30,25 @@ core:add_listener(
             chances.shop = chances.shop + 3
             chances.treasure = chances.treasure + 2
             pttg:set_state('event_room_chances', chances)
-            -- TODO Trigger events
-            core:trigger_custom_event('pttg_idle', {})
+
+            local event = pttg_events:random_event()
+            cm:trigger_dilemma(cm:get_local_faction():name(), event)
+
+            core:add_listener(
+                "pttg_event_resolved",
+                "DilemmaChoiceMadeEvent",
+                function(context)
+                    return context:dilemma() == event
+                end,
+                function(context) 
+                    -- TODO: add event to the excluded events if non-repeatable.
+                    
+                    pttg_events:get_event_callback(event)(context)
+                    core:trigger_custom_event('pttg_idle', {})
+                end,
+                false
+            )
+                
         end
     end,
     true

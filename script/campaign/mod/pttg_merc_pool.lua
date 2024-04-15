@@ -47,8 +47,6 @@ local pttg_merc_pool = {
         ["wh2_dlc11_cst_cav_deck_droppers_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc11_cst_cav_deck_droppers_1"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc11_cst_cav_deck_droppers_2"] = { weight = false, tier = false, cost = 1 },
-        ["wh2_dlc11_cst_cav_knights_of_the_realm"] = { weight = false, tier = false, cost = 1 },
-        ["wh2_dlc11_cst_cav_questing_knights_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc11_cst_inf_deck_gunners_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc11_cst_inf_depth_guard_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc11_cst_inf_depth_guard_1"] = { weight = false, tier = false, cost = 1 },
@@ -109,7 +107,6 @@ local pttg_merc_pool = {
         ["wh2_dlc15_hef_inf_rangers_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc15_hef_inf_silverin_guard_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc15_hef_mon_arcane_phoenix_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh2_dlc15_hef_mon_forest_dragon_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc15_hef_mon_war_lions_of_chrace_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc15_hef_veh_lion_chariot_of_chrace_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc16_skv_mon_rat_ogre_mutant"] = { weight = false, tier = false, cost = 1 },
@@ -131,7 +128,6 @@ local pttg_merc_pool = {
         ["wh2_dlc17_bst_cav_tuskgor_chariot_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc17_bst_mon_ghorgon_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc17_bst_mon_jabberslythe_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh2_dlc17_emp_inf_prisoners_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc17_lzd_inf_chameleon_stalkers_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc17_lzd_mon_coatl_0"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc17_lzd_mon_troglodon_0"] = { weight = false, tier = false, cost = 1 },
@@ -518,9 +514,7 @@ local pttg_merc_pool = {
         ["wh_dlc06_dwf_inf_rangers_1"] = { weight = false, tier = false, cost = 1 },
         ["wh_dlc06_grn_cav_squig_hoppers_0"] = { weight = false, tier = false, cost = 1 },
         ["wh_dlc06_grn_inf_nasty_skulkers_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh_dlc06_grn_inf_squig_explosive_0"] = { weight = false, tier = false, cost = 1 },
         ["wh_dlc06_grn_inf_squig_herd_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh_dlc06_grn_mon_spider_hatchlings_0"] = { weight = false, tier = false, cost = 1 },
         ["wh_dlc07_brt_cav_grail_guardians_0"] = { weight = false, tier = false, cost = 1 },
         ["wh_dlc07_brt_cav_knights_errant_0"] = { weight = false, tier = false, cost = 1 },
         ["wh_dlc07_brt_cav_questing_knights_0"] = { weight = false, tier = false, cost = 1 },
@@ -677,13 +671,6 @@ local pttg_merc_pool = {
         ["wh_main_vmp_veh_black_coach"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc11_cst_mon_terrorgheist"] = { weight = false, tier = false, cost = 1 },
         ["wh2_dlc16_skv_mon_brood_horror_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh2_dlc16_skv_mon_brood_horror_0_flesh_lab"] = { weight = false, tier = false, cost = 1 },
-        ["wh3_main_tze_cha_iridescent_horror_metal_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh3_main_tze_cha_iridescent_horror_metal_1"] = { weight = false, tier = false, cost = 1 },
-        ["wh3_main_tze_cha_iridescent_horror_metal_2"] = { weight = false, tier = false, cost = 1 },
-        ["wh3_main_tze_cha_iridescent_horror_tzeentch_0"] = { weight = false, tier = false, cost = 1 },
-        ["wh3_main_tze_cha_iridescent_horror_tzeentch_1"] = { weight = false, tier = false, cost = 1 },
-        ["wh3_main_tze_cha_iridescent_horror_tzeentch_2"] = { weight = false, tier = false, cost = 1 },
         ["wh3_main_tze_inf_blue_horrors_0"] = { weight = false, tier = false, cost = 1 },
         ["wh3_main_tze_inf_pink_horrors_0"] = { weight = false, tier = false, cost = 1 },
         ["wh3_main_tze_inf_pink_horrors_1"] = { weight = false, tier = false, cost = 1 },
@@ -745,20 +732,10 @@ function pttg_merc_pool:reset_merc_pool()
         for tier, units in ipairs(tiers) do
             for i, unit_info in ipairs(units) do
                 unit = unit_info[1]
-                pttg:log(string.format("[pttg_RaiseDead] Resetting unit %s to faction pool.", unit))
-                cm:add_unit_to_faction_mercenary_pool(
-                    faction,
-                    unit,
-                    "pttg_raise_dead",
-                    0, 0, 0, 0,
-                    "", "", "",
-                    false, "pttg_"..unit
-                )
+                self:add_unit_to_pool(unit, 0)
             end
         end
     end
-    self.active_merc_pool = {}
-    pttg:set_state("recruitable_mercs", self.active_merc_pool)
 end
 
 function pttg_merc_pool:init_merc_pool() 
@@ -790,37 +767,39 @@ function pttg_merc_pool:init_merc_pool()
     }
 
     local culture_keys = {
-        "tmb_",
-        "cst_",
-        "def_",
-        "hef_",
-        "lzd_",
-        "skv_",
-        "chd_",
-        "cth_",
-        "dae_",
-        "kho_",
-        "ksl_",
-        "nur_",
-        "ogr_",
-        "sla_",
-        "tze_",
-        "bst_",
-        "wef_",
-        "nor_",
-        "brt_",
-        "chs_",
-        "dwf_",
-        "emp_",
-        "grn_",
-        "vmp_"
+        "_tmb_",
+        "_cst_",
+        "_def_",
+        "_hef_",
+        "_lzd_",
+        "_skv_",
+        "_chd_",
+        "_cth_",
+        "_dae_",
+        "_kho_",
+        "_ksl_",
+        "_nur_",
+        "_ogr_",
+        "_sla_",
+        "_tze_",
+        "_bst_",
+        "_wef_",
+        "_nor_",
+        "_brt_",
+        "_chs_",
+        "_dwf_",
+        "_emp_",
+        "_grn_",
+        "_vmp_"
     }
     pttg:log(string.format("[pttg_MercPool] Initialising units merc pool."))
+
+    local recruit_weights = pttg:get_state('recruit_weights')
     for k, culture_key in pairs(culture_keys) do
         self.merc_pool[cultures[k]] = { {}, {}, {} }
         for unit_key, info in pairs(ttc.units) do
             if string.find(unit_key, culture_key) and self.merc_units[unit_key] then
-
+                pttg:log(string.format("[pttg_MercPool] Initialising unit %s to the merc pool.", unit_key))
                 local tier = 1
                 if info.group == "core" then
                     tier = 1
@@ -829,13 +808,14 @@ function pttg_merc_pool:init_merc_pool()
                 elseif info.group == "rare" then
                     tier = 3
                 end
-
+                
                 unit_info = self.merc_units[unit_key]
+                
                 unit_info.tier = tier
                 unit_info.cost = self.merc_units[unit_key].cost or info.weight
-                unit_info.weight = self.merc_units[unit_key].weight or math.ceil(pttg:get_state('recruit_weights')[info.group] / unit_info.cost)
+                unit_info.weight = self.merc_units[unit_key].weight or math.ceil(recruit_weights[info.group] / unit_info.cost)
                 
-                pttg:log(string.format("[pttg_MercPool] Initialising unit %s merc pool with weight %i.", unit_key, unit_info.weight))
+                pttg:log(string.format("[pttg_MercPool] Adding unit %s with weight %s at cost %s.", unit_key, unit_info.weight, unit_info.cost))
                 table.insert(self.merc_pool[cultures[k]][tier], {unit_key, unit_info.weight, unit_info.cost})
             end
         end
@@ -847,24 +827,37 @@ function pttg_merc_pool:init_active_merc_pool()
     self.active_merc_pool = pttg:get_state('recruitable_mercs')
     
     for unit, count in pairs(self.active_merc_pool) do
-        local faction = cm:get_local_faction()
-        pttg:log(string.format("[pttg_RewardChosenRecruit] Initialising recruit %s(%i)", unit, count))
-        
-        cm:add_unit_to_faction_mercenary_pool(
-            faction,
-            unit,
-            "pttg_raise_dead",
-            count, 0, 20, count,
-            "", "", "",
-            false, "pttg_"..unit
-        )
+        self:add_unit_to_pool(unit, count)
     end
+end
+
+function pttg_merc_pool:reset_active_merc_pool()
+    for unit, count in pairs(self.active_merc_pool) do
+        self:add_unit_to_pool(unit, 0)
+    end
+    self.active_merc_pool = {}
+    pttg:set_state("recruitable_mercs", self.active_merc_pool)
+end
+
+function pttg_merc_pool:add_unit_to_pool(unit, count)
+    pttg:log(string.format("[pttg_RewardChosenRecruit] Recruiting %s(%s)", unit, tostring(count)))
+
+    local faction = cm:get_local_faction()
+            
+    cm:add_unit_to_faction_mercenary_pool(
+        faction,
+        unit,
+        "pttg_raise_dead",
+        count, 0, 20, count,
+        "", "", "",
+        false, "pttg_"..unit
+    )
 end
 
 ttc.add_post_setup_callback(
     function()
-        pttg_merc_pool:init_merc_pool()
         pttg_merc_pool:reset_merc_pool()
+        pttg_merc_pool:init_merc_pool()
     end
 );
 
@@ -914,6 +907,11 @@ function pttg_merc_pool:add_active_units(units)
             self.active_merc_pool[unit] = 1
         end
     end
+
+    for unit, count in pairs(self:get_active_units_with_counts()) do
+        pttg_merc_pool:add_unit_to_pool(unit, count)
+    end
+
     pttg:set_state('recruitable_mercs', self.active_merc_pool)
 end
 
@@ -1061,19 +1059,6 @@ core:add_listener(
         end
         
         pttg_merc_pool:add_active_units(pttg_merc_pool_manager:generate_pool(recruit_pool_key, 3, true))
-        
-        for unit, count in pairs(pttg_merc_pool:get_active_units_with_counts()) do
-            pttg:log(string.format("[pttg_RewardChosenRecruit] Recruiting %s(%s)", unit, tostring(count)))
-            
-            cm:add_unit_to_faction_mercenary_pool(
-                faction,
-                unit,
-                "pttg_raise_dead",
-                count, 0, 20, count,
-                "", "", "",
-                false, "pttg_"..unit
-            )
-        end
     end,
     true
 )
@@ -1083,7 +1068,7 @@ core:add_listener(
     "pttg_phase1",
     true,
     function(context) 
-        pttg_merc_pool:reset_merc_pool()
+        pttg_merc_pool:reset_active_merc_pool()
         local faction = cm:get_local_faction()
         local glory_recruit_points = faction:pooled_resource_manager():resource("pttg_unit_reward_glory"):value()
         cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory", "pttg_glory_unit_recruitment", -glory_recruit_points)

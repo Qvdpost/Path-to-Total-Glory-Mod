@@ -639,6 +639,27 @@ local regions = {
     "wh3_main_combi_region_zvorak"
 }
 
+local function get_random_region()
+    local owner = nil
+    local region
+    while not owner do
+        local random_region_name = regions[cm:random_number(#regions, 1)]
+        region = cm:get_region_data(random_region_name):region()
+        while not region do
+            pttg:log(string.format("[prrg_teleporter] Trying again: No region data found for region: %s", random_region_name))
+            region = cm:get_region_data(random_region_name):region()
+        end
+        if region.owning_faction then
+            owner = region:owning_faction()
+        else
+            pttg:log(string.format("[prrg_teleporter] No owning faction data for region: %s", random_region_name))
+            owner = nil
+        end
+    end
+
+    return region
+end
+
 function pttg_tele:teleport_to_random_region(character, distance_upper_bound)
     at_war_with = {}
     warring_factions = cm:get_local_faction():factions_at_war_with()
@@ -648,33 +669,21 @@ function pttg_tele:teleport_to_random_region(character, distance_upper_bound)
     
     local x = -1
     local y = -1
-    local random_region_name
+    local random_region
     local distance
     
     while x == -1 do
-        random_region_name = regions[cm:random_number(#regions, 1)]
-        local region = cm:get_region_data(random_region_name):region()
-        if not region then
-            script_error(string.format("[prrg_teleporter] Error: No region data found for region: %s", random_region_name))
-        end
-        local owner = region:owning_faction()
-        
-        while owner:is_null_interface() or at_war_with[owner:name()] do
-            random_region_name = regions[cm:random_number(#regions,1)]
-            region = cm:get_region_data(random_region_name):region()
-            owner = region:owning_faction()
-        end
+        random_region = get_random_region()
+
         distance = cm:random_number(distance_upper_bound or self.distance_upper_bound,1)
 
         ---@diagnostic disable-next-line: cast-local-type
-        x, y = cm:find_valid_spawn_location_for_character_from_settlement(cm:get_local_faction_name(), random_region_name, false, true, distance)
+        x, y = cm:find_valid_spawn_location_for_character_from_settlement(cm:get_local_faction_name(), random_region:name(), false, true, distance)
     end
-    pttg:log(string.format("[pttg_teleport][random_region] Teleporting to %s at %i, %i with a distance of %i.", random_region_name, x, y, distance))
+    pttg:log(string.format("[pttg_teleport][random_region] Teleporting to %s at %i, %i with a distance of %i.", random_region:name(), x, y, distance))
 
     local tele = cm:teleport_to(cm:char_lookup_str(character), x, y)
     
-    pttg:set_state('cur_region', random_region_name)
-
     pttg:log(string.format("[pttg_teleport][random_region] Teleported: %s.", tostring(tele)))
 end
 

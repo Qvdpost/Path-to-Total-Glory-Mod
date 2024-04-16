@@ -60,13 +60,13 @@ core:add_listener(
         local node = pttg:get_cursor()
                 
         if context:choice_key() == 'FIRST' then
-            cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory", "pttg_glory_unit_recruitment", 1)
+            cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory", "pttg_glory_unit_recruitment", 2)
             
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then
 --             cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):modify_winds_of_magic_reserve(5)
         elseif context:choice_key() == 'THIRD' then
-            
+            cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward", cm:random_number(40, 25))
         else
             pttg:set_state('pending_reward', true)
             core:trigger_custom_event('pttg_idle', {})

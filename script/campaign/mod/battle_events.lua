@@ -24,7 +24,10 @@ local factions_to_template = {
     ["pttg_hef_high_elves"] = {"wh2_main_sc_hef_high_elves"},
     ["pttg_vmp_strygos_empire"] = {"vmp_ghoul_horde"},
     ["pttg_wef_wood_elves"] = {"wh_dlc05_sc_wef_wood_elves"},
-    ["pttg_wef_forest_spirits"] = {"wef_forest_spirits"}
+    ["pttg_wef_forest_spirits"] = {"wef_forest_spirits"},
+    ["pttg_ksl_kislev"] = "wh3_main_sc_ksl_kislev",
+    ["pttg_chd_chaos_dwarfs"] = "wh3_dlc23_sc_chd_chaos_dwarfs",
+    ["pttg_cth_cathay"] = "wh3_main_sc_cth_cathay"
 }
 
 local faction_keyset = {}
@@ -87,7 +90,7 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
 
 	pttg:log(string.format("[trigger_forced_battle] Forced battle spawned at %i,%i.", x, y))
 
----@diagnostic disable-next-line: param-type-mismatch
+    ---@diagnostic disable-next-line: param-type-mismatch
 	forced_battle:trigger_battle(attacker, defender, x, y, is_ambush)
 end
 
@@ -107,8 +110,9 @@ core:add_listener(
 
         
         local invasion_power = cursor.z
-        local invasion_size = ((cursor.z - 1) * 5) + cursor.y + 1
+        local invasion_size = ((cursor.z - 1) * 5) + cursor.y + 2
         local general_level = cursor.z + cursor.y
+
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)", invasion_power, invasion_size, invasion_faction, invasion_template))
         
         Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(

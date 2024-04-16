@@ -646,17 +646,24 @@ local function get_random_region()
         local random_region_name = regions[cm:random_number(#regions, 1)]
         region = cm:get_region_data(random_region_name):region()
         while not region do
-            pttg:log(string.format("[prrg_teleporter] Trying again: No region data found for region: %s", random_region_name))
+            pttg:log(string.format("[pttg_teleporter] Trying again: No region data found for region: %s", random_region_name))
             region = cm:get_region_data(random_region_name):region()
         end
-        if region.owning_faction then
+        if region.is_abandoned and not region:is_abandoned() then
             owner = region:owning_faction()
+        elseif region.adjacent_region_list then
+            pttg:log(string.format("[pttg_teleporter] No owning faction data for region: %s", random_region_name))
+            for i = 0, region:adjacent_region_list():num_items()-1 do
+                local neighbour = region:adjacent_region_list():item_at(i)
+                if not neighbour:is_abandoned() then
+                    cm:transfer_region_to_faction(random_region_name, neighbour:owning_faction():name())
+                end
+            end
         else
-            pttg:log(string.format("[prrg_teleporter] No owning faction data for region: %s", random_region_name))
-            owner = nil
+            pttg:log(string.format("[pttg_teleporter] Dud region %s", random_region_name))
         end
     end
-
+    pttg:log(string.format("[pttg_teleporter] Random region %s with owner %s", region:name(), region:owning_faction():name()))
     return region
 end
 

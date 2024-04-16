@@ -1,4 +1,5 @@
 local pttg = core:get_static_object("pttg");
+local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 
 core:add_listener(
     "pttg_TreasureRoomChosen",
@@ -8,8 +9,14 @@ core:add_listener(
 
         pttg:log("[pttg_TreasureRoom] resolving treasure: ")
 
-        -- TODO Hand out treasure
-        core:trigger_custom_event('pttg_idle', {})
+        local rando = cm:random_number(100)
+        if rando <= 50 then
+            cm:trigger_incident(cm:get_local_faction():name(),'pttg_small_treasure', true)
+        elseif rando <= 83 then
+            cm:trigger_incident(cm:get_local_faction():name(),'pttg_medium_treasure', true)
+        else
+            cm:trigger_incident(cm:get_local_faction():name(),'pttg_large_treasure', true)
+        end
     end,
     true
 )
@@ -17,6 +24,80 @@ core:add_listener(
 local function init()
 
 end
+
+function pttg_small_treasure_callback(context)
+	local rando = cm:random_number(100)
+    if rando <= 75 then
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[1])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    else
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[2])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    end
+    
+    rando = cm:random_number(100)
+    if rando <= 50 then
+        cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward", cm:random_number(27, 23))
+    end
+    
+end
+
+function pttg_medium_treasure_callback(context)
+    local rando = cm:random_number(100)
+	if rando <= 35 then
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[1])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    elseif rando <= 85 then
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[2])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    else
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[3])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    end
+
+    rando = cm:random_number(100)
+    if rando <= 35 then
+        cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward", cm:random_number(55, 45))
+    end
+end
+
+function pttg_large_treasure_callback(context)
+    local rando = cm:random_number(100)
+	if rando <= 75 then
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[2])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    else
+        local random_item = pttg_glory_shop.shop_items.merchandise[1][cm:random_number(#pttg_glory_shop.shop_items.merchandise[3])]
+        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+    end
+
+    rando = cm:random_number(100)
+    if rando <= 50 then
+        cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward", cm:random_number(82, 68))
+    end
+end
+
+function pttg_boss_treasure_callback(context)
+	--body of the callback; what should happen for each choice?
+end
+
+core:add_listener(
+    "pttg_treasure_chest",
+    "IncidentOccuredEvent",
+    true,
+    function(context)
+        if context:dilemma() == "pttg_small_treasure" then
+            pttg_small_treasure_callback(context)
+        elseif context:dilemma() == "pttg_medium_treasure" then
+            pttg_medium_treasure_callback(context)
+        elseif context:dilemma() == "pttg_large_treasure" then
+            pttg_boss_treasure_callback(context)
+        elseif context:dilemma() == "pttg_boss_treasure" then
+            pttg_boss_treasure_callback(context)
+        end
+    end,
+    true
+)
 
 core:add_listener(
     "init_TreasureRoom",

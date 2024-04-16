@@ -64,7 +64,8 @@ core:add_listener(
             
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then
---             cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):modify_winds_of_magic_reserve(5)
+            -- local magic_resource = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):pooled_resource_manager():resource("wh3_main_winds_of_magic")
+            
         elseif context:choice_key() == 'THIRD' then
             cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward", cm:random_number(40, 25))
         else

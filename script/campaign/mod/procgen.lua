@@ -25,7 +25,6 @@ function MapRoomNode.repr(self)
     return string.format("Node(%s): %i, %i with %i Edges", pttg_get_room_symbol(self.class), self.y, self.x, #self.edges)
 end
 
-
 function MapRoomNode.is_connected(self)
     return #self.edges > 0
 end
@@ -54,7 +53,6 @@ end
 function MapEdge.repr(self)
     return 'Edge: ' .. self.src_x .. ', ' .. self.src_y .. ', ' .. self.dst_x .. ', ' .. self.dst_y
 end
-
 
 Point = {}
 
@@ -126,7 +124,8 @@ end
 
 local function generate_room_type(room_chances, available_room_count)
     local acc = {}
-    local rooms_type_q = { pttg_RoomType.ShopRoom, pttg_RoomType.RestRoom, pttg_RoomType.MonsterRoomElite, pttg_RoomType.EventRoom }
+    local rooms_type_q = { pttg_RoomType.ShopRoom, pttg_RoomType.RestRoom, pttg_RoomType.MonsterRoomElite, pttg_RoomType
+        .EventRoom }
 
     for _, t in ipairs(rooms_type_q) do
         local chance = room_chances[t]
@@ -580,7 +579,7 @@ local function generate_maps(seed, map_height, map_width, path_density, ascensio
     return maps
 end
 
-function procgen:format_map(nodes, cursor)
+function procgen:format_map(nodes, cursor, seed)
     local s = ""
     s = s .. "\n__"
 
@@ -604,12 +603,12 @@ function procgen:format_map(nodes, cursor)
             s = s .. string.format("%s%s%s", left, mid, right)
         end
         s = s .. "\n|"
-        
---         if row_num < 10 then
---             s = s .. string.format("\n %i |", row_num) --format!("\n{: <6}", row_num)
---         else
---             s = s .. string.format("\n%i |", row_num)  --format!("\n{: <6}", row_num)
---         end
+
+        --         if row_num < 10 then
+        --             s = s .. string.format("\n %i |", row_num) --format!("\n{: <6}", row_num)
+        --         else
+        --             s = s .. string.format("\n%i |", row_num)  --format!("\n{: <6}", row_num)
+        --         end
 
         for i, node in ipairs(nodes[row_num]) do
             local node_symbol = '  '
@@ -638,20 +637,20 @@ function procgen:format_map(nodes, cursor)
 
     s = s .. "\n"
 
---     for i = 1, #nodes[1] do
---         s = s .. string.format("---", i)
---     end
--- 
---     s = s .. "\n"
--- 
---     for i = 1, #nodes[1] do
---         s = s .. string.format(" %i ", i)
---     end
+    s = "Map seed: " .. tostring(seed)
+    --     for i = 1, #nodes[1] do
+    --         s = s .. string.format("---", i)
+    --     end
+    --
+    --     s = s .. "\n"
+    --
+    --     for i = 1, #nodes[1] do
+    --         s = s .. string.format(" %i ", i)
+    --     end
 
     return s
 end
-   
-   
+
 cm:add_first_tick_callback(function()
     pttg:load_seed()
 end)
@@ -660,9 +659,9 @@ cm:add_post_first_tick_callback(function()
     local map_height = pttg:get_config("map_height")
     local map_width = pttg:get_config("map_width")
     local path_density = pttg:get_config("map_density")
-    
+
     local difficulty;
-    
+
     if pttg:get_config("difficulty") == 'easy' then
         difficulty = 1
     elseif pttg:get_config("difficulty") == 'regular' then
@@ -670,25 +669,25 @@ cm:add_post_first_tick_callback(function()
     else
         difficulty = 4
     end
-    
+
     local seed = pttg:get_config("seed")
-    
+
     if pttg:get_config("random_seed") and cm:is_new_game() then
         seed = math.random(0, 10000)
     end
-    
+
     if pttg:get_state("gen_seed") then
         seed = pttg:get_state("gen_seed")
     else
         pttg:set_seed(seed)
     end
-    
+
 
     pttg:log(string.format("[ProcGen]Generating maps (seed=%i, difficulty=%s)", seed, difficulty))
     local maps = generate_maps(seed, map_height, map_width, path_density, difficulty)
-    
+
     pttg:set_state('maps', maps)
-    
+
     core:trigger_custom_event('pttg_procgen_finished', {})
 end)
 

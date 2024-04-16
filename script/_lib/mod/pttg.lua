@@ -31,6 +31,7 @@ local state = {
     recruit_weights = { ["core"] = 50, ["special"] = 5, ["rare"] = 1 },
     recruitable_mercs = {},
     excluded_items = {},
+    excluded_shop_items = {},
     replenishment_factor = 0.2,
     excluded_event_pool = {},
     alignment = 0
@@ -48,6 +49,7 @@ local persistent_keys = {
     recruit_weights = true,
     recruitable_mercs = true,
     excluded_items = true,
+    excluded_shop_items = true,
     replenishment_factor = true,
     excluded_event_pool = true,
     alignment = true

@@ -121,21 +121,34 @@ core:add_listener(
             return a
         end
 
-        local available_merc_pool = pttg_merc_pool.merc_pool[cm:get_local_faction():culture()][1]
 
-        available_merc_pool = concatArray(available_merc_pool,
-            pttg_merc_pool.merc_pool[cm:get_local_faction():culture()][2])
-        available_merc_pool = concatArray(available_merc_pool,
-            pttg_merc_pool.merc_pool[cm:get_local_faction():culture()][3])
+        local recruit_chances = pttg:get_state('recruit_chances')
+        local rando_tiers = { 0, 0, 0 }
 
-        local recruit_pool_key = "pttg_recruit_reward"
-        pttg_merc_pool_manager:new_pool(recruit_pool_key)
-
-        for _, merc in pairs(available_merc_pool) do
-            pttg_merc_pool_manager:add_unit(recruit_pool_key, merc.key, merc.weight)
+        for i = 1, pttg:get_state('recruit_count') do
+            local rando_tier = cm:random_number(100)
+            if rando_tier < recruit_chances[1] then
+                rando_tiers[1] = rando_tiers[1] + 1
+            elseif rando_tier < recruit_chances[2] then
+                rando_tiers[2] = rando_tiers[2] + 1
+            else
+                rando_tiers[3] = rando_tiers[3] + 1
+            end
         end
 
-        pttg_merc_pool:add_active_units(pttg_merc_pool_manager:generate_pool(recruit_pool_key, 3, true))
+        for tier, count in pairs(rando_tiers) do
+            local available_merc_pool = pttg_merc_pool.merc_pool[faction][tier]
+
+
+            local recruit_pool_key = "pttg_recruit_reward"
+            pttg_merc_pool_manager:new_pool(recruit_pool_key)
+
+            for _, merc in pairs(available_merc_pool) do
+                pttg_merc_pool_manager:add_unit(recruit_pool_key, merc.key, merc.weight)
+            end
+
+            pttg_merc_pool:add_active_units(pttg_merc_pool_manager:generate_pool(recruit_pool_key, count, true))
+        end
     end,
     true
 )

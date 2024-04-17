@@ -1,4 +1,5 @@
 local pttg = core:get_static_object("pttg");
+local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 
 local pttg_merc_pool_manager = {
     pool_list = {}

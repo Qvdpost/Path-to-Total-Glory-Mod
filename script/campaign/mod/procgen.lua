@@ -579,7 +579,7 @@ local function generate_maps(seed, map_height, map_width, path_density, ascensio
     return maps
 end
 
-function procgen:format_map(nodes, cursor, seed)
+function procgen:format_map(nodes, cursor)
     local s = ""
     s = s .. "\n__"
 
@@ -637,7 +637,7 @@ function procgen:format_map(nodes, cursor, seed)
 
     s = s .. "\n"
 
-    s = "Map seed: " .. tostring(seed)
+    s = s .. "Map seed: " .. tostring(pttg:get_state("gen_seed"))
     --     for i = 1, #nodes[1] do
     --         s = s .. string.format("---", i)
     --     end

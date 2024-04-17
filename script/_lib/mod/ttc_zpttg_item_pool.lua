@@ -1,7 +1,12 @@
 local pttg = core:get_static_object("pttg");
+local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 
 local pttg_item_pool = {
     item_pool = {
+        craftable = { {}, {}, {}, {} },
+        rewards = { {}, {}, {}, {} }
+    },
+    unit_pool = {
         craftable = { {}, {}, {}, {} },
         rewards = { {}, {}, {}, {} }
     },
@@ -10,7 +15,7 @@ local pttg_item_pool = {
 }
 
 function pttg_item_pool:add_item(item, info)
-    pttg:log(string.format('[pttg_item_pool] Adding item: %s (%s, %s, %s)',
+    pttg:log(string.format('[pttg_item_pool] Adding item: %s (%s, %s, %s, %s)',
             item,
             tostring(info.uniqueness),
             tostring(info.category),
@@ -19,18 +24,26 @@ function pttg_item_pool:add_item(item, info)
         )
     )
 
-    local tier = self:item_tier(info.uniqueness)
-    if self.item_pool['rewards'][tier][info.faction_set] then
-        table.insert(self.shop_items['rewards'][tier][info.faction_set], {item=item, info=info})
+    local pool = nil
+    if info.category == 'unit' then
+        pool = self.unit_pool
     else
-        self.shop_items['rewards'][tier][info.faction_set] = {{item=item, info=info}}
+        pool = self.item_pool
+    end
+
+    local tier = self:item_tier(info.uniqueness)
+
+    if pool['rewards'][tier][info.faction_set] then
+        table.insert(pool['rewards'][tier][info.faction_set], {item=item, info=info})
+    else
+        pool['rewards'][tier][info.faction_set] = {{item=item, info=info}}
     end
 
     if info.ritual then
-        if self.item_pool['craftable'][tier][info.faction_set] then
-            table.insert(self.shop_items['craftable'][tier][info.faction_set], {item=item, info=info})
+        if pool['craftable'][tier][info.faction_set] then
+            table.insert(pool['craftable'][tier][info.faction_set], {item=item, info=info})
         else
-            self.shop_items['craftable'][tier][info.faction_set] = {{item=item, info=info}}
+            pool['craftable'][tier][info.faction_set] = {{item=item, info=info}}
         end
     end
 
@@ -44,17 +57,11 @@ function pttg_item_pool:add_items(items)
 end
 
 function pttg_item_pool:get_craftable_item_rituals(excluded_items)
-    local item_pool = { {}, {}, {}, {} }
-    for tier, faction_sets in pairs(self.item_pool.craftable) do
-        for faction_set, items in pairs(faction_sets) do
-            for _, item in items do
-                if not excluded_items[item] then
-                    table.insert(item_pool[tier][faction_set], item.info.ritual)
-                end
-            end
-        end
-    end
-    return item_pool
+    return self.item_pool.craftable
+end
+
+function pttg_item_pool:get_purchaseable_unit_rituals()
+    return self.unit_pool.craftable
 end
 
 function pttg_item_pool:item_tier(uniqueness)
@@ -80,6 +87,18 @@ function pttg_item_pool:init()
     self:add_item("pttg_glorious_weapon", { ["uniqueness"] = 75, ["category"] = "weapon", ["faction_set"] = "all", ["ritual"] = "pttg_ritual_glorious_weapon"})
 
     self.excluded_items = pttg:get_state('excluded_items')
+
+    local tier_to_uniqueness = {29, 49, 99}
+
+    for tier, units in pairs(pttg_merc_pool.merc_pool[cm:get_local_faction():culture()]) do
+        for _, unit_info in pairs(units) do
+            unit_info.uniqueness = tier_to_uniqueness[tier]
+            unit_info.category = 'unit'
+            unit_info.ritual = "pttg_ritual_"..unit_info.key
+            unit_info.faction_set = 'all'
+            self:add_item(unit_info.key, unit_info)
+        end
+    end
 end
 
 core:add_listener(

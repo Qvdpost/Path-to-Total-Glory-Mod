@@ -317,10 +317,10 @@ function WH_Random_Army_Generator:new_force(key)
 	local existing_force = self:get_force_by_key(key)
 
 	if existing_force ~= false then
-		self.existing_force[i].key = key;
-		self.existing_force[i].units = {};
-		self.existing_force[i].mandatory_units = {};
-		self.existing_force[i].faction = "";
+		existing_force.key = key;
+		existing_force.units = {};
+		existing_force.mandatory_units = {};
+		existing_force.faction = "";
 		pttg:log("\tForce with key [" .. key .. "] already exists - resetting force!");
 		return true;
 	end

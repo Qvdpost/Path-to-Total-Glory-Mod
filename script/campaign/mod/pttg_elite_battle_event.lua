@@ -3,32 +3,30 @@ local pttg_glory = core:get_static_object("pttg_glory")
 
 
 local factions_to_template = {
-    ["pttg_grn_savage_orcs"] = { "wh_main_sc_grn_savage_orcs" },
-    ["pttg_tmb_tomb_kings"] = { "wh2_dlc09_sc_tmb_tomb_kings" },
-    ["pttg_skv_skaven"] = { "wh2_main_sc_skv_skaven", "skv_pestilens_and_rats", "skv_moulder", "skv_skryre_drill_team" },
-    ["pttg_sla_slaanesh"] = { "wh3_main_sc_sla_slaanesh" },
-    ["pttg_def_dark_elves"] = { "wh2_main_sc_def_dark_elves", "def_corsairs" },
-    ["pttg_lzd_lizardmen"] = { "wh2_main_sc_lzd_lizardmen", "lzd_sanctum_ambush", "lzd_dino_rampage" },
-    ["pttg_bst_beastmen"] = { "wh_dlc03_sc_bst_beastmen" },
-    ["pttg_grn_greenskins"] = { "wh_main_sc_grn_greenskins", "grn_greenskins_orcs_only", "grn_spider_cult" },
-    ["pttg_kho_khorne"] = { "wh3_main_sc_kho_khorne", "khorne_spawned_armies" },
-    ["pttg_nur_nurgle"] = { "wh3_main_sc_nur_nurgle" },
-    ["pttg_chs_chaos"] = { "wh_main_sc_chs_chaos" },
-    ["pttg_vmp_vampire_counts"] = { "wh_main_sc_vmp_vampire_counts" },
-    ["pttg_dwf_dwarfs"] = { "wh_main_sc_dwf_dwarfs" },
-    ["pttg_cst_vampire_coast"] = { "wh2_dlc11_sc_cst_vampire_coast" },
-    ["pttg_tze_tzeentch"] = { "wh3_main_sc_tze_tzeentch" },
-    ["pttg_emp_empire"] = { "wh_main_sc_emp_empire" },
-    ["pttg_ogr_ogre_kingdoms"] = { "wh3_main_sc_ogr_ogre_kingdoms" },
-    ["pttg_brt_bretonnia"] = { "wh_main_sc_brt_bretonnia" },
-    ["pttg_nor_norsca"] = { "wh_dlc08_sc_nor_norsca", "nor_fimir" },
-    ["pttg_hef_high_elves"] = { "wh2_main_sc_hef_high_elves" },
-    ["pttg_vmp_strygos_empire"] = { "vmp_ghoul_horde" },
-    ["pttg_wef_wood_elves"] = { "wh_dlc05_sc_wef_wood_elves" },
-    ["pttg_wef_forest_spirits"] = { "wef_forest_spirits" },
-    ["pttg_ksl_kislev"] = "wh3_main_sc_ksl_kislev",
-    ["pttg_chd_chaos_dwarfs"] = "wh3_dlc23_sc_chd_chaos_dwarfs",
-    ["pttg_cth_cathay"] = "wh3_main_sc_cth_cathay"
+    ["pttg_grn_savage_orcs"] = { "wurrzag" },
+    ["pttg_tmb_tomb_kings"] = { "khatep", "arkhan", "khalida" },
+    ["pttg_skv_skaven"] = { "snikch", "mors", "thrott" },
+    ["pttg_sla_slaanesh"] = { "azazel" },
+    ["pttg_def_dark_elves"] = { "rakarth", "crone", "lokhir" },
+    ["pttg_lzd_lizardmen"] = { "tehenhauin", "nakai", "gor-rok" },
+    ["pttg_bst_beastmen"] = { "malagor", "morghur", "taurox" },
+    ["pttg_grn_greenskins"] = { "azhag", "grom", "skarsnik" },
+    ["pttg_kho_khorne"] = { "valkia" },
+    ["pttg_nur_nurgle"] = { "festus" },
+    ["pttg_chs_chaos"] = { "sigvald", "kholek" },
+    ["pttg_vmp_vampire_counts"] = { "ghorst", "kemmler", "vlad+isabella" },
+    ["pttg_dwf_dwarfs"] = { "grombrindal", "ungrim", "belegar" },
+    ["pttg_cst_vampire_coast"] = { "saltspire", "direfin", "noctilus" },
+    ["pttg_tze_tzeentch"] = { "vilitch", "changeling" },
+    ["pttg_emp_empire"] = { "volkmar", "wulfhart", "gelt" },
+    ["pttg_ogr_ogre_kingdoms"] = { "skrag", "greasus" },
+    ["pttg_brt_bretonnia"] = { "repanse", "alberic", "the-fay" },
+    ["pttg_nor_norsca"] = { "throgg", "wulfrik" },
+    ["pttg_hef_high_elves"] = { "alith", "alarielle", "eltharion" },
+    ["pttg_wef_wood_elves"] = { "drycha", "Durthu", "Sisters" },
+    ["pttg_ksl_kislev"] = { "kostaltyn", "ostankya", "Boris" },
+    ["pttg_chd_chaos_dwarfs"] = { "zhatan", "drazhoath" },
+    ["pttg_cth_cathay"] = { "zhao", "miao", "yuan" }
 }
 
 local faction_keyset = {}
@@ -157,7 +155,7 @@ core:add_listener(
             end,
             0.2
         )
-        pttg_glory:reward_glory(105, 95)
+        pttg_glory:reward_glory(35, 25)
 
         core:trigger_custom_event('pttg_phase3', {})
     end,

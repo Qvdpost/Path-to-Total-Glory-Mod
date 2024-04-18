@@ -1,6 +1,7 @@
 local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 core:add_listener(
     "pttg_RewardChosenRecruit",
@@ -42,20 +43,6 @@ core:add_listener(
                 pttg_merc_pool:add_active_units(pttg_pool_manager:generate_pool(recruit_pool_key, count, true))
             end
         end
-    end,
-    true
-)
-
-core:add_listener(
-    "pttg_ResetMercPool",
-    "pttg_phase1",
-    true,
-    function(context)
-        pttg_merc_pool:reset_active_merc_pool()
-        local faction = cm:get_local_faction()
-        local glory_recruit_points = faction:pooled_resource_manager():resource("pttg_unit_reward_glory"):value()
-        cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory",
-            "pttg_glory_unit_recruitment", -glory_recruit_points)
     end,
     true
 )

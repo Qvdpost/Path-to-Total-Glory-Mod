@@ -26,9 +26,9 @@ local factions_to_template = {
     ["pttg_vmp_strygos_empire"] = { "vmp_ghoul_horde" },
     ["pttg_wef_wood_elves"] = { "wh_dlc05_sc_wef_wood_elves" },
     ["pttg_wef_forest_spirits"] = { "wef_forest_spirits" },
-    ["pttg_ksl_kislev"] = "wh3_main_sc_ksl_kislev",
-    ["pttg_chd_chaos_dwarfs"] = "wh3_dlc23_sc_chd_chaos_dwarfs",
-    ["pttg_cth_cathay"] = "wh3_main_sc_cth_cathay"
+    ["pttg_ksl_kislev"] = { "wh3_main_sc_ksl_kislev" },
+    ["pttg_chd_chaos_dwarfs"] = { "wh3_dlc23_sc_chd_chaos_dwarfs" },
+    ["pttg_cth_cathay"] = { "wh3_main_sc_cth_cathay" }
 }
 
 local faction_keyset = {}
@@ -57,7 +57,6 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     local forced_battle = Forced_Battle_Manager:setup_new_battle(forced_battle_key)
     local generated_force = WH_Random_Army_Generator:generate_random_army(forced_battle_key, generated_force_template,
         generated_force_size, generated_force_power, true, false)
-
     forced_battle:add_new_force(forced_battle_key, generated_force, generated_force_faction,
         destroy_generated_force_after_battle, opt_effect_bundle, opt_general_subtype, opt_general_level)
 
@@ -65,14 +64,12 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     local defender = forced_battle_key
     local attacker_victory_incident = opt_player_victory_incident
     local defender_victory_incident = opt_player_defeat_incident
-
     if generated_force_is_attacker then
         defender = target_force_cqi
         attacker = forced_battle_key
         attacker_victory_incident = opt_player_defeat_incident
         defender_victory_incident = opt_player_victory_incident
     end
-
     local opt_player_is_generated_force = opt_player_is_generated_force or nil
     if opt_player_is_generated_force then
         cm:disable_event_feed_events(true, "wh_event_category_character", "", "")
@@ -104,7 +101,7 @@ end
 
 core:add_listener(
     "pttg_RoomBattle",
-    "pttg_StartEliteRoomBattle",
+    "pttg_StartRoomBattle",
     true,
     function(context)
         local cursor = pttg:get_cursor()
@@ -125,28 +122,28 @@ core:add_listener(
             invasion_power, invasion_size, invasion_faction, invasion_template))
 
         Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
-            pttg:get_state('army_cqi'),  --	target_force_cqi
-            invasion_faction,            --	generated_force_faction
-            invasion_template,           --	generated_force_template
-            invasion_size,               --	generated_force_size
-            invasion_power,              --	generated_force_power
-            false,                       --	generated_force_is_attacker
-            true,                        --	destroy_generated_force_after_battle
-            false,                       --	is_ambush
-            "pttg_elite_battle_victory", --	opt_player_victory_incident
-            "pttg_battle_defeat",        --	opt_player_defeat_incident
-            nil,                         --	opt_general_subtype
-            general_level,               --	opt_general_level
-            nil                          --	opt_effect_bundle
+            pttg:get_state('army_cqi'), --	target_force_cqi
+            invasion_faction,           --	generated_force_faction
+            invasion_template,          --	generated_force_template
+            invasion_size,              --	generated_force_size
+            invasion_power,             --	generated_force_power
+            false,                      --	generated_force_is_attacker
+            true,                       --	destroy_generated_force_after_battle
+            false,                      --	is_ambush
+            "pttg_battle_victory",      --	opt_player_victory_incident
+            "pttg_battle_defeat",       --	opt_player_defeat_incident
+            nil,                        --	opt_general_subtype
+            general_level,              --	opt_general_level
+            nil                         --	opt_effect_bundle
         )
     end,
     true
 )
 
 core:add_listener(
-    "pttg_EliteBattleWon",
+    "pttg_BattleWon",
     "IncidentOccuredEvent",
-    function(context) return context:dilemma() == "pttg_elite_battle_victory" end,
+    function(context) return context:dilemma() == "pttg_battle_victory" end,
     function(context)
         cm:callback( -- we need to wait a tick for this to work, for some reason
             function()
@@ -157,9 +154,19 @@ core:add_listener(
             end,
             0.2
         )
-        pttg_glory:reward_glory(105, 95)
+        pttg_glory:reward_glory(20, 10)
 
         core:trigger_custom_event('pttg_phase3', {})
+    end,
+    true
+)
+
+core:add_listener(
+    "pttg_BattleDefeat",
+    "IncidentOccuredEvent",
+    function(context) return context:dilemma() == "pttg_battle_defeat" end,
+    function(context)
+
     end,
     true
 )

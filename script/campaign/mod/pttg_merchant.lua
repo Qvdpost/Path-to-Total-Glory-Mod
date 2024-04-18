@@ -2,6 +2,7 @@ local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool");
 local pttg_item_pool = core:get_static_object("pttg_item_pool");
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
+local pttg_glory = core:get_static_object("pttg_glory")
 
 local pttg_glory_shop = {
     shop_items = {
@@ -68,7 +69,7 @@ function pttg_glory_shop:init_shop()
     self.shop_items.merchandise = pttg_item_pool:get_craftable_item_rituals(self.excluded_shop_items)
 
     self.shop_items.units = pttg_item_pool:get_purchaseable_unit_rituals()
-    
+
     core:add_listener(
         "pttg_merc_unlock",
         "RitualCompletedEvent",
@@ -84,7 +85,7 @@ function pttg_glory_shop:init_shop()
 
             if shop_item and shop_item.category == 'unit' then
                 pttg_merc_pool:add_unit_to_pool(shop_item.item, 1)
-                cm:faction_add_pooled_resource(faction_key, "pttg_unit_reward_glory", "pttg_glory_unit_recruitment", 1)
+                pttg_glory:add_recruit_glory(1)
                 return;
             end;
         end,
@@ -136,27 +137,25 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
             self:unlock_rituals(purchaseable_items)
         end
     end
-
 end
 
 function pttg_glory_shop:populate_shop()
     local shop_sizes = pttg:get_state('shop_sizes')
     pttg:log(string.format('[pttg_glory_shop] Populating shop with(merch: %i, units:%i)',
-            shop_sizes.merchandise,
-            shop_sizes.units)
+        shop_sizes.merchandise,
+        shop_sizes.units)
     )
 
     self:populate_items(shop_sizes.merchandise, pttg:get_state('shop_chances'), 'merchandise')
     self:populate_items(shop_sizes.units, pttg:get_state('recruit_chances'), 'units')
-
-
 end
 
 function pttg_glory_shop:disable_shop_button()
     pttg:log("[pttg_glory_shop] Disabling shop button.")
     local root = core:get_ui_root()
 
-    local button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management", "button_mortuary_cult")
+    local button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management",
+        "button_mortuary_cult")
 
     if not button then
         pttg:log("[pttg_ui] Could not find button.")
@@ -175,7 +174,8 @@ function pttg_glory_shop:enable_shop_button()
     pttg:log("[pttg_glory_shop] Highlighting shop button.")
     local root = core:get_ui_root()
 
-    local button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management", "button_mortuary_cult")
+    local button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management",
+        "button_mortuary_cult")
 
     if not button then
         pttg:log("[pttg_ui] Could not find button.")
@@ -202,16 +202,6 @@ core:add_listener(
             pttg_glory_shop.excluded_shop_items[context:ritual():ritual_key()] = true
             pttg:set_state('excluded_shop_items', pttg_glory_shop.excluded_shop_items)
         end
-    end,
-    true
-)
-
-core:add_listener(
-    "reset_GloryShop",
-    "pttg_reset_shop",
-    true,
-    function(context)
-        pttg_glory_shop:reset_rituals()
     end,
     true
 )

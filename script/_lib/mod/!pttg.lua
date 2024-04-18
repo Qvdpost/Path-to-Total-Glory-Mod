@@ -39,7 +39,9 @@ local state = {
   excluded_shop_items = {},
   replenishment_factor = 0.2,
   excluded_event_pool = {},
-  alignment = 0
+  alignment = 0,
+  glory_reward_modifier = 1,
+  glory_recruit_modifier = 1
 }
 
 local persistent_keys = {
@@ -59,7 +61,9 @@ local persistent_keys = {
   excluded_shop_items = true,
   replenishment_factor = true,
   excluded_event_pool = true,
-  alignment = true
+  alignment = true,
+  glory_reward_modifier = true,
+  glory_recruit_modifier = true
 }
 
 -- UTILS --

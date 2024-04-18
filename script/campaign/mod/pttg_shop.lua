@@ -14,22 +14,12 @@ core:add_listener(
     "pttg_ShopRoom",
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_shop_room" end,
-    function(context)       
+    function(context)
         pttg:log("[pttg_ShopRoom] resolving shop: ")
 
         core:trigger_custom_event('pttg_populate_shop', {})
         pttg_shop:enable_shop_button()
         core:trigger_custom_event('pttg_idle', {})
-    end,
-    true
-)
-
-core:add_listener(
-    "pttg_ShopRoom",
-    "pttg_phase1",
-    true,
-    function(context) 
-        core:trigger_custom_event('pttg_reset_merc_pool', {})
     end,
     true
 )
@@ -43,4 +33,3 @@ core:add_listener(
     end,
     false
 )
-

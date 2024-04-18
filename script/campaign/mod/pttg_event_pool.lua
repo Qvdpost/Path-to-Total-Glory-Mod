@@ -9,15 +9,16 @@ local pttg_event_pool = {
 }
 
 function pttg_event_pool:add_event(event, info)
-    pttg:log(string.format('[pttg_event_pool] Adding event: %s (weight:%s, faction_set%s, acts(%s,%s), alignment(%s,%s))',
-            event,
-            tostring(info.weight),
-            tostring(info.faction_set),
-            tostring(info.acts.upper),
-            tostring(info.acts.lower),
-            tostring(info.alignment.upper),
-            tostring(info.alignment.lower)
-        )
+    pttg:log(string.format(
+        '[pttg_event_pool] Adding event: %s (weight:%s, faction_set%s, acts(%s,%s), alignment(%s,%s))',
+        event,
+        tostring(info.weight),
+        tostring(info.faction_set),
+        tostring(info.acts.upper),
+        tostring(info.acts.lower),
+        tostring(info.alignment.upper),
+        tostring(info.alignment.lower)
+    )
     )
     self.event_pool[event] = info
 end
@@ -33,11 +34,11 @@ function pttg_event_pool:exclude_event(event)
 end
 
 function pttg_event_pool:init_events()
-    local events_all = { 
-        ["pttg_EventGlory"] = { weight = 10, acts = {upper=nil, lower=nil}, alignment = {upper=10, lower=nil}, faction_set='all', callback=pttg_EventGlory_callback },
+    local events_all = {
+        ["pttg_EventGlory"] = { weight = 10, acts = { upper = nil, lower = nil }, alignment = { upper = 10, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
     }
     self:add_events(events_all)
-    
+
     self.excluded_event_pool = pttg:get_state('excluded_event_pool')
 end
 
@@ -53,7 +54,8 @@ function pttg_event_pool:is_eligible(event, info)
     local cursor = pttg:get_cursor()
     local alignment = pttg:get_state('alignment')
     local faction = cm:get_local_faction()
-    pttg:log(string.format("[pttg_event_pool] Checking eligibility for: %s with alignment %s at %s.", faction:name(), tostring(alignment), tostring(cursor.z)));
+    pttg:log(string.format("[pttg_event_pool] Checking eligibility for: %s with alignment %s at %s.", faction:name(),
+        tostring(alignment), tostring(cursor.z)));
     return (cursor.z > (info.acts.lower or -math:huge(cursor.z)) and (cursor.z < (info.acts.upper or math:huge(cursor.z)))) and
         (alignment > (info.alignment.lower or -math:huge(alignment)) and (alignment < (info.alignment.upper or math:huge(alignment)))) and
         ---@diagnostic disable-next-line: undefined-field
@@ -72,7 +74,6 @@ function pttg_event_pool:random_event()
     end
 
     return pttg_pool_manager:generate_pool(event_pool_key, 1, true)[1]
-
 end
 
 core:add_listener(

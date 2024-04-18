@@ -4,6 +4,9 @@ local pttg_UI = core:get_static_object("pttg_UI")
 local pttg_tele = core:get_static_object("pttg_tele")
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
+local pttg_glory = core:get_static_object("pttg_glory")
+local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 local mct = get_mct();
 
@@ -16,10 +19,6 @@ map_notif:set_title("This is the PtTG Map!")
     :set_persistent(true)
 
 local function init()
-    procgen = core:get_static_object("procgen")
-    pttg_UI = core:get_static_object("pttg_UI")
-    pttg_tele = core:get_static_object("pttg_tele")
-
     pttg:load_state();
     pttg_merc_pool:init_active_merc_pool()
     mct = get_mct();
@@ -36,6 +35,13 @@ local function init()
     mct:get_notification_system():get_ui():refresh_button()
 
     cm:disable_end_turn(true)
+
+    -- Add upkeep callbacks
+    pttg_upkeep:add_callback("pttg_reset_recruit_glory", pttg_glory.reset_recruit_glory, pttg_glory)
+    pttg_upkeep:add_callback("pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
+    pttg_upkeep:add_callback("pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { -5 })
+    pttg_upkeep:add_callback("pttg_reset_merc_pool", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
+
 
     if not pttg:get_state('army_cqi') then
         pttg:set_state('army_cqi', cm:get_local_faction():faction_leader():military_force():command_queue_index())
@@ -64,17 +70,15 @@ core:add_listener(
         local node = pttg:get_cursor()
 
         if context:choice_key() == 'FIRST' then -- Recruit Reward
-            cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory",
-                "pttg_glory_unit_recruitment", 2)
+            pttg_glory:add_initial_recruit_glory(1)
 
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then -- WoM reward
             pttg:log("[pttg_RewardChosen] Increasing WoM.")
-            pttg_mod_wom:modify(15) 
-        elseif context:choice_key() == 'THIRD' then  -- Glory Reward
-            cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward",
-                cm:random_number(40, 25))
-        else -- Decide Later
+            pttg_mod_wom:increase(15)
+        elseif context:choice_key() == 'THIRD' then -- Glory Reward
+            pttg_glory:reward_glory(40, 25)
+        else                                        -- Decide Later
             pttg:set_state('pending_reward', true)
             core:trigger_custom_event('pttg_idle', {})
             return true
@@ -116,6 +120,8 @@ core:add_listener(
     true,
     function(context)
         pttg:set_state('cur_phase', "pttg_phase1")
+
+        pttg_upkeep:resolve()
 
         local cursor = pttg:get_cursor()
         -- Choose a path dilemma
@@ -189,7 +195,6 @@ core:add_listener(
         pttg:set_state('cur_phase', "pttg_phase3")
         -- Trigger reward dilemma
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
-        
     end,
     true
 )

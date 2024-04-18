@@ -638,15 +638,7 @@ function procgen:format_map(nodes, cursor)
     s = s .. "\n"
 
     s = s .. "Map seed: " .. tostring(pttg:get_state("gen_seed"))
-    --     for i = 1, #nodes[1] do
-    --         s = s .. string.format("---", i)
-    --     end
-    --
-    --     s = s .. "\n"
-    --
-    --     for i = 1, #nodes[1] do
-    --         s = s .. string.format(" %i ", i)
-    --     end
+
 
     return s
 end

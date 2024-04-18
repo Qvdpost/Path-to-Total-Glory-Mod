@@ -1,49 +1,7 @@
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool");
 local pttg = core:get_static_object("pttg");
+local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 
-local function template_to_culture(sc)
-	local sc_to_culture = {
-		["wh2_dlc09_sc_tmb_tomb_kings"] = "wh2_dlc09_tmb_tomb_kings",
-		["wh2_dlc11_sc_cst_vampire_coast"] = "wh2_dlc11_cst_vampire_coast",
-		["wh2_main_sc_def_dark_elves"] = "wh2_main_def_dark_elves",
-		["wh2_main_sc_hef_high_elves"] = "wh2_main_hef_high_elves",
-		["wh2_main_sc_lzd_lizardmen"] = "wh2_main_lzd_lizardmen",
-		["wh2_main_sc_skv_skaven"] = "wh2_main_skv_skaven",
-		["wh3_dlc23_sc_chd_chaos_dwarfs"] = "wh3_dlc23_chd_chaos_dwarfs",
-		["wh3_main_sc_cth_cathay"] = "wh3_main_cth_cathay",
-		["wh3_main_sc_dae_daemons"] = "wh3_main_dae_daemons",
-		["wh3_main_sc_kho_khorne"] = "wh3_main_kho_khorne",
-		["wh3_main_sc_ksl_kislev"] = "wh3_main_ksl_kislev",
-		["wh3_main_sc_nur_nurgle"] = "wh3_main_nur_nurgle",
-		["wh3_main_sc_ogr_ogre_kingdoms"] = "wh3_main_ogr_ogre_kingdoms",
-		["wh3_main_sc_sla_slaanesh"] = "wh3_main_sla_slaanesh",
-		["wh3_main_sc_tze_tzeentch"] = "wh3_main_tze_tzeentch",
-		["wh_dlc03_sc_bst_beastmen"] = "wh_dlc03_bst_beastmen",
-		["wh_dlc05_sc_wef_wood_elves"] = "wh_dlc05_wef_wood_elves",
-		["wh_dlc08_sc_nor_norsca"] = "wh_dlc08_nor_norsca",
-		["wh_main_sc_brt_bretonnia"] = "wh_main_brt_bretonnia",
-		["wh_main_sc_chs_chaos"] = "wh_main_chs_chaos",
-		["wh_main_sc_dwf_dwarfs"] = "wh_main_dwf_dwarfs",
-		["wh_main_sc_emp_empire"] = "wh_main_emp_empire",
-		["wh_main_sc_grn_greenskins"] = "wh_main_grn_greenskins",
-		["wh_main_sc_grn_savage_orcs"] = "wh_main_grn_greenskins",
-		["wh_main_sc_teb_teb"] = "wh_main_emp_empire",
-		["wh_main_sc_vmp_vampire_counts"] = "wh_main_vmp_vampire_counts",
-		["skv_pestilens_and_rats"] = "wh2_main_skv_skaven",
-		["skv_skryre_drill_team"] = "wh2_main_skv_skaven",
-		["skv_moulder"] = "wh2_main_skv_skaven",
-		["def_corsairs"] = "wh2_main_def_dark_elves",
-		["lzd_sanctum_ambush"] = "wh2_main_lzd_lizardmen",
-		["lzd_dino_rampage"] = "wh2_main_lzd_lizardmen",
-		["grn_greenskins_orcs_only"] = "wh_main_grn_greenskins",
-		["grn_spider_cult"] = "wh_main_grn_greenskins",
-		["khorne_spawned_armies"] = "wh3_main_kho_khorne",
-		["nor_fimir"] = "wh_dlc08_nor_norsca",
-		["vmp_ghoul_horde"] = "wh_main_vmp_vampire_counts",
-		["wef_forest_spirits"] = "wh_dlc05_wef_wood_elves",
-	}
-	return sc_to_culture[sc]
-end
 
 local function get_random_category(distribution)
 	local rando = cm:random_number(100)
@@ -70,15 +28,11 @@ WH_Random_Army_Generator = {
 --if 'use thresholds' is true, high tier units will *never* appear at low power levels, and vice versa. These thresholds are defined within the function
 function WH_Random_Army_Generator:generate_random_army(key, template_key, num_units, power, use_thresholds,
 													   generate_as_table)
-	if not template_to_culture(template_key) then
-		script_error("ERROR: generate_random_army() called but supplied template_key [" ..
+	if not pttg_battle_templates.templates[template_key] then
+		script_error("[generate_random_army] ERROR: generate_random_army() called but supplied template_key [" ..
 			template_key .. "] is not supported");
 		return false;
 	end
-
-	local unit_list = {};
-	local ram = WH_Random_Army_Generator;
-
 	--clamp the range
 	if power < 1 then
 		power = 1
@@ -125,14 +79,38 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 	local modifiers = { low_tier_modifier, mid_tier_modifier, high_tier_modifier }
 
 
-	ram:new_force(key);
+	self:new_force(key);
 
-	for tier, units in pairs(pttg_merc_pool.merc_pool[template_to_culture(template_key)]) do
-		local weighting_modifier = modifiers[tier]
-		for i, unit_info in ipairs(units) do
-			ram:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
+	local template_info = pttg_battle_templates.templates[template_key]
+
+	pttg:log(string.format("[generate_random_army] Generating army with template %s for %s", template_key, template_info.culture))
+	pttg:log(string.format("[generate_random_army] %s, %s, %s, %s", template_info.faction, template_info.culture, template_info.subculture, template_info.alignment))
+	pttg:log(string.format("[generate_random_army] %s, %s", #template_info.mandatory_units, #template_info.units))
+
+	if #template_info.mandatory_units > 0 then
+		for _, unit in pairs(template_info.mandatory_units) do
+			self:add_mandatory_unit(key, unit.key, unit.weight)
 		end
 	end
+
+	if #template_info.units > 0 then
+		for _, unit in pairs(template_info.units) do
+			pttg:log("[generate_random_army] Adding unit "..unit.key.."from template.")
+			self:add_unit(key, unit.key, unit.weight)
+		end		
+	end
+
+	local unit_delta = num_units - (#template_info.mandatory_units + #template_info.units)
+	if unit_delta > 0 then
+		pttg:log("[generate_random_army] Not enough units supplied. Adding culture units for "..template_info.culture)
+		for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
+			local weighting_modifier = modifiers[tier]
+			for i, unit_info in ipairs(units) do
+				self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
+			end
+		end
+	end
+	
 
 	return self:generate_force(key, num_units, generate_as_table);
 end
@@ -142,18 +120,11 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	local force_data = self:get_force_by_key(force_key);
 
 	if not force_data then
-		script_error("No force data found for key: " .. force_key)
+		script_error("[generate_random_army] No force data found for key: " .. force_key)
 		return nil
 	end
 
-	local troop_distribution = {
-		inf_melee = 30,
-		inf_ranged = 20,
-		cavalry = 15,
-		war_beast = 15,
-		artillery = 10,
-		war_machine = 10,
-	}
+	
 
 	if not unit_count then
 		unit_count = #force_data.mandatory_units
@@ -163,7 +134,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 
 	unit_count = math.min(19, unit_count);
 
-	pttg:log("Random Army Manager: Getting Random Force for army [" .. force_key .. "] with size [" .. unit_count .. "]");
+	pttg:log("[generate_random_army] Random Army Manager: Getting Random Force for army [" .. force_key .. "] with size [" .. unit_count .. "]");
 
 	local mandatory_units_added = 0;
 
@@ -173,7 +144,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	end;
 
 	if (unit_count - mandatory_units_added) > 0 and #force_data.units == 0 then
-		script_error("Random Army Manager: Tried to add units to force_key [" ..
+		script_error("[generate_random_army] Random Army Manager: Tried to add units to force_key [" ..
 			force_key .. "] but the force has not been set up with any non-mandatory units - add them first!");
 		return false;
 	end;
@@ -185,6 +156,15 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 		war_beast = {},
 		artillery = {},
 		war_machine = {},
+	}
+
+	local troop_distribution = {
+		inf_melee = 30,
+		inf_ranged = 20,
+		cavalry = 15,
+		war_beast = 15,
+		artillery = 10,
+		war_machine = 10,
 	}
 
 	for _, unit_info in pairs(force_data.units) do
@@ -203,7 +183,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	end;
 
 	if #force == 0 then
-		script_error("Random Army Manager: Did not add any units to force with force_key [" ..
+		script_error("[generate_random_army] Random Army Manager: Did not add any units to force with force_key [" ..
 			force_key .. "] - was the force created?");
 		return false;
 	elseif return_as_table then
@@ -219,7 +199,7 @@ function WH_Random_Army_Generator:add_unit(force_key, unit, weight)
 	if force_data then
 		for i = 1, weight do
 			table.insert(force_data.units, unit);
-			pttg:log("Random Army Manager: Adding Unit- [" ..
+			pttg:log("[generate_random_army] Random Army Manager: Adding Unit- [" ..
 				unit.key .. "] with weight: [" .. weight .. "] to force: [" .. force_key .. "]");
 		end;
 		return;
@@ -234,7 +214,7 @@ end;
 --- @desc Remove an existing force from the force list
 --- @p string key of the force
 function WH_Random_Army_Generator:remove_force(force_key)
-	pttg:log("Random Army Manager: Removing Force with key [" .. force_key .. "]");
+	pttg:log("[generate_random_army] Random Army Manager: Removing Force with key [" .. force_key .. "]");
 
 	for i = 1, #self.force_list do
 		if force_key == self.force_list[i].key then
@@ -270,21 +250,13 @@ function WH_Random_Army_Generator:get_force_by_key(force_key)
 	return false;
 end;
 
--- Internal Debug
-local show_debug_output_ram = false;
-function output_ram(text)
-	if show_debug_output_ram then
-		out(text);
-	end;
-end;
-
 function WH_Random_Army_Generator:add_mandatory_unit(force_key, unit_info, amount)
 	local force_data = self:get_force_by_key(force_key);
 
 	if force_data then
 		for i = 1, amount do
 			table.insert(force_data.mandatory_units, unit_info.key);
-			pttg:log("Random Army Manager: Adding Mandatory Unit- [" ..
+			pttg:log("[generate_random_army] Random Army Manager: Adding Mandatory Unit- [" ..
 				unit_info.key .. "] with amount: [" .. amount .. "] to force: [" .. force_key .. "]");
 		end;
 		return;
@@ -311,7 +283,7 @@ function WH_Random_Army_Generator:set_faction(force_key, faction_key)
 end
 
 function WH_Random_Army_Generator:new_force(key)
-	pttg:log("Random Army Manager: Creating New Force with key [" .. key .. "]");
+	pttg:log("[generate_random_army] Random Army Manager: Creating New Force with key [" .. key .. "]");
 
 	if self:get_force_by_key(key) then
 		pttg:log("\tForce with key [" .. key .. "] already exists!");

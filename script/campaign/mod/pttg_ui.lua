@@ -72,7 +72,7 @@ core:add_listener(
             pttg:log("[pttg_ui] Pending reward found. Triggering phase 3")
             core:trigger_custom_event('pttg_phase3', {})
         else
-            if cm:is_new_game() and pttg:get_cursor() == nil then
+            if pttg:get_cursor() == nil then
                 pttg:log("[pttg_ui] Triggering start")
                 core:trigger_custom_event('pttg_phase0', {})
                 return

@@ -18,6 +18,7 @@ function pttg_upkeep:add_callback(name, func, object, payload, prio)
 end
 
 function pttg_upkeep:resolve()
+    pttg:log(string.format("[pttg_upkeep] Resolving upkeep"))
     for prio, callbacks in pairs(self.callbacks) do
         for name, callback in pairs(callbacks) do
             pttg:log(string.format("[pttg_upkeep] Executing %s", name))

@@ -47,12 +47,13 @@ local function init()
         pttg:set_state('army_cqi', cm:get_local_faction():faction_leader():military_force():command_queue_index())
     end
 
-    core:trigger_custom_event('pttg_init_complete', {})
-
+    
     if pttg:get_state('cur_phase') == "" then
         pttg:set_state('cur_phase', "pttg_idle")
     end
-
+    
+    core:trigger_custom_event('pttg_init_complete', {})
+    
     pttg_UI:enable_next_phase_button()
 end
 
@@ -171,7 +172,7 @@ core:add_listener(
         if cursor.class == pttg_RoomType.MonsterRoom then
             core:trigger_custom_event('pttg_StartRoomBattle', {})
         elseif cursor.class == pttg_RoomType.MonsterRoomElite then
-            core:trigger_custom_event('pttg_StartRoomBattle', {})
+            core:trigger_custom_event('pttg_StartEliteRoomBattle', {})
         elseif cursor.class == pttg_RoomType.BossRoom then
             core:trigger_custom_event('pttg_idle', {})
         elseif cursor.class == pttg_RoomType.RestRoom then

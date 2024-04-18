@@ -40,7 +40,7 @@ end;
 
 function pttg_pool_manager:add_item(pool_key, key, weight)
     local pool_data = self:get_pool_by_key(pool_key);
-
+    pttg:log(string.format("Pool Manager: adding item: %s", tostring(key)));
     if pool_data then
         for i = 1, weight do
             table.insert(pool_data.items, key);

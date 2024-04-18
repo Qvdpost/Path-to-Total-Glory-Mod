@@ -256,7 +256,7 @@ local function glory_cost_listeners()
                 local armyList = find_uicomponent_from_table(core:get_ui_root(),
                     { "units_panel", "main_units_panel", "units" })
                 local merc = find_uicomponent(armyList, "temp_merc_" .. tostring(#merc_in_queue - 1))
-                if merc then
+                if merc ~= false then
                     pttg:log("The new queued mercenary appeared")
                     local unit_record = pttg_merc_pool.merc_units[unit_key]
                     pttg_glory:remove_recruit_glory(unit_record.cost)
@@ -287,6 +287,7 @@ local function glory_cost_listeners()
                 local int_pos = math.floor(tonumber(position) + 1)
                 local unit_key = merc_in_queue[int_pos]
                 local unit_record = pttg_merc_pool.merc_units[unit_key]
+                pttg:log("Component Clicked was Mercenary [" .. unit_key .. "]")
 
                 pttg_glory:add_recruit_glory(unit_record.cost)
 

@@ -42,7 +42,7 @@ function pttg_glory:remove_recruit_glory(amount)
     end
 
     cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory",
-        "pttg_glory_unit_recruitment", amount)
+        "pttg_glory_unit_recruitment", -amount)
 end
 
 function pttg_glory:reset_recruit_glory(amount)

@@ -22,20 +22,20 @@ function pttg_glory_shop:reset_rituals()
 end
 
 function pttg_glory_shop:unlock_ritual(shop_item)
-    pttg:log(string.format('[pttg_glory_shop]Unlocking ritual %s', shop_item.ritual))
+    pttg:log(string.format('[pttg_glory_shop]Unlocking ritual %s', shop_item.info.ritual))
     local faction = cm:get_local_faction()
 
-    cm:unlock_ritual(faction, shop_item.ritual, 1)
-    self.active_shop_items[shop_item.ritual] = shop_item.info
+    cm:unlock_ritual(faction, shop_item.info.ritual, 1)
+    self.active_shop_items[shop_item.info.ritual] = shop_item.info
     pttg:set_state('active_shop_items', self.active_shop_items)
 end
 
 function pttg_glory_shop:unlock_rituals(shop_items)
     local faction = cm:get_local_faction()
     for _, shop_item in pairs(shop_items) do
-        pttg:log(string.format('[pttg_glory_shop] Unlocking ritual %s', tostring(shop_item.ritual)))
-        cm:unlock_ritual(faction, shop_item.ritual, 1)
-        self.active_shop_items[shop_item.ritual] = shop_item.info
+        pttg:log(string.format('[pttg_glory_shop] Unlocking ritual %s', tostring(shop_item.info.ritual)))
+        cm:unlock_ritual(faction, shop_item.info.ritual, 1)
+        self.active_shop_items[shop_item.info.ritual] = shop_item.info
     end
     pttg:set_state('active_shop_items', self.active_shop_items)
 end
@@ -61,14 +61,17 @@ end
 
 function pttg_glory_shop:init_shop()
     pttg = core:get_static_object("pttg");
+
     pttg_merc_pool = core:get_static_object("pttg_merc_pool");
     pttg_item_pool = core:get_static_object("pttg_item_pool");
 
+
+
     pttg:log(string.format('[pttg_glory_shop] Initialising shop.'))
 
-    self.shop_items.merchandise = pttg_item_pool:get_craftable_item_rituals(self.excluded_shop_items)
+    self.shop_items.merchandise = pttg_item_pool:get_craftable_items(self.excluded_shop_items)
 
-    self.shop_items.units = pttg_item_pool:get_purchaseable_unit_rituals()
+    self.shop_items.units = pttg_item_pool:get_purchaseable_units()
 
     core:add_listener(
         "pttg_merc_unlock",
@@ -94,6 +97,12 @@ function pttg_glory_shop:init_shop()
 
     self.active_shop_items = pttg:get_state('active_shop_items')
     self.excluded_shop_items = pttg:get_state('excluded_shop_items')
+
+    if #self.active_shop_items > 0 then
+        self:enable_shop_button()
+    else
+        self:disable_shop_button()
+    end
 end
 
 function pttg_glory_shop:populate_items(num_items, chances, category)

@@ -1,10 +1,7 @@
 local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
+local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 
-local faction_keyset = {}
-for k in pairs(factions_to_template) do
-    table.insert(faction_keyset, k)
-end
 
 function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     target_force_cqi,
@@ -78,13 +75,10 @@ core:add_listener(
     true,
     function(context)
         local cursor = pttg:get_cursor()
-        local faction = cm:get_local_faction()
-        local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
 
-        local invasion_faction = faction_keyset[math.random(1, #faction_keyset)]
-        local invasion_templates = factions_to_template[invasion_faction]
-
-        local invasion_template = invasion_templates[cm:random_number(#invasion_templates)]
+        local invasion_template_army = pttg_battle_templates:get_random_elite_battle_template(cursor.z)
+        local invasion_template = invasion_template_army.template
+        local invasion_faction = invasion_template_army.info.faction
 
 
         local invasion_power = cursor.z
@@ -105,7 +99,7 @@ core:add_listener(
             false,                       --	is_ambush
             "pttg_elite_battle_victory", --	opt_player_victory_incident
             "pttg_battle_defeat",        --	opt_player_defeat_incident
-            nil,                         --	opt_general_subtype
+            invasion_template_army.template,      --	opt_general_subtype
             general_level,               --	opt_general_level
             nil                          --	opt_effect_bundle
         )

@@ -56,11 +56,11 @@ function pttg_item_pool:add_items(items)
     end
 end
 
-function pttg_item_pool:get_craftable_item_rituals(excluded_items)
+function pttg_item_pool:get_craftable_items(excluded_items)
     return self.item_pool.craftable
 end
 
-function pttg_item_pool:get_purchaseable_unit_rituals()
+function pttg_item_pool:get_purchaseable_units()
     return self.unit_pool.craftable
 end
 

@@ -1,40 +1,7 @@
 local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
+local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 
-
-local factions_to_template = {
-    ["pttg_grn_savage_orcs"] = { "wh_main_sc_grn_savage_orcs" },
-    ["pttg_tmb_tomb_kings"] = { "wh2_dlc09_sc_tmb_tomb_kings" },
-    ["pttg_skv_skaven"] = { "wh2_main_sc_skv_skaven", "skv_pestilens_and_rats", "skv_moulder", "skv_skryre_drill_team" },
-    ["pttg_sla_slaanesh"] = { "wh3_main_sc_sla_slaanesh" },
-    ["pttg_def_dark_elves"] = { "wh2_main_sc_def_dark_elves", "def_corsairs" },
-    ["pttg_lzd_lizardmen"] = { "wh2_main_sc_lzd_lizardmen", "lzd_sanctum_ambush", "lzd_dino_rampage" },
-    ["pttg_bst_beastmen"] = { "wh_dlc03_sc_bst_beastmen" },
-    ["pttg_grn_greenskins"] = { "wh_main_sc_grn_greenskins", "grn_greenskins_orcs_only", "grn_spider_cult" },
-    ["pttg_kho_khorne"] = { "wh3_main_sc_kho_khorne", "khorne_spawned_armies" },
-    ["pttg_nur_nurgle"] = { "wh3_main_sc_nur_nurgle" },
-    ["pttg_chs_chaos"] = { "wh_main_sc_chs_chaos" },
-    ["pttg_vmp_vampire_counts"] = { "wh_main_sc_vmp_vampire_counts" },
-    ["pttg_dwf_dwarfs"] = { "wh_main_sc_dwf_dwarfs" },
-    ["pttg_cst_vampire_coast"] = { "wh2_dlc11_sc_cst_vampire_coast" },
-    ["pttg_tze_tzeentch"] = { "wh3_main_sc_tze_tzeentch" },
-    ["pttg_emp_empire"] = { "wh_main_sc_emp_empire" },
-    ["pttg_ogr_ogre_kingdoms"] = { "wh3_main_sc_ogr_ogre_kingdoms" },
-    ["pttg_brt_bretonnia"] = { "wh_main_sc_brt_bretonnia" },
-    ["pttg_nor_norsca"] = { "wh_dlc08_sc_nor_norsca", "nor_fimir" },
-    ["pttg_hef_high_elves"] = { "wh2_main_sc_hef_high_elves" },
-    ["pttg_vmp_strygos_empire"] = { "vmp_ghoul_horde" },
-    ["pttg_wef_wood_elves"] = { "wh_dlc05_sc_wef_wood_elves" },
-    ["pttg_wef_forest_spirits"] = { "wef_forest_spirits" },
-    ["pttg_ksl_kislev"] = "wh3_main_sc_ksl_kislev",
-    ["pttg_chd_chaos_dwarfs"] = "wh3_dlc23_sc_chd_chaos_dwarfs",
-    ["pttg_cth_cathay"] = "wh3_main_sc_cth_cathay"
-}
-
-local faction_keyset = {}
-for k in pairs(factions_to_template) do
-    table.insert(faction_keyset, k)
-end
 
 function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     target_force_cqi,
@@ -104,17 +71,14 @@ end
 
 core:add_listener(
     "pttg_RoomBattle",
-    "pttg_StartEliteRoomBattle",
+    "pttg_StartBossRoomBattle",
     true,
     function(context)
         local cursor = pttg:get_cursor()
-        local faction = cm:get_local_faction()
-        local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
 
-        local invasion_faction = faction_keyset[math.random(1, #faction_keyset)]
-        local invasion_templates = factions_to_template[invasion_faction]
-
-        local invasion_template = invasion_templates[cm:random_number(#invasion_templates)]
+        local invasion_template_army = pttg_battle_templates:get_random_elite_battle_template(cursor.z)
+        local invasion_template = invasion_template_army.template
+        local invasion_faction = invasion_template_army.info.faction
 
 
         local invasion_power = cursor.z
@@ -133,7 +97,7 @@ core:add_listener(
             false,                       --	generated_force_is_attacker
             true,                        --	destroy_generated_force_after_battle
             false,                       --	is_ambush
-            "pttg_elite_battle_victory", --	opt_player_victory_incident
+            "pttg_boss_battle_victory", --	opt_player_victory_incident
             "pttg_battle_defeat",        --	opt_player_defeat_incident
             nil,                         --	opt_general_subtype
             general_level,               --	opt_general_level
@@ -146,7 +110,7 @@ core:add_listener(
 core:add_listener(
     "pttg_EliteBattleWon",
     "IncidentOccuredEvent",
-    function(context) return context:dilemma() == "pttg_elite_battle_victory" end,
+    function(context) return context:dilemma() == "pttg_boss_battle_victory" end,
     function(context)
         cm:callback( -- we need to wait a tick for this to work, for some reason
             function()

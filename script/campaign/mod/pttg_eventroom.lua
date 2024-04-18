@@ -12,7 +12,7 @@ core:add_listener(
         local chances = pttg:get_state('event_room_chances')
         
         local chance = cm:random_number(100,1)
-        
+        pttg:log("[pttg_EventRoom] random number: ", chance)
         if chance <= chances.monster then
             chances.monster = 10
             pttg:set_state('event_room_chances', chances)

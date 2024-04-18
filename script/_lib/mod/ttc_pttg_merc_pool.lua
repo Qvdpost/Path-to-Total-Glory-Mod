@@ -886,6 +886,7 @@ function pttg_merc_pool:init_merc_pool()
     pttg:log(string.format("[pttg_MercPool] Initialising units merc pool."))
 
     local recruit_weights = pttg:get_state('recruit_weights')
+    
     for k, culture_key in pairs(culture_keys) do
         self.merc_pool[cultures[k]] = { {}, {}, {} }
         for unit_key, info in pairs(ttc.units) do

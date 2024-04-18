@@ -3,6 +3,7 @@ local procgen = core:get_static_object("procgen")
 local pttg_UI = core:get_static_object("pttg_UI")
 local pttg_tele = core:get_static_object("pttg_tele")
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
+local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
 
 local mct = get_mct();
 
@@ -69,21 +70,7 @@ core:add_listener(
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then -- WoM reward
             pttg:log("[pttg_RewardChosen] Increasing WoM.")
-            -- TODO: trigger ritual with a connected payload cost to pooled resource that affects the WoM-reserve factor.
-            -- MEAT RITUALS
-            -- local incident_mapping = {
-            --     ["wh3_main_ritual_ogr_great_maw_bloody_and_raw"] = "wh3_main_incident_ritual_ogr_great_maw_bloody_and_raw",
-            --     ["wh3_main_ritual_ogr_great_maw_come_and_get_it"] = "wh3_main_incident_ritual_ogr_great_maw_come_and_get_it",
-            --     ["wh3_main_ritual_ogr_great_maw_fill_yer_bellies"] = "wh3_main_incident_ritual_ogr_great_maw_fill_yer_bellies",
-            --     ["wh3_main_ritual_ogr_great_maw_give_me_gut_magic"] = "wh3_main_incident_ritual_ogr_great_maw_give_me_gut_magic"
-            -- };
-            
-            -- cm:trigger_incident_with_targets(performing_faction_cqi, incident_mapping[ritual_key], 0, 0, ritual:ritual_target():get_target_force():general_character():command_queue_index(), 0, 0, 0);
-            -- cm:perform_ritual(cm:get_local_faction_name(), cm:get_local_faction_name(), "pttg_WoM_increase")
-
-            -- local pttg = core:get_static_object("pttg");
-            -- local fac_cqi = cm:get_local_faction():command_queue_index()
-            -- cm:trigger_incident_with_targets(fac_cqi, "pttg_WoM_up", fac_cqi, fac_cqi, cm:get_character_by_mf_cqi(pttg:get_state('army_cqi')):command_queue_index(), pttg:get_state('army_cqi'), 0, 0);
+            pttg_mod_wom:modify(change) 
         elseif context:choice_key() == 'THIRD' then  -- Glory Reward
             cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward",
                 cm:random_number(40, 25))
@@ -201,19 +188,7 @@ core:add_listener(
     function(context)
         pttg:set_state('cur_phase', "pttg_phase3")
         -- Trigger reward dilemma
-        -- cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
-        
-        ---@diagnostic disable-next-line: missing-parameter
-        cm:trigger_dilemma_with_targets(cm:get_local_faction():command_queue_index(), "pttg_ChooseReward", 
-            0, 0, -- target factions
-            cm:get_character_by_mf_cqi(pttg:get_state('army_cqi')):command_queue_index(), -- char/mforce
-            0, 0 -- regions
-        );
-
-        -- cm:trigger_dilemma_with_targets(
-        --     cm:get_local_faction():command_queue_index(), 'pttg_ChooseReward', 
-        --     cm:get_local_faction():command_queue_index(), cm:get_local_faction():command_queue_index(), cm:get_character_by_mf_cqi(pttg:get_state('army_cqi')):command_queue_index(), pttg:get_state('army_cqi'), pttg:get_state('army_cqi'), 0
-        -- )
+        cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
         
     end,
     true

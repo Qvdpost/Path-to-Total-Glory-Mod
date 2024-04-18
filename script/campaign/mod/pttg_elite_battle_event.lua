@@ -1,34 +1,6 @@
 local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 
-
-local factions_to_template = {
-    ["pttg_grn_savage_orcs"] = { "wurrzag" },
-    ["pttg_tmb_tomb_kings"] = { "khatep", "arkhan", "khalida" },
-    ["pttg_skv_skaven"] = { "snikch", "mors", "thrott" },
-    ["pttg_sla_slaanesh"] = { "azazel" },
-    ["pttg_def_dark_elves"] = { "rakarth", "crone", "lokhir" },
-    ["pttg_lzd_lizardmen"] = { "tehenhauin", "nakai", "gor-rok" },
-    ["pttg_bst_beastmen"] = { "malagor", "morghur", "taurox" },
-    ["pttg_grn_greenskins"] = { "azhag", "grom", "skarsnik" },
-    ["pttg_kho_khorne"] = { "valkia" },
-    ["pttg_nur_nurgle"] = { "festus" },
-    ["pttg_chs_chaos"] = { "sigvald", "kholek" },
-    ["pttg_vmp_vampire_counts"] = { "ghorst", "kemmler", "vlad+isabella" },
-    ["pttg_dwf_dwarfs"] = { "grombrindal", "ungrim", "belegar" },
-    ["pttg_cst_vampire_coast"] = { "saltspire", "direfin", "noctilus" },
-    ["pttg_tze_tzeentch"] = { "vilitch", "changeling" },
-    ["pttg_emp_empire"] = { "volkmar", "wulfhart", "gelt" },
-    ["pttg_ogr_ogre_kingdoms"] = { "skrag", "greasus" },
-    ["pttg_brt_bretonnia"] = { "repanse", "alberic", "the-fay" },
-    ["pttg_nor_norsca"] = { "throgg", "wulfrik" },
-    ["pttg_hef_high_elves"] = { "alith", "alarielle", "eltharion" },
-    ["pttg_wef_wood_elves"] = { "drycha", "Durthu", "Sisters" },
-    ["pttg_ksl_kislev"] = { "kostaltyn", "ostankya", "Boris" },
-    ["pttg_chd_chaos_dwarfs"] = { "zhatan", "drazhoath" },
-    ["pttg_cth_cathay"] = { "zhao", "miao", "yuan" }
-}
-
 local faction_keyset = {}
 for k in pairs(factions_to_template) do
     table.insert(faction_keyset, k)

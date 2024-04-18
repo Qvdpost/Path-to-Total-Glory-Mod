@@ -41,7 +41,7 @@ local function template_to_culture(sc)
 		["nor_fimir"] = "wh_dlc08_nor_norsca",
 		["vmp_ghoul_horde"] = "wh_main_vmp_vampire_counts",
 		["wef_forest_spirits"] = "wh_dlc05_wef_wood_elves",
-    }
+	}
 	return sc_to_culture[sc]
 end
 
@@ -64,13 +64,15 @@ WH_Random_Army_Generator = {
 	force_list = {}
 }
 
---generates a random army based for the relevant faction template_key. 
+--generates a random army based for the relevant faction template_key.
 --currently has armies stored for each template_key, but technically we can use any key here. So feel free to add custom armies with unique rosters using the existing format.
 --Use the 'power' modifier to increase the likeliness of high-tier units appearing. this is clamped between 1 and 10.
 --if 'use thresholds' is true, high tier units will *never* appear at low power levels, and vice versa. These thresholds are defined within the function
-function WH_Random_Army_Generator:generate_random_army(key, template_key, num_units, power, use_thresholds, generate_as_table)
+function WH_Random_Army_Generator:generate_random_army(key, template_key, num_units, power, use_thresholds,
+													   generate_as_table)
 	if not template_to_culture(template_key) then
-		script_error("ERROR: generate_random_army() called but supplied template_key [" .. template_key .. "] is not supported");
+		script_error("ERROR: generate_random_army() called but supplied template_key [" ..
+			template_key .. "] is not supported");
 		return false;
 	end
 
@@ -85,21 +87,21 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 	end
 
 	--the formulae we use for each tier
-	local low_tier_modifier = 1
-	local mid_tier_modifier = power
-	local high_tier_modifier  = power*2
+	local low_tier_modifier  = 1
+	local mid_tier_modifier  = power
+	local high_tier_modifier = power * 2
 
 
 	-- thresholds at which certain tiers of units will start/stop appearing if use_thresholds is enabled
 	-- these can be adjusted, but there should always be some overlap
-	
+
 	local mid_tier_lower_threshold = 2
 	local mid_tier_upper_threshold = 10
 
 	local high_tier_lower_threshold = 6
 
 	local low_tier_upper_threshold = 7
-	
+
 
 	--formulae for the weighting
 	if use_thresholds then
@@ -110,7 +112,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		if power <= high_tier_lower_threshold then
 			high_tier_modifier = 0
 		end
-		
+
 		if power >= low_tier_upper_threshold then
 			low_tier_modifier = 0
 		end
@@ -120,19 +122,18 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		end
 	end
 
-	local modifiers = {low_tier_modifier, mid_tier_modifier, high_tier_modifier}
+	local modifiers = { low_tier_modifier, mid_tier_modifier, high_tier_modifier }
 
 
 	ram:new_force(key);
 
-	-- TODO: add troop distribution of random force.
 	for tier, units in pairs(pttg_merc_pool.merc_pool[template_to_culture(template_key)]) do
 		local weighting_modifier = modifiers[tier]
 		for i, unit_info in ipairs(units) do
-			ram:add_unit(key, unit_info, unit_info.weight*weighting_modifier);
+			ram:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
 		end
 	end
-	
+
 	return self:generate_force(key, num_units, generate_as_table);
 end
 
@@ -141,7 +142,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	local force_data = self:get_force_by_key(force_key);
 
 	if not force_data then
-		script_error("No force data found for key: "..force_key)
+		script_error("No force data found for key: " .. force_key)
 		return nil
 	end
 
@@ -159,20 +160,21 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	elseif is_table(unit_count) then
 		unit_count = cm:random_number(math.max(unit_count[1], unit_count[2]), math.min(unit_count[1], unit_count[2]));
 	end
-	
+
 	unit_count = math.min(19, unit_count);
-	
+
 	pttg:log("Random Army Manager: Getting Random Force for army [" .. force_key .. "] with size [" .. unit_count .. "]");
-	
+
 	local mandatory_units_added = 0;
-	
+
 	for i = 1, #force_data.mandatory_units do
 		table.insert(force, force_data.mandatory_units[i]);
 		mandatory_units_added = mandatory_units_added + 1;
 	end;
-	
+
 	if (unit_count - mandatory_units_added) > 0 and #force_data.units == 0 then
-		script_error("Random Army Manager: Tried to add units to force_key [" .. force_key .. "] but the force has not been set up with any non-mandatory units - add them first!");
+		script_error("Random Army Manager: Tried to add units to force_key [" ..
+			force_key .. "] but the force has not been set up with any non-mandatory units - add them first!");
 		return false;
 	end;
 
@@ -188,7 +190,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	for _, unit_info in pairs(force_data.units) do
 		table.insert(categorized_units[unit_info.category], unit_info.key)
 	end
-	
+
 	for i = 1, unit_count - mandatory_units_added do
 		local category = get_random_category(troop_distribution)
 		while #categorized_units[category] == 0 do
@@ -199,9 +201,10 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 
 		table.insert(force, categorized_units[category][unit_index]);
 	end;
-	
+
 	if #force == 0 then
-		script_error("Random Army Manager: Did not add any units to force with force_key [" .. force_key .. "] - was the force created?");
+		script_error("Random Army Manager: Did not add any units to force with force_key [" ..
+			force_key .. "] - was the force created?");
 		return false;
 	elseif return_as_table then
 		return force;
@@ -212,20 +215,20 @@ end;
 
 function WH_Random_Army_Generator:add_unit(force_key, unit, weight)
 	local force_data = self:get_force_by_key(force_key);
-	
+
 	if force_data then
 		for i = 1, weight do
 			table.insert(force_data.units, unit);
-			pttg:log("Random Army Manager: Adding Unit- [" .. unit.key .. "] with weight: [" .. weight .. "] to force: [" .. force_key .. "]");
+			pttg:log("Random Army Manager: Adding Unit- [" ..
+				unit.key .. "] with weight: [" .. weight .. "] to force: [" .. force_key .. "]");
 		end;
 		return;
 	end;
-	
+
 	-- the force key doesn't exist, create it now
 	self:new_force(force_key);
 	self:add_unit(force_key, unit, weight);
 end;
-
 
 --- @function remove_force
 --- @desc Remove an existing force from the force list
@@ -263,7 +266,7 @@ function WH_Random_Army_Generator:get_force_by_key(force_key)
 			return self.force_list[i];
 		end;
 	end;
-	
+
 	return false;
 end;
 
@@ -277,15 +280,16 @@ end;
 
 function WH_Random_Army_Generator:add_mandatory_unit(force_key, unit_info, amount)
 	local force_data = self:get_force_by_key(force_key);
-	
+
 	if force_data then
 		for i = 1, amount do
 			table.insert(force_data.mandatory_units, unit_info.key);
-			pttg:log("Random Army Manager: Adding Mandatory Unit- [" .. unit_info.key .. "] with amount: [" .. amount .. "] to force: [" .. force_key .. "]");
+			pttg:log("Random Army Manager: Adding Mandatory Unit- [" ..
+				unit_info.key .. "] with amount: [" .. amount .. "] to force: [" .. force_key .. "]");
 		end;
 		return;
 	end;
-	
+
 	-- the force key doesn't exist, create it now
 	self:new_force(force_key);
 	self:add_mandatory_unit(force_key, unit_info.key, amount);
@@ -308,7 +312,7 @@ end
 
 function WH_Random_Army_Generator:new_force(key)
 	pttg:log("Random Army Manager: Creating New Force with key [" .. key .. "]");
-	
+
 	if self:get_force_by_key(key) then
 		pttg:log("\tForce with key [" .. key .. "] already exists!");
 		return false;

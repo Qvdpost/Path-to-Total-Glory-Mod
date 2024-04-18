@@ -70,7 +70,7 @@ core:add_listener(
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then -- WoM reward
             pttg:log("[pttg_RewardChosen] Increasing WoM.")
-            pttg_mod_wom:modify(change) 
+            pttg_mod_wom:modify(15) 
         elseif context:choice_key() == 'THIRD' then  -- Glory Reward
             cm:faction_add_pooled_resource(cm:get_local_faction_name(), "pttg_glory_points", "pttg_glory_point_reward",
                 cm:random_number(40, 25))

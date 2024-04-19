@@ -1,6 +1,8 @@
 local pttg = core:get_static_object("pttg");
 local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 local pttg_glory = core:get_static_object("pttg_glory")
+local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
+local pttg_item_pool = core:get_static_object("pttg_item_pool")
 
 core:add_listener(
     "pttg_TreasureRoomChosen",
@@ -22,68 +24,82 @@ core:add_listener(
 )
 
 local function init()
-
+    -- Is there anything to init?
 end
 
-function pttg_small_treasure_callback(context)
+local function pttg_small_treasure_callback(context)
     local rando = cm:random_number(100)
+    local random_item
     if rando <= 75 then
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[1])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1][cm:random_number(#rewards)]
+        random_item = rewards[cm:random_number(#rewards)]
     else
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[2])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2][cm:random_number(#rewards)]
+        random_item = rewards
     end
 
-    rando = cm:random_number(100)
-    if rando <= 50 then
+    if not random_item then
+        script_error("[pttg_treasure] No item reward available!")
+        return false
+    end
+
+    cm:add_ancillary_to_faction(context:faction(), random_item.info.item, false)
+
+    if cm:random_number(100) <= 50 then
         pttg_glory:reward_glory(27, 23)
     end
 end
 
-function pttg_medium_treasure_callback(context)
+local function pttg_medium_treasure_callback(context)
     local rando = cm:random_number(100)
+    local random_item
     if rando <= 35 then
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[1])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
+        random_item = rewards[cm:random_number(#rewards)]
     elseif rando <= 85 then
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[2])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
+        random_item = rewards[cm:random_number(#rewards)]
     else
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[3])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[3]
+        random_item = rewards[cm:random_number(#rewards)]
     end
 
-    rando = cm:random_number(100)
-    if rando <= 35 then
+    if not random_item then
+        script_error("[pttg_treasure] No item reward available!")
+        return false
+    end
+
+    cm:add_ancillary_to_faction(context:faction(), random_item.info.item, false)
+
+    if cm:random_number(100) <= 35 then
         pttg_glory:reward_glory(55, 45)
     end
 end
 
-function pttg_large_treasure_callback(context)
+local function pttg_large_treasure_callback(context)
     local rando = cm:random_number(100)
+    local random_item
     if rando <= 75 then
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[2])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
+        random_item = rewards[cm:random_number(#rewards)]
     else
-        local random_item = pttg_glory_shop.shop_items.merchandise[1]
-            [cm:random_number(#pttg_glory_shop.shop_items.merchandise[3])]
-        cm:perform_ritual(context:faction():name(), context:faction():name(), random_item.ritual)
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[3]
+        random_item = rewards[cm:random_number(#rewards)]
     end
 
-    rando = cm:random_number(100)
-    if rando <= 50 then
+    if not random_item then
+        script_error("[pttg_treasure] No item reward available!")
+        return false
+    end
+
+    cm:add_ancillary_to_faction(context:faction(), random_item.info.item, false)
+
+    if cm:random_number(100) <= 50 then
         pttg_glory:reward_glory(82, 68)
     end
 end
 
-function pttg_boss_treasure_callback(context)
+local function pttg_boss_treasure_callback(context)
     --body of the callback; what should happen for each choice?
 end
 
@@ -97,7 +113,7 @@ core:add_listener(
         elseif context:dilemma() == "pttg_medium_treasure" then
             pttg_medium_treasure_callback(context)
         elseif context:dilemma() == "pttg_large_treasure" then
-            pttg_boss_treasure_callback(context)
+            pttg_large_treasure_callback(context)
         elseif context:dilemma() == "pttg_boss_treasure" then
             pttg_boss_treasure_callback(context)
         end

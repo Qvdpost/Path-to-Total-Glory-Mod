@@ -39,7 +39,7 @@ local function init()
     -- Add upkeep callbacks
     pttg_upkeep:add_callback("pttg_reset_recruit_glory", pttg_glory.reset_recruit_glory, pttg_glory)
     pttg_upkeep:add_callback("pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
-    pttg_upkeep:add_callback("pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { -5 })
+    pttg_upkeep:add_callback("pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
     pttg_upkeep:add_callback("pttg_reset_merc_pool", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
 
 
@@ -47,13 +47,13 @@ local function init()
         pttg:set_state('army_cqi', cm:get_local_faction():faction_leader():military_force():command_queue_index())
     end
 
-    
+
     if pttg:get_state('cur_phase') == "" then
         pttg:set_state('cur_phase', "pttg_idle")
     end
-    
+
     core:trigger_custom_event('pttg_init_complete', {})
-    
+
     pttg_UI:enable_next_phase_button()
 end
 

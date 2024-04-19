@@ -254,26 +254,27 @@ function pttg_battle_templates:get_random_battle_template(act)
 end
 
 function pttg_battle_templates:get_random_elite_battle_template(act)
-    local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 2)
+    return {template="wh_main_grn_azhag_the_slaughterer", info=self.templates["wh_main_grn_azhag_the_slaughterer"]}
+    -- local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 2)
 
-    local alignment_templates = nil
-    if random_encounter_alignment <= 33 then -- order encounter
-        alignment_templates = self.elites[act].order
-    elseif random_encounter_alignment <= 66 then -- neutral encounter
-        alignment_templates = self.elites[act].neutral
-    else -- chaos encounter
-        alignment_templates = self.elites[act].chaos
-    end
+    -- local alignment_templates = nil
+    -- if random_encounter_alignment <= 33 then -- order encounter
+    --     alignment_templates = self.elites[act].order
+    -- elseif random_encounter_alignment <= 66 then -- neutral encounter
+    --     alignment_templates = self.elites[act].neutral
+    -- else -- chaos encounter
+    --     alignment_templates = self.elites[act].chaos
+    -- end
 
-    local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
-    pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.template))
-    return random_encounter
+    -- local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
+    -- pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.template))
+    -- return random_encounter
 end
 
 local function init()
     local elites = {
         ["wh2_dlc12_lzd_tehenhauin"] = { faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", mandatory_units = {}, units = {}, alignment = 'order', act = 1 },
-        ["wh_main_grn_azhag_the_slaughterer"] = { faction = "pttg_grn_greenskins", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_greenskins", mandatory_units = {}, units = {}, alignment = 'neutral', act = 1 },
+        ["wh_main_grn_azhag_the_slaughterer"] = { faction = "wh2_dlc15_grn_bonerattlaz", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_greenskins", mandatory_units = {}, units = {}, alignment = 'neutral', act = 1 },
         ["wh_dlc03_bst_malagor"] = { faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", mandatory_units = {}, units = {}, alignment = 'chaos', act = 1 },
     }
 

@@ -83,10 +83,12 @@ function pttg_glory_shop:init_shop()
             local performing_faction = context:performing_faction();
             local faction_key = performing_faction:name();
             local ritual_key = context:ritual():ritual_key();
+            pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A item was purchased with %s", ritual_key))
 
             local shop_item = self.active_shop_items[ritual_key]
 
             if shop_item and shop_item.category == 'unit' then
+                pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A unit was purchased: %s", shop_item.item))
                 pttg_merc_pool:add_unit_to_pool(shop_item.item, 1)
                 pttg_glory:add_recruit_glory(1)
                 return;

@@ -14,20 +14,20 @@ function pttg_UI:ui_created()
     local root = core:get_ui_root()
     local faction_buttons = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management")
 
-    local pttg_next_phase = UIComponent(faction_buttons:CreateComponent("pttg_next_phase", "ui/templates/round_hud_button_toggle"))
-    
+    local pttg_next_phase = UIComponent(faction_buttons:CreateComponent("pttg_next_phase",
+        "ui/templates/round_hud_button_toggle"))
+
     pttg_next_phase:SetImagePath("ui/skins/default/button_indicator_arrow_active.png")
     pttg_next_phase:SetTooltipText("Proceed to the next phase.", true)
-    
-    
 end
 
-function pttg_UI:disable_next_phase_button() 
+function pttg_UI:disable_next_phase_button()
     pttg:log("[pttg_ui] Disabling next phase button.")
     local root = core:get_ui_root()
-    
-    local phase_button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management", "pttg_next_phase")
-    
+
+    local phase_button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management",
+        "pttg_next_phase")
+
     if not phase_button then
         pttg:log("[pttg_ui] Could not find next phase button.")
         return
@@ -35,50 +35,53 @@ function pttg_UI:disable_next_phase_button()
     phase_button:SetDisabled(true)
     phase_button:StopPulseHighlight()
     phase_button:Highlight(false)
-    
-    return
 end
 
-function pttg_UI:enable_next_phase_button() 
+function pttg_UI:enable_next_phase_button()
     pttg:log("[pttg_ui] Highlighting next phase button.")
     local root = core:get_ui_root()
-    
-    local phase_button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management", "pttg_next_phase")
-    
+
+    local phase_button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management",
+        "pttg_next_phase")
+
     if not phase_button then
         pttg:log("[pttg_ui] Could not find next phase button.")
         return
     end
-    
+
     phase_button:SetDisabled(false)
     phase_button:StartPulseHighlight(2)
     phase_button:Highlight(true)
-    
-    return
 end
 
 core:add_listener(
     "pttg_next_phase_listener",
     "ComponentLClickUp",
     function(context)
-        return "pttg_next_phase" == context.string and pttg:get_state("cur_phase") == "pttg_idle"
+        return "pttg_next_phase" == context.string
     end,
     function(context)
         pttg:log("[pttg_ui] Next phase triggered")
-        pttg_UI:disable_next_phase_button() 
+        pttg_UI:disable_next_phase_button()
         pttg_shop:disable_shop_button()
-        
-        if pttg:get_state("pending_reward") then
-            pttg:log("[pttg_ui] Pending reward found. Triggering phase 3")
-            core:trigger_custom_event('pttg_phase3', {})
-        else
-            if pttg:get_cursor() == nil then
-                pttg:log("[pttg_ui] Triggering start")
-                core:trigger_custom_event('pttg_phase0', {})
-                return
+
+        local cur_phase = pttg:get_state("cur_phase")
+
+        if cur_phase == "pttg_idle" then
+            if pttg:get_state("pending_reward") then
+                pttg:log("[pttg_ui] Pending reward found. Triggering phase 3")
+                core:trigger_custom_event('pttg_phase3', {})
+            else
+                if pttg:get_cursor() == nil then
+                    pttg:log("[pttg_ui] Triggering start")
+                    core:trigger_custom_event('pttg_phase0', {})
+                    return
+                end
+
+                core:trigger_custom_event('pttg_phase1', {})
             end
-            
-            core:trigger_custom_event('pttg_phase1', {})
+        else -- assume we're stuck in a phase where an intervention misfired
+            core:trigger_custom_event(cur_phase, {})
         end
     end,
     true

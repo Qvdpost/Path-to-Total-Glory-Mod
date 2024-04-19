@@ -178,13 +178,14 @@ local pttg_battle_templates = {
     templates = {}
 }
 
-function pttg_battle_templates:add_template(category, template, faction, culture, subculture, alignment, mandatory_units, units,
+function pttg_battle_templates:add_template(category, template, faction, culture, subculture, alignment, mandatory_units,
+                                            units,
                                             act)
     if self.templates[template] then
         pttg:log(string.format("Template %s already exists. Skipping", template))
     end
 
-    pttg:log(string.format("Adding template: %s [%s](%s, %s, %s)", 
+    pttg:log(string.format("Adding template: %s [%s](%s, %s, %s)",
         template, category, faction, subculture, alignment)
     )
     alignment = alignment or 'neutral'
@@ -203,10 +204,14 @@ function pttg_battle_templates:add_template(category, template, faction, culture
     if category == 'random' then
         if not act then
             for act = 1, 3 do
-                table.insert(self.random[act][alignment], {template=template, info=template_info})
+                table.insert(self.random[act][alignment], { template = template, info = template_info })
             end
-        else
-            table.insert(self.random[act][alignment], {template=template, info=template_info})
+        elseif type(act) == 'number' then
+            table.insert(self.random[act][alignment], { template = template, info = template_info })
+        elseif type(act) == 'table' then
+            for _, acts in pairs(act) do
+                table.insert(self.random[acts][alignment], { template = template, info = template_info })
+            end
         end
 
         -- TODO: figure out if elite and boss templates should also be in here.
@@ -220,13 +225,13 @@ function pttg_battle_templates:add_template(category, template, faction, culture
             script_error("[pttg_army_templates] Elite templates require an 'act' parameter.")
             return false
         end
-        table.insert(self.elites[act][alignment], {template=template, info=template_info})
+        table.insert(self.elites[act][alignment], { template = template, info = template_info })
     elseif category == 'boss' then
         if not act then
             script_error("[pttg_army_templates] Boss templates require an 'act' parameter.")
             return false
         end
-        table.insert(self.elites[act][alignment], {template=template, info=template_info})
+        table.insert(self.elites[act][alignment], { template = template, info = template_info })
     else
         script_error(string.format("[pttg_army_templates] Category %s is not supported.", tostring(category)))
         return false
@@ -239,18 +244,17 @@ function pttg_battle_templates:get_random_battle_template(act)
     local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 4)
 
     local alignment_templates = nil
-    if random_encounter_alignment <= 33 then -- order encounter
+    if random_encounter_alignment <= 33 then     -- order encounter
         alignment_templates = self.random[act].order
     elseif random_encounter_alignment <= 66 then -- neutral encounter
         alignment_templates = self.random[act].neutral
-    else -- chaos encounter
+    else                                         -- chaos encounter
         alignment_templates = self.random[act].chaos
     end
 
     local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
     pttg:log(string.format("[pttg_army_templates] Random template: %s", random_encounter.template))
     return random_encounter
-
 end
 
 function pttg_battle_templates:get_random_elite_battle_template(act)
@@ -309,15 +313,15 @@ local function init()
         ["pttg_nor_fimir"] = { faction = "pttg_nor_norsca", culture = "wh_dlc08_nor_norsca", subculture = "wh_dlc08_sc_nor_norsca", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_norsca"] = { faction = "pttg_nor_norsca", culture = "wh_dlc08_nor_norsca", subculture = "wh2_main_sc_hef_high_elves", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_high_elves"] = { faction = "pttg_hef_high_elves", culture = "wh2_main_hef_high_elves", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
-        ["pttg_vmp_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
+        ["pttg_vmp_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {}, units = { { key = "wh_main_vmp_inf_crypt_ghouls", weight = 30 }, { key = "wh_main_vmp_mon_crypt_horrors", weight = 20 }, { key = "wh_main_vmp_mon_terrorgheist", weight = 10 } }, alignment = 'neutral', act = 1 },
         ["pttg_wood_elves"] = { faction = "pttg_wef_wood_elves", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
-        ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
+        ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = {{key="wh2_dlc16_wef_mon_malicious_treeman_0",weight=10}, {key="wh_dlc05_wef_mon_treeman_0",weight=10}, {key="wh2_dlc16_wef_mon_wolves_0",weight=10}, {key="wh2_dlc16_wef_mon_malicious_treekin_0",weight=10},{key="wh2_dlc16_wef_mon_hawks_0",weight=10},{key="wh2_dlc16_wef_mon_harpies_0",weight=10},{key="wh2_dlc16_wef_mon_harpies_0",weight=10},{key="wh2_dlc16_wef_mon_feral_manticore",weight=5},{key="wh2_dlc16_wef_mon_giant_spiders_0",weight=10},{key="wh_dlc05_wef_mon_great_eagle_0",weight=10},{key="wh_dlc05_wef_mon_treekin_0",weight=20},{key="wh2_dlc16_wef_mon_cave_bats",weight=20},{key="wh2_dlc16_wef_inf_malicious_dryads_0",weight=40},{key="wh_dlc05_wef_inf_dryads_0",weight=40},}, alignment = 'order', act = nil },
         ["pttg_kislev"] = { faction = "pttg_ksl_kislev", culture = "wh3_main_ksl_kislev", subculture = "wh3_main_sc_ksl_kislev", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
         ["pttg_chaos_dwarfs"] = { faction = "pttg_chd_chaos_dwarfs", culture = "wh3_dlc23_chd_chaos_dwarfs", subculture = "wh3_dlc23_sc_chd_chaos_dwarfs", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_cathay"] = { faction = "pttg_cth_cathay", culture = "wh3_main_cth_cathay", subculture = "wh3_main_sc_cth_cathay", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
     }
     for template, template_info in pairs(random) do
-        pttg_battle_templates:add_template( 'random',
+        pttg_battle_templates:add_template('random',
             template, template_info.faction, template_info.culture,
             template_info.subculture, template_info.alignment,
             template_info.mandatory_units, template_info.units
@@ -325,7 +329,7 @@ local function init()
     end
 
     for template, template_info in pairs(elites) do
-        pttg_battle_templates:add_template( 'elite',
+        pttg_battle_templates:add_template('elite',
             template, template_info.faction, template_info.culture,
             template_info.subculture, template_info.alignment,
             template_info.mandatory_units, template_info.units, template_info.act

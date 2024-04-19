@@ -83,8 +83,10 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 
 	local template_info = pttg_battle_templates.templates[template_key]
 
-	pttg:log(string.format("[generate_random_army] Generating army with template %s for %s", template_key, template_info.culture))
-	pttg:log(string.format("[generate_random_army] %s, %s, %s, %s", template_info.faction, template_info.culture, template_info.subculture, template_info.alignment))
+	pttg:log(string.format("[generate_random_army] Generating army with template %s for %s", template_key,
+		template_info.culture))
+	pttg:log(string.format("[generate_random_army] %s, %s, %s, %s", template_info.faction, template_info.culture,
+		template_info.subculture, template_info.alignment))
 	pttg:log(string.format("[generate_random_army] %s, %s", #template_info.mandatory_units, #template_info.units))
 
 	if #template_info.mandatory_units > 0 then
@@ -95,22 +97,17 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 
 	if #template_info.units > 0 then
 		for _, unit in pairs(template_info.units) do
-			pttg:log("[generate_random_army] Adding unit "..unit.key.."from template.")
+			pttg:log("[generate_random_army] Adding unit " .. unit.key .. "from template.")
 			self:add_unit(key, unit.key, unit.weight)
-		end		
-	end
-
-	local unit_delta = num_units - (#template_info.mandatory_units + #template_info.units)
-	if unit_delta > 0 then
-		pttg:log("[generate_random_army] Not enough units supplied. Adding culture units for "..template_info.culture)
-		for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
-			local weighting_modifier = modifiers[tier]
-			for i, unit_info in ipairs(units) do
-				self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
-			end
 		end
 	end
-	
+
+	for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
+		local weighting_modifier = modifiers[tier]
+		for i, unit_info in ipairs(units) do
+			self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
+		end
+	end
 
 	return self:generate_force(key, num_units, generate_as_table);
 end
@@ -124,7 +121,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 		return nil
 	end
 
-	
+
 
 	if not unit_count then
 		unit_count = #force_data.mandatory_units
@@ -134,7 +131,8 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 
 	unit_count = math.min(19, unit_count);
 
-	pttg:log("[generate_random_army] Random Army Manager: Getting Random Force for army [" .. force_key .. "] with size [" .. unit_count .. "]");
+	pttg:log("[generate_random_army] Random Army Manager: Getting Random Force for army [" ..
+		force_key .. "] with size [" .. unit_count .. "]");
 
 	local mandatory_units_added = 0;
 

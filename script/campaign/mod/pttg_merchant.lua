@@ -73,6 +73,7 @@ function pttg_glory_shop:init_shop()
 
     self.shop_items.units = pttg_item_pool:get_purchaseable_units()
 
+    -- TODO: this does not always trigger.
     core:add_listener(
         "pttg_merc_unlock",
         "RitualCompletedEvent",
@@ -132,7 +133,7 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
         if count > 0 then
             local available_pools = self.shop_items[category][tier]
 
-            local shop_pool_key = "pttg_shop"
+            local shop_pool_key = string.format("pttg_%s_%s_shop", category, tier)
             pttg_pool_manager:new_pool(shop_pool_key)
 
             for faction_set, items in pairs(available_pools) do
@@ -144,8 +145,13 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
                 end
             end
 
-            local purchaseable_items = pttg_pool_manager:generate_pool(shop_pool_key, count, true)
-            self:unlock_rituals(purchaseable_items)
+            if pttg_pool_manager:get_item_count(shop_pool_key) == 0 then
+                script_error("Item Pool Manager is empty. Cannot generate any pruchaseable items.")
+            else
+                pttg:log(string.format("Generating %s items from a pool of size: %s", count, pttg_pool_manager:get_item_count(shop_pool_key)))
+                local purchaseable_items = pttg_pool_manager:generate_pool(shop_pool_key, count, true)
+                self:unlock_rituals(purchaseable_items)
+            end            
         end
     end
 end

@@ -258,7 +258,7 @@ function pttg_battle_templates:get_random_battle_template(act)
 end
 
 function pttg_battle_templates:get_random_elite_battle_template(act)
-    return {template="wh_main_grn_azhag_the_slaughterer", info=self.templates["wh_main_grn_azhag_the_slaughterer"]}
+    return self:get_random_battle_template(act)
     -- local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 2)
 
     -- local alignment_templates = nil
@@ -273,6 +273,9 @@ function pttg_battle_templates:get_random_elite_battle_template(act)
     -- local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
     -- pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.template))
     -- return random_encounter
+
+    -- cm:spawn_character_to_pool(cm:get_local_faction_name(), "names_name_247259237", "names_name_247259238", "", "", 18, true, "general", "kou_zlatgar_ll", true, "");
+
 end
 
 local function init()
@@ -310,12 +313,12 @@ local function init()
         ["pttg_savage_orcs"] = { faction = "pttg_grn_savage_orcs", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_savage_orcs", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_ogre_kingdoms"] = { faction = "pttg_skvpttg_ogr_ogre_kingdoms_skaven", culture = "wh3_main_ogr_ogre_kingdoms", subculture = "wh3_main_sc_ogr_ogre_kingdoms", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_bretonnia"] = { faction = "pttg_brt_bretonnia", culture = "wh_main_brt_bretonnia", subculture = "wh_main_sc_brt_bretonnia", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
-        ["pttg_nor_fimir"] = { faction = "pttg_nor_norsca", culture = "wh_dlc08_nor_norsca", subculture = "wh_dlc08_sc_nor_norsca", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
+        ["pttg_nor_fimir"] = { faction = "pttg_nor_norsca", culture = "wh_dlc08_nor_norsca", subculture = "wh_dlc08_sc_nor_norsca", mandatory_units = {}, units = {{key="wh_main_nor_inf_chaos_marauders_0", weight=10},{key="wh_dlc08_nor_inf_marauder_hunters_0", weight=10},{key="wh_dlc08_nor_mon_warwolves_0", weight=15},{key="wh_dlc08_nor_feral_manticore", weight=10},{key="wh_dlc08_nor_mon_skinwolves_0", weight=20},{key="wh_dlc08_nor_mon_fimir_0", weight=40},{key="wh_dlc08_nor_mon_fimir_1", weight=40},{key="wh_dlc08_nor_mon_norscan_giant_0", weight=10},{key="wh_dlc08_nor_mon_war_mammoth_0", weight=10}}, alignment = 'chaos', act = nil },
         ["pttg_norsca"] = { faction = "pttg_nor_norsca", culture = "wh_dlc08_nor_norsca", subculture = "wh2_main_sc_hef_high_elves", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_high_elves"] = { faction = "pttg_hef_high_elves", culture = "wh2_main_hef_high_elves", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
-        ["pttg_vmp_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {}, units = { { key = "wh_main_vmp_inf_crypt_ghouls", weight = 30 }, { key = "wh_main_vmp_mon_crypt_horrors", weight = 20 }, { key = "wh_main_vmp_mon_terrorgheist", weight = 10 } }, alignment = 'neutral', act = 1 },
+        ["pttg_vmp_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {}, units = { { key = "wh_main_vmp_inf_zombie", weight = 10 },{ key = "wh_main_vmp_mon_fell_bats", weight = 10 },{ key = "wh_main_vmp_mon_dire_wolves", weight = 10 },{ key = "wh_dlc04_vmp_veh_corpse_cart_0", weight = 5 },{ key = "wh_main_vmp_inf_crypt_ghouls", weight = 30 }, { key = "wh_main_vmp_mon_crypt_horrors", weight = 20 }, { key = "wh_main_vmp_mon_terrorgheist", weight = 10 } }, alignment = 'neutral', act = 1 },
         ["pttg_wood_elves"] = { faction = "pttg_wef_wood_elves", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
-        ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = {{key="wh2_dlc16_wef_mon_malicious_treeman_0",weight=10}, {key="wh_dlc05_wef_mon_treeman_0",weight=10}, {key="wh2_dlc16_wef_mon_wolves_0",weight=10}, {key="wh2_dlc16_wef_mon_malicious_treekin_0",weight=10},{key="wh2_dlc16_wef_mon_hawks_0",weight=10},{key="wh2_dlc16_wef_mon_harpies_0",weight=10},{key="wh2_dlc16_wef_mon_harpies_0",weight=10},{key="wh2_dlc16_wef_mon_feral_manticore",weight=5},{key="wh2_dlc16_wef_mon_giant_spiders_0",weight=10},{key="wh_dlc05_wef_mon_great_eagle_0",weight=10},{key="wh_dlc05_wef_mon_treekin_0",weight=20},{key="wh2_dlc16_wef_mon_cave_bats",weight=20},{key="wh2_dlc16_wef_inf_malicious_dryads_0",weight=40},{key="wh_dlc05_wef_inf_dryads_0",weight=40},}, alignment = 'order', act = nil },
+        ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = {{key="wh2_dlc16_wef_mon_malicious_treeman_0",weight=10}, {key="wh_dlc05_wef_mon_treeman_0",weight=10}, {key="wh2_dlc16_wef_mon_wolves_0",weight=10}, {key="wh2_dlc16_wef_mon_malicious_treekin_0",weight=10},{key="wh2_dlc16_wef_mon_hawks_0",weight=10},{key="wh2_dlc16_wef_mon_harpies_0",weight=10},{key="wh2_dlc16_wef_mon_harpies_0",weight=10},{key="wh2_dlc16_wef_mon_feral_manticore",weight=5},{key="wh2_dlc16_wef_mon_giant_spiders_0",weight=10},{key="wh_dlc05_wef_mon_great_eagle_0",weight=10},{key="wh_dlc05_wef_mon_treekin_0",weight=20},{key="wh2_dlc16_wef_mon_cave_bats",weight=20},{key="wh2_dlc16_wef_inf_malicious_dryads_0",weight=40},{key="wh_dlc05_wef_inf_dryads_0",weight=40},}, alignment = 'order', act = {1, 2} },
         ["pttg_kislev"] = { faction = "pttg_ksl_kislev", culture = "wh3_main_ksl_kislev", subculture = "wh3_main_sc_ksl_kislev", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
         ["pttg_chaos_dwarfs"] = { faction = "pttg_chd_chaos_dwarfs", culture = "wh3_dlc23_chd_chaos_dwarfs", subculture = "wh3_dlc23_sc_chd_chaos_dwarfs", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_cathay"] = { faction = "pttg_cth_cathay", culture = "wh3_main_cth_cathay", subculture = "wh3_main_sc_cth_cathay", mandatory_units = {}, units = {}, alignment = 'order', act = nil },

@@ -91,21 +91,24 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 
 	if #template_info.mandatory_units > 0 then
 		for _, unit in pairs(template_info.mandatory_units) do
-			self:add_mandatory_unit(key, unit.key, unit.weight)
+			unit_info = pttg_merc_pool.merc_units[unit.key]
+
+			self:add_mandatory_unit(key, { key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category }, 1)
 		end
 	end
 
 	if #template_info.units > 0 then
 		for _, unit in pairs(template_info.units) do
-			pttg:log("[generate_random_army] Adding unit " .. unit.key .. "from template.")
-			self:add_unit(key, unit.key, unit.weight)
+			unit_info = pttg_merc_pool.merc_units[unit.key]
+			local weighting_modifier = modifiers[unit_info.tier]
+			self:add_unit(key, { key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category }, unit.weight * weighting_modifier)
 		end
-	end
-
-	for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
-		local weighting_modifier = modifiers[tier]
-		for i, unit_info in ipairs(units) do
-			self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
+	else
+		for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
+			local weighting_modifier = modifiers[tier]
+			for i, unit_info in ipairs(units) do
+				self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);
+			end
 		end
 	end
 

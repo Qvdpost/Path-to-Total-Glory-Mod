@@ -28,6 +28,15 @@ function pttg_pool_manager:new_pool(key)
     return true;
 end
 
+function pttg_pool_manager:get_item_count(pool_key)
+    local pool_data = self:get_pool_by_key(pool_key);
+    if not pool_data then 
+        return nil
+    end
+
+    return #pool_data.items + #pool_data.mandatory_items
+end
+
 function pttg_pool_manager:get_pool_by_key(pool_key)
     for i = 1, #self.pool_list do
         if pool_key == self.pool_list[i].key then
@@ -55,6 +64,15 @@ end;
 function pttg_pool_manager:generate_pool(pool_key, item_count, return_as_table)
     local pool = {};
     local pool_data = self:get_pool_by_key(pool_key);
+
+    if item_count == 0 then
+        if return_as_table then
+            return pool;
+        else
+            return "";
+        end
+    end;
+
 
     if not pool_data then
         pttg:log(string.format("Pool Manager: no pool data found for %s; Aborting.", pool_key));

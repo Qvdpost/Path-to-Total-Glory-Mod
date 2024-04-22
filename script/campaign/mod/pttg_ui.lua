@@ -54,6 +54,18 @@ function pttg_UI:enable_next_phase_button()
     phase_button:Highlight(true)
 end
 
+function pttg_UI:center_camera()
+    cm:callback( -- we need to wait a tick for this to work, for some reason
+        function()
+            local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
+            cm:replenish_action_points(cm:char_lookup_str(character));
+            cm:scroll_camera_from_current(false, 1,
+                { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
+        end,
+        0.2
+    )
+end
+
 core:add_listener(
     "pttg_next_phase_listener",
     "ComponentLClickUp",
@@ -72,7 +84,7 @@ core:add_listener(
                 pttg:log("[pttg_ui] Pending reward found. Triggering phase 3")
                 core:trigger_custom_event('pttg_phase3', {})
             else
-                if pttg:get_cursor() == nil then
+                if pttg:get_cursor() == nil or pttg:get_cursor().class == pttg_RoomType.BossRoom then
                     pttg:log("[pttg_ui] Triggering start")
                     core:trigger_custom_event('pttg_phase0', {})
                     return

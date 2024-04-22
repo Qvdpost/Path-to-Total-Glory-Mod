@@ -1,7 +1,6 @@
 local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
-local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 core:add_listener(
     "pttg_RewardChosenRecruit",
@@ -11,7 +10,7 @@ core:add_listener(
         local faction = cm:get_local_faction()
         pttg:log(string.format("[pttg_RewardChosenRecruit] Recruiting units for %s", faction:culture()))
 
-        local recruit_chances = pttg:get_state('recruit_chances')
+        local recruit_chances = context.recruit_chances or pttg:get_state('recruit_chances')
         local rando_tiers = { 0, 0, 0 }
 
         for i = 1, pttg:get_state('recruit_count') do

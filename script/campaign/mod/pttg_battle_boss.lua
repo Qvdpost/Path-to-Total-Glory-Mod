@@ -1,11 +1,12 @@
 local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
+local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
 
 
 core:add_listener(
     "pttg_RoomBattle",
-    "pttg_StartEliteRoomBattle",
+    "pttg_StartBossRoomBattle",
     true,
     function(context)
         local cursor = pttg:get_cursor()
@@ -22,7 +23,7 @@ core:add_listener(
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))
 
-        Forced_Battle_Manager:pttg_trigger_forced_elite_battle_with_generated_army(
+        Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
             pttg:get_state('army_cqi'),  --	target_force_cqi
             invasion_faction,            --	generated_force_faction
             invasion_template,           --	generated_force_template
@@ -31,9 +32,9 @@ core:add_listener(
             false,                       --	generated_force_is_attacker
             true,                        --	destroy_generated_force_after_battle
             false,                       --	is_ambush
-            "pttg_elite_battle_victory", --	opt_player_victory_incident
+            "pttg_boss_battle_victory", --	opt_player_victory_incident
             "pttg_battle_defeat",        --	opt_player_defeat_incident
-            invasion_template_army.template,      --	opt_general_subtype
+            nil,                         --	opt_general_subtype
             general_level,               --	opt_general_level
             nil                          --	opt_effect_bundle
         )
@@ -44,7 +45,7 @@ core:add_listener(
 core:add_listener(
     "pttg_EliteBattleWon",
     "IncidentOccuredEvent",
-    function(context) return context:dilemma() == "pttg_elite_battle_victory" end,
+    function(context) return context:dilemma() == "pttg_boss_battle_victory" end,
     function(context)
         cm:callback( -- we need to wait a tick for this to work, for some reason
             function()
@@ -55,9 +56,15 @@ core:add_listener(
             end,
             0.2
         )
-        pttg_glory:reward_glory(35, 25)
+        pttg_glory:reward_glory(105, 95)
 
-        core:trigger_custom_event('pttg_phase3', {})
+        core:trigger_custom_event('pttg_recruit_reward', {recruit_chances = {0, 0, 100}})
+
+        pttg_mod_wom:increase(10)
+
+        cm:heal_military_force(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
+
+        core:trigger_custom_event('pttg_idle', {})
     end,
     true
 )

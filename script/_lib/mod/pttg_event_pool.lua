@@ -1,5 +1,4 @@
 local pttg = core:get_static_object("pttg");
-local ttc = core:get_static_object("tabletopcaps");
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
 
 local pttg_event_pool = {
@@ -35,7 +34,7 @@ end
 
 function pttg_event_pool:init_events()
     local events_all = {
-        ["pttg_EventGlory"] = { weight = 10, acts = { upper = nil, lower = nil }, alignment = { upper = 10, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
+        ["pttg_EventGlory"] = { weight = 10, acts = { [1] = true, [2] = true }, alignment = { upper = 10, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
     }
     self:add_events(events_all)
 
@@ -56,7 +55,7 @@ function pttg_event_pool:is_eligible(event, info)
     local faction = cm:get_local_faction()
     pttg:log(string.format("[pttg_event_pool] Checking eligibility for: %s with alignment %s at %s.", faction:name(),
         tostring(alignment), tostring(cursor.z)));
-    return (cursor.z > (info.acts.lower or -math:huge(cursor.z)) and (cursor.z < (info.acts.upper or math:huge(cursor.z)))) and
+    return info.acts[cursor.z] and
         (alignment > (info.alignment.lower or -math:huge(alignment)) and (alignment < (info.alignment.upper or math:huge(alignment)))) and
         ---@diagnostic disable-next-line: undefined-field
         faction:is_contained_in_faction_set(info.faction_set or "all")

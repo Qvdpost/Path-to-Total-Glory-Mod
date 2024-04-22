@@ -23,6 +23,9 @@ local function init()
     pttg_merc_pool:init_active_merc_pool()
     mct = get_mct();
 
+    mct:get_notification_system():get_ui():populate_banner()
+    mct:get_notification_system():get_ui():refresh_button()
+
     local cursor = pttg:get_cursor()
     local act = 1
     if cursor then
@@ -31,9 +34,6 @@ local function init()
 
     map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[act], cursor))
 
-    mct:get_notification_system():get_ui():populate_banner()
-    mct:get_notification_system():get_ui():refresh_button()
-
     cm:disable_end_turn(true)
 
     -- Add upkeep callbacks
@@ -41,6 +41,8 @@ local function init()
     pttg_upkeep:add_callback("pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
     pttg_upkeep:add_callback("pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
     pttg_upkeep:add_callback("pttg_reset_merc_pool", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
+    pttg_upkeep:add_callback("pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
+    pttg_upkeep:add_callback("pttg_center_camera", pttg_UI.center_camera, pttg_UI)
 
 
     if not pttg:get_state('army_cqi') then
@@ -51,48 +53,11 @@ local function init()
     if pttg:get_state('cur_phase') == "" then
         pttg:set_state('cur_phase', "pttg_idle")
     end
+    
+    pttg_UI:enable_next_phase_button()
 
     core:trigger_custom_event('pttg_init_complete', {})
-
-    pttg_UI:enable_next_phase_button()
 end
-
-core:add_listener(
-    "pttg_RewardChosen",
-    "DilemmaChoiceMadeEvent",
-    function(context)
-        return context:dilemma() == 'pttg_ChooseReward'
-    end,
-    function(context)
-        pttg:log("[PathToTotalGlory][pttg_RewardChosen] resolving reward: ")
-
-        pttg:log(string.format("Choice: %s", context:choice_key()))
-
-        local node = pttg:get_cursor()
-
-        if context:choice_key() == 'FIRST' then -- Recruit Reward
-            pttg_glory:add_initial_recruit_glory(1)
-
-            core:trigger_custom_event('pttg_recruit_reward', {})
-        elseif context:choice_key() == 'SECOND' then -- WoM reward
-            pttg:log("[pttg_RewardChosen] Increasing WoM.")
-            pttg_mod_wom:increase(15)
-        elseif context:choice_key() == 'THIRD' then -- Glory Reward
-            pttg_glory:reward_glory(40, 25)
-        else                                        -- Decide Later
-            pttg:set_state('pending_reward', true)
-            core:trigger_custom_event('pttg_idle', {})
-            return true
-        end
-
-        pttg:set_state('pending_reward', false)
-        core:trigger_custom_event('pttg_idle', {})
-
-        return true
-    end,
-    true
-)
-
 
 core:add_listener(
     "init_PathToTotalGlory",
@@ -109,7 +74,17 @@ core:add_listener(
     "pttg_phase0",
     true,
     function(context)
-        pttg:set_state('cur_phase', "pttg_phase1")
+        pttg:set_state('cur_phase', "pttg_phase0")
+
+        local cursor = pttg:get_cursor()
+        local act = 1
+        if cursor then
+            act = cursor.z + 1
+        end
+
+        map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[act], cursor))
+        
+
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseStart')
     end,
     true
@@ -122,9 +97,10 @@ core:add_listener(
     function(context)
         pttg:set_state('cur_phase', "pttg_phase1")
 
-        pttg_upkeep:resolve()
-
         local cursor = pttg:get_cursor()
+
+        map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[cursor.z], cursor))
+
         -- Choose a path dilemma
         if #cursor.edges == 3 then
             cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathLMR')
@@ -158,16 +134,13 @@ core:add_listener(
     function(context)
         pttg:set_state('cur_phase', "pttg_phase2")
 
-        local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
-        pttg_tele:teleport_to_random_region(character, 100)
-
         local cursor = pttg:get_cursor()
+
+        pttg_upkeep:resolve()
 
         -- Trigger chosen room
         map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[cursor.z], cursor))
         mct:get_notification_system():get_ui():refresh_button()
-
-
 
         if cursor.class == pttg_RoomType.MonsterRoom then
             core:trigger_custom_event('pttg_StartRoomBattle', {})
@@ -208,15 +181,7 @@ core:add_listener(
         pttg:set_state('cur_phase', "pttg_idle")
 
         if pttg:get_cursor() then
-            local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
-            cm:callback( -- we need to wait a tick for this to work, for some reason
-                function()
-                    cm:replenish_action_points(cm:char_lookup_str(character));
-                    cm:scroll_camera_from_current(false, 1,
-                        { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
-                end,
-                0.2
-            )
+            pttg_UI:center_camera()
         end
 
         pttg_UI:enable_next_phase_button()

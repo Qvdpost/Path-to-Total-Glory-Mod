@@ -919,6 +919,24 @@ function pttg_merc_pool:init_merc_pool()
     fix_daemons()
 end
 
+function pttg_merc_pool:add_unit(unit_info, extra_info)
+    local weight = 0
+    if unit_info[2] == "core" then
+        weight = 20
+    elseif unit_info[2] == "special" then
+        weight = 10
+    elseif unit_info[2] == "rare" then
+        weight = 5
+    end
+    self.merc_units[unit_info[1]] = { category = extra_info.category, weight = weight, cost = extra_info.cost or 1, tier = extra_info.tier or false }
+end
+
+function pttg_merc_pool:add_unit_list(units)
+    for _, unit in pairs(units) do
+        self:add_unit(unit[1], unit[2])
+    end
+end
+
 function pttg_merc_pool:init_active_merc_pool()
     self.active_merc_pool = pttg:get_state('recruitable_mercs')
 
@@ -948,24 +966,6 @@ function pttg_merc_pool:add_unit_to_pool(unit, count)
         "", "", "",
         false, "pttg_" .. unit
     )
-end
-
-function pttg_merc_pool:add_unit(unit_info)
-    local weight = 0
-    if unit_info[2] == "core" then
-        weight = 20
-    elseif unit_info[2] == "special" then
-        weight = 10
-    elseif unit_info[2] == "rare" then
-        weight = 5
-    end
-    self.merc_units[unit_info[1]] = { weight = weight }
-end
-
-function pttg_merc_pool:add_unit_list(units)
-    for _, unit in pairs(units) do
-        self.merc_units[unit[1]] = { weight = unit.weight }
-    end
 end
 
 function pttg_merc_pool:add_active_unit(unit, count)

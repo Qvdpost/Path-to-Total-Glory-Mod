@@ -672,7 +672,8 @@ local function get_random_region()
     return region
 end
 
-function pttg_tele:teleport_to_random_region(character, distance_upper_bound)
+function pttg_tele:teleport_to_random_region(distance_upper_bound)
+    local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
     at_war_with = {}
     warring_factions = cm:get_local_faction():factions_at_war_with()
     for i = 0, warring_factions:num_items() - 1 do
@@ -702,7 +703,8 @@ function pttg_tele:teleport_to_random_region(character, distance_upper_bound)
     pttg:log(string.format("[pttg_teleport][random_region] Teleported: %s.", tostring(tele)))
 end
 
-function pttg_tele:teleport_random_distance(character, distance_upper_bound)
+function pttg_tele:teleport_random_distance(distance_upper_bound)
+    local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
     local x = -1
     local y = -1
     local distance

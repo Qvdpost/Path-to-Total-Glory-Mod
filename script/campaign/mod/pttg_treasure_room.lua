@@ -31,10 +31,10 @@ local function pttg_small_treasure_callback(context)
     local rando = cm:random_number(100)
     local random_item
     if rando <= 75 then
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1][cm:random_number(#rewards)]
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
         random_item = rewards[cm:random_number(#rewards)]
     else
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2][cm:random_number(#rewards)]
+        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
         random_item = rewards
     end
 

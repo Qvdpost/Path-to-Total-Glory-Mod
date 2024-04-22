@@ -6,7 +6,7 @@ pttg_glory = {
 
 function pttg_glory:reward_glory(amount, min)
     if min then
-        amount = cm:random_number(max, min)
+        amount = cm:random_number(amount, min)
     end
     amount = amount * pttg:get_state("glory_reward_modifier")
 
@@ -46,6 +46,7 @@ function pttg_glory:remove_recruit_glory(amount)
 end
 
 function pttg_glory:reset_recruit_glory(amount)
+    local faction = cm:get_local_faction()
     local glory_recruit_points = faction:pooled_resource_manager():resource("pttg_unit_reward_glory"):value()
     cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory",
         "pttg_glory_unit_recruitment", -glory_recruit_points)

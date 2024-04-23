@@ -58,7 +58,7 @@ core:add_listener(
         )
         pttg_glory:reward_glory(105, 95)
 
-        core:trigger_custom_event('pttg_recruit_reward', {recruit_chances = {0, 0, 100}})
+        core:trigger_custom_event('pttg_recruit_reward', {recruit_chances=pttg:get_state("boss_recruit_chances")})
 
         pttg_mod_wom:increase(10)
 

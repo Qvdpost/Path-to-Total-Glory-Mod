@@ -676,7 +676,59 @@ local pttg_merc_pool = {
         ["wh3_dlc24_tze_inf_centigors_great_weapons"] = { category = "inf_melee", weight = false, cost = 1, tier = false },
         ["wh3_dlc24_cth_mon_celestial_lion"] = { category = "inf_melee", weight = false, cost = 1, tier = false },
     },
-    active_merc_pool = {}
+    active_merc_pool = {},
+    cultures = {
+        "wh2_dlc09_tmb_tomb_kings",
+        "wh2_dlc11_cst_vampire_coast",
+        "wh2_main_def_dark_elves",
+        "wh2_main_hef_high_elves",
+        "wh2_main_lzd_lizardmen",
+        "wh2_main_skv_skaven",
+        "wh3_dlc23_chd_chaos_dwarfs",
+        "wh3_main_cth_cathay",
+        "wh3_main_dae_daemons",
+        "wh3_main_kho_khorne",
+        "wh3_main_ksl_kislev",
+        "wh3_main_nur_nurgle",
+        "wh3_main_ogr_ogre_kingdoms",
+        "wh3_main_sla_slaanesh",
+        "wh3_main_tze_tzeentch",
+        "wh_dlc03_bst_beastmen",
+        "wh_dlc05_wef_wood_elves",
+        "wh_dlc08_nor_norsca",
+        "wh_main_brt_bretonnia",
+        "wh_main_chs_chaos",
+        "wh_main_dwf_dwarfs",
+        "wh_main_emp_empire",
+        "wh_main_grn_greenskins",
+        "wh_main_vmp_vampire_counts"
+    },
+    culture_keys = {
+        "_tmb_",
+        "_cst_",
+        "_def_",
+        "_hef_",
+        "_lzd_",
+        "_skv_",
+        "_chd_",
+        "_cth_",
+        "_dae_",
+        "_kho_",
+        "_ksl_",
+        "_nur_",
+        "_ogr_",
+        "_sla_",
+        "_tze_",
+        "_bst_",
+        "_wef_",
+        "_nor_",
+        "_brt_",
+        "_chs_",
+        "_dwf_",
+        "_emp_",
+        "_grn_",
+        "_vmp_"
+    }
 }
 
 
@@ -830,90 +882,35 @@ function pttg_merc_pool:reset_merc_pool()
 end
 
 function pttg_merc_pool:init_merc_pool()
-    local cultures = {
-        "wh2_dlc09_tmb_tomb_kings",
-        "wh2_dlc11_cst_vampire_coast",
-        "wh2_main_def_dark_elves",
-        "wh2_main_hef_high_elves",
-        "wh2_main_lzd_lizardmen",
-        "wh2_main_skv_skaven",
-        "wh3_dlc23_chd_chaos_dwarfs",
-        "wh3_main_cth_cathay",
-        "wh3_main_dae_daemons",
-        "wh3_main_kho_khorne",
-        "wh3_main_ksl_kislev",
-        "wh3_main_nur_nurgle",
-        "wh3_main_ogr_ogre_kingdoms",
-        "wh3_main_sla_slaanesh",
-        "wh3_main_tze_tzeentch",
-        "wh_dlc03_bst_beastmen",
-        "wh_dlc05_wef_wood_elves",
-        "wh_dlc08_nor_norsca",
-        "wh_main_brt_bretonnia",
-        "wh_main_chs_chaos",
-        "wh_main_dwf_dwarfs",
-        "wh_main_emp_empire",
-        "wh_main_grn_greenskins",
-        "wh_main_vmp_vampire_counts"
-    }
 
-    local culture_keys = {
-        "_tmb_",
-        "_cst_",
-        "_def_",
-        "_hef_",
-        "_lzd_",
-        "_skv_",
-        "_chd_",
-        "_cth_",
-        "_dae_",
-        "_kho_",
-        "_ksl_",
-        "_nur_",
-        "_ogr_",
-        "_sla_",
-        "_tze_",
-        "_bst_",
-        "_wef_",
-        "_nor_",
-        "_brt_",
-        "_chs_",
-        "_dwf_",
-        "_emp_",
-        "_grn_",
-        "_vmp_"
-    }
     pttg:log(string.format("[pttg_MercPool] Initialising units merc pool."))
 
-    local recruit_weights = pttg:get_state('recruit_weights')
-    
-    for k, culture_key in pairs(culture_keys) do
-        self.merc_pool[cultures[k]] = { {}, {}, {} }
-        for unit_key, info in pairs(ttc.units) do
-            if string.find(unit_key, culture_key) and self.merc_units[unit_key] then
-                pttg:log(string.format("[pttg_MercPool] Initialising unit %s to the merc pool.", unit_key))
-                local tier = 1
-                if info.group == "core" then
-                    tier = 1
-                elseif info.group == "special" then
-                    tier = 2
-                elseif info.group == "rare" then
-                    tier = 3
-                end
-
-                unit_info = self.merc_units[unit_key]
-
-                unit_info.tier = tier
-                unit_info.cost = self.merc_units[unit_key].cost or tier
-
-                unit_info.weight = self.merc_units[unit_key].weight or
-                    math.ceil(recruit_weights[info.group] / info.weight)
-
-                pttg:log(string.format("[pttg_MercPool] Adding unit %s with weight %s at cost %s.", unit_key,
-                    unit_info.weight, unit_info.cost))
-                table.insert(self.merc_pool[cultures[k]][tier],
-                    { key = unit_key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category })
+    for unit_key, info in pairs(ttc.untis) do
+        local unit_info = self.merc_units[unit_key]
+        if unit_info then
+            if not self.merc_pool[unit_info.culture] then
+                self.merc_pool[unit_info.culture] = { {}, {}, {} }
             end
+            pttg:log(string.format("[pttg_MercPool] Initialising unit %s to the merc pool.", unit_key))
+            local tier = 1
+            if info.group == "core" then
+                tier = 1
+            elseif info.group == "special" then
+                tier = 2
+            elseif info.group == "rare" then
+                tier = 3
+            end
+
+            unit_info.key = unit_key
+            unit_info.weight = unit_info.weight or math.floor(1 / info.weight * 10)
+            unit_info.cost = unit_info.cost or 1
+            unit_info.tier = unit_info.tier or tier
+            -- category = unit_info.category, culture=unit_info.culture
+
+            pttg:log(string.format("[pttg_MercPool] Adding unit %s with weight %s at cost %s.", unit_key,
+                unit_info.weight, unit_info.cost))
+
+            table.insert(self.merc_pool[unit_info.culture][tier], unit_info)
         end
     end
     fix_daemons()
@@ -928,7 +925,7 @@ function pttg_merc_pool:add_unit(unit_info, extra_info)
     elseif unit_info[2] == "rare" then
         weight = 5
     end
-    self.merc_units[unit_info[1]] = { category = extra_info.category, weight = weight, cost = extra_info.cost or 1, tier = extra_info.tier or false }
+    self.merc_units[unit_info[1]] = { category = extra_info.category, weight = weight, cost = extra_info.cost or 1, tier = extra_info.tier or false, culture = extra_info.culture }
 end
 
 function pttg_merc_pool:add_unit_list(units)

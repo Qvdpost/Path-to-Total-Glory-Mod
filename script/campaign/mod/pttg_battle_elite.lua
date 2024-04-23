@@ -50,7 +50,7 @@ core:add_listener(
         
         pttg_glory:reward_glory(35, 25)
         
-        core:trigger_custom_event('pttg_recruit_reward', {})
+        core:trigger_custom_event('pttg_recruit_reward', {recruit_chances=pttg:get_state("elite_recruit_chances")})
 
         pttg_mod_wom:increase(10)
 

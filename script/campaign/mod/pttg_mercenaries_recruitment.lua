@@ -14,10 +14,12 @@ core:add_listener(
         local rando_tiers = { 0, 0, 0 }
 
         for i = 1, pttg:get_state('recruit_count') do
-            local rando_tier = cm:random_number(100) + pttg:get_state('recruit_rarity_offset')
+            local offset = pttg:get_state('recruit_rarity_offset')
+            local rando_tier = cm:random_number(100) - offset
+            pttg:log(string.format("[pttg_RewardChosenRecruit] Adding tier for roll %s(%s)", rando_tier, offset))
             if rando_tier < recruit_chances[1] then
                 rando_tiers[1] = rando_tiers[1] + 1
-                pttg:set_state('recruit_rarity_offset', math.min(40, pttg:get_state('recruit_rarity_offset') + 1))
+                pttg:set_state('recruit_rarity_offset', math.min(40, offset + 1))
             elseif rando_tier < recruit_chances[2] then
                 rando_tiers[2] = rando_tiers[2] + 1
             else

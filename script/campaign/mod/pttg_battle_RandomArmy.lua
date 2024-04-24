@@ -93,7 +93,8 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		for _, unit in pairs(template_info.mandatory_units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]
 
-			self:add_mandatory_unit(key, { key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category }, 1)
+			self:add_mandatory_unit(key,
+				{ key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category }, 1)
 		end
 	end
 
@@ -101,7 +102,9 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		for _, unit in pairs(template_info.units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]
 			local weighting_modifier = modifiers[unit_info.tier]
-			self:add_unit(key, { key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category }, unit.weight * weighting_modifier)
+			self:add_unit(key,
+				{ key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category },
+				unit.weight * weighting_modifier)
 		end
 	else
 		for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
@@ -123,8 +126,6 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 		script_error("[generate_random_army] No force data found for key: " .. force_key)
 		return nil
 	end
-
-
 
 	if not unit_count then
 		unit_count = #force_data.mandatory_units
@@ -150,23 +151,14 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 		return false;
 	end;
 
-	local categorized_units = {
-		inf_melee = {},
-		inf_ranged = {},
-		cavalry = {},
-		war_beast = {},
-		artillery = {},
-		war_machine = {},
-	}
 
-	local troop_distribution = {
-		inf_melee = 30,
-		inf_ranged = 20,
-		cavalry = 15,
-		war_beast = 15,
-		artillery = 10,
-		war_machine = 10,
-	}
+
+	local troop_distribution = pttg_battle_templates:get_distribution('default')
+
+	local categorized_units = {}
+	for category, _ in pairs(troop_distribution) do
+		categorized_units[category] = {}
+	end
 
 	for _, unit_info in pairs(force_data.units) do
 		table.insert(categorized_units[unit_info.category], unit_info.key)

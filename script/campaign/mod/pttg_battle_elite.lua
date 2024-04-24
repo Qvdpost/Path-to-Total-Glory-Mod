@@ -47,10 +47,9 @@ core:add_listener(
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_elite_battle_victory" end,
     function(context)
-        
         pttg_glory:reward_glory(35, 25)
-        
-        core:trigger_custom_event('pttg_recruit_reward', {recruit_chances=pttg:get_state("elite_recruit_chances")})
+
+        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances") })
 
         pttg_mod_wom:increase(10)
 

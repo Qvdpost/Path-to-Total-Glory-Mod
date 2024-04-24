@@ -6,12 +6,11 @@ core:add_listener(
     "pttg_event_room",
     true,
     function(context)
-
         pttg:log("[pttg_EventRoom] resolving event: ")
-        
+
         local chances = pttg:get_state('event_room_chances')
-        
-        local chance = cm:random_number(100,1)
+
+        local chance = cm:random_number(100, 1)
         pttg:log("[pttg_EventRoom] random number: ", chance)
         if chance <= chances.monster then
             chances.monster = 10
@@ -40,15 +39,14 @@ core:add_listener(
                 function(context)
                     return context:dilemma() == event
                 end,
-                function(context) 
+                function(context)
                     -- TODO: add event to the excluded events if non-repeatable.
-                    
+
                     pttg_events:get_event_callback(event)(context)
                     core:trigger_custom_event('pttg_idle', {})
                 end,
                 false
             )
-                
         end
     end,
     true
@@ -57,7 +55,6 @@ core:add_listener(
 local function init()
     pttg:log("[pttg_EventRoom] initialising events")
     local chances = pttg:get_state('event_room_chances')
-    
 end
 
 core:add_listener(
@@ -69,4 +66,3 @@ core:add_listener(
     end,
     false
 )
-

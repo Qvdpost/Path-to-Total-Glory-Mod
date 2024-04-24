@@ -24,19 +24,19 @@ core:add_listener(
             invasion_power, invasion_size, invasion_faction, invasion_template))
 
         Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
-            pttg:get_state('army_cqi'),  --	target_force_cqi
-            invasion_faction,            --	generated_force_faction
-            invasion_template,           --	generated_force_template
-            invasion_size,               --	generated_force_size
-            invasion_power,              --	generated_force_power
-            false,                       --	generated_force_is_attacker
-            true,                        --	destroy_generated_force_after_battle
-            false,                       --	is_ambush
+            pttg:get_state('army_cqi'), --	target_force_cqi
+            invasion_faction,           --	generated_force_faction
+            invasion_template,          --	generated_force_template
+            invasion_size,              --	generated_force_size
+            invasion_power,             --	generated_force_power
+            false,                      --	generated_force_is_attacker
+            true,                       --	destroy_generated_force_after_battle
+            false,                      --	is_ambush
             "pttg_boss_battle_victory", --	opt_player_victory_incident
-            "pttg_battle_defeat",        --	opt_player_defeat_incident
-            nil,                         --	opt_general_subtype
-            general_level,               --	opt_general_level
-            nil                          --	opt_effect_bundle
+            "pttg_battle_defeat",       --	opt_player_defeat_incident
+            nil,                        --	opt_general_subtype
+            general_level,              --	opt_general_level
+            nil                         --	opt_effect_bundle
         )
     end,
     true
@@ -58,7 +58,7 @@ core:add_listener(
         )
         pttg_glory:reward_glory(105, 95)
 
-        core:trigger_custom_event('pttg_recruit_reward', {recruit_chances=pttg:get_state("boss_recruit_chances")})
+        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("boss_recruit_chances") })
 
         pttg_mod_wom:increase(10)
 

@@ -30,7 +30,7 @@ end
 
 function pttg_pool_manager:get_item_count(pool_key)
     local pool_data = self:get_pool_by_key(pool_key);
-    if not pool_data then 
+    if not pool_data then
         return nil
     end
 

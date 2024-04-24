@@ -53,7 +53,7 @@ local function init()
     if pttg:get_state('cur_phase') == "" then
         pttg:set_state('cur_phase', "pttg_idle")
     end
-    
+
     pttg_UI:enable_next_phase_button()
 
     core:trigger_custom_event('pttg_init_complete', {})
@@ -83,7 +83,7 @@ core:add_listener(
         end
 
         map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[act], cursor))
-        
+
 
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseStart')
     end,

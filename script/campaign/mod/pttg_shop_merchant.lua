@@ -148,10 +148,11 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
             if pttg_pool_manager:get_item_count(shop_pool_key) == 0 then
                 script_error("Item Pool Manager is empty. Cannot generate any pruchaseable items.")
             else
-                pttg:log(string.format("Generating %s items from a pool of size: %s", count, pttg_pool_manager:get_item_count(shop_pool_key)))
+                pttg:log(string.format("Generating %s items from a pool of size: %s", count,
+                    pttg_pool_manager:get_item_count(shop_pool_key)))
                 local purchaseable_items = pttg_pool_manager:generate_pool(shop_pool_key, count, true)
                 self:unlock_rituals(purchaseable_items)
-            end            
+            end
         end
     end
 end

@@ -2,14 +2,17 @@ local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 
 core:add_listener(
-    "pttg_RoomBattle",
+    "pttg_BossRoomBattle",
     "pttg_StartBossRoomBattle",
     true,
     function(context)
         local cursor = pttg:get_cursor()
+
+        pttg_upkeep:resolve("pttg_BossRoomBattle")
 
         local invasion_template_army = pttg_battle_templates:get_random_elite_battle_template(cursor.z)
         local invasion_template = invasion_template_army.template
@@ -64,7 +67,7 @@ core:add_listener(
 
         cm:heal_military_force(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
 
-        core:trigger_custom_event('pttg_idle', {})
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

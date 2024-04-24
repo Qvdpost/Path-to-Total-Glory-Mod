@@ -1,10 +1,10 @@
 local pttg = core:get_static_object("pttg");
 local ttc = core:get_static_object("tabletopcaps");
 
-MercInfo = {
+PttG_MercInfo = {
 }
 
-function MercInfo:new(key, category, culture, tier)
+function PttG_MercInfo:new(key, category, culture, tier)
     local self = {}
     if not key or not category or not culture then
         script_error("Cannot add merc without a name_key, category and culture.")
@@ -16,11 +16,11 @@ function MercInfo:new(key, category, culture, tier)
     self.tier = tier or false
     self.weight = false
     self.cost = 1
-    setmetatable(self, { __index = MercInfo })
+    setmetatable(self, { __index = PttG_MercInfo })
     return self
 end
 
-function MercInfo.repr(self)
+function PttG_MercInfo.repr(self)
     return string.format("Merc(%s): %s, %s, %s, %s", self.key, self.culture, self.category, self.tier, self.weight)
 end
 
@@ -221,7 +221,7 @@ end
 
 function pttg_merc_pool:add_unit(unit_info)
     local extra_info = unit_info[4]
-    self.merc_units[unit_info[1]] = MercInfo:new(unit_info[1], extra_info.category, extra_info.culture, extra_info.tier)
+    self.merc_units[unit_info[1]] = PttG_MercInfo:new(unit_info[1], extra_info.category, extra_info.culture, extra_info.tier)
 end
 
 function pttg_merc_pool:add_unit_list(units)

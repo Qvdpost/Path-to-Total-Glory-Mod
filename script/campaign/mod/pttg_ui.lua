@@ -79,18 +79,18 @@ core:add_listener(
 
         local cur_phase = pttg:get_state("cur_phase")
 
-        if cur_phase == "pttg_idle" then
+        if cur_phase == "pttg_Idle" then
             if pttg:get_state("pending_reward") then
                 pttg:log("[pttg_ui] Pending reward found. Triggering phase 3")
-                core:trigger_custom_event('pttg_phase3', {})
+                core:trigger_custom_event('pttg_Rewards', {})
             else
                 if pttg:get_cursor() == nil or pttg:get_cursor().class == pttg_RoomType.BossRoom then
                     pttg:log("[pttg_ui] Triggering start")
-                    core:trigger_custom_event('pttg_phase0', {})
+                    core:trigger_custom_event('pttg_ChooseStart', {})
                     return
                 end
 
-                core:trigger_custom_event('pttg_phase1', {})
+                core:trigger_custom_event('pttg_ChoosePath', {})
             end
         else -- assume we're stuck in a phase where an intervention misfired
             core:trigger_custom_event(cur_phase, {})

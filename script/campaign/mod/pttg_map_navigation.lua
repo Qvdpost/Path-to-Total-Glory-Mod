@@ -33,7 +33,7 @@ core:add_listener(
                 if choice == 0 then
                     pttg:set_cursor(pttg:get_state('maps')[act][1][node.x])
                     pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
-                    core:trigger_custom_event('pttg_phase2', {})
+                    core:trigger_custom_event('pttg_ResolveRoom', {})
                     return true
                 end
             end
@@ -48,7 +48,7 @@ core:add_listener(
                 if choice == 0 then
                     pttg:set_cursor(pttg:get_state('maps')[act][1][node.x])
                     pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
-                    core:trigger_custom_event('pttg_phase2', {})
+                    core:trigger_custom_event('pttg_ResolveRoom', {})
                     return true
                 end
             end
@@ -81,7 +81,7 @@ core:add_listener(
         end
 
         pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
-        core:trigger_custom_event('pttg_phase2', {})
+        core:trigger_custom_event('pttg_ResolveRoom', {})
 
         return true
     end,
@@ -108,7 +108,7 @@ core:add_listener(
         end
 
         pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
-        core:trigger_custom_event('pttg_phase2', {})
+        core:trigger_custom_event('pttg_ResolveRoom', {})
 
         return true
     end,
@@ -135,7 +135,7 @@ core:add_listener(
         end
 
         pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
-        core:trigger_custom_event('pttg_phase2', {})
+        core:trigger_custom_event('pttg_ResolveRoom', {})
 
         return true
     end,
@@ -163,7 +163,7 @@ core:add_listener(
 
         pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
 
-        core:trigger_custom_event('pttg_phase2', {})
+        core:trigger_custom_event('pttg_ResolveRoom', {})
 
         return true
     end,
@@ -188,7 +188,7 @@ core:add_listener(
 
         pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())
 
-        core:trigger_custom_event('pttg_phase2', {})
+        core:trigger_custom_event('pttg_ResolveRoom', {})
 
         return true
     end,

@@ -3,13 +3,18 @@ local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
 local pttg_item_pool = core:get_static_object("pttg_item_pool")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
+
 
 core:add_listener(
-    "pttg_TreasureRoomChosen",
+    "pttg_TreasureRoom",
     "pttg_treasure_room",
     true,
     function(context)
         pttg:log("[pttg_TreasureRoom] resolving treasure: ")
+
+        pttg_upkeep:resolve("pttg_TreasureRoom")
+
 
         local rando = cm:random_number(100)
         if rando <= 50 then

@@ -2,14 +2,18 @@ local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 
 core:add_listener(
-    "pttg_RoomBattle",
+    "pttg_EliteRoomBattle",
     "pttg_StartEliteRoomBattle",
     true,
     function(context)
         local cursor = pttg:get_cursor()
+
+        pttg_upkeep:resolve("pttg_EliteRoomBattle")
+
 
         local invasion_template_army = pttg_battle_templates:get_random_elite_battle_template(cursor.z)
         local invasion_template = invasion_template_army.template
@@ -43,7 +47,7 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_EliteBattleWon",
+    "pttg_EliteRoomBattle",
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_elite_battle_victory" end,
     function(context)
@@ -53,7 +57,7 @@ core:add_listener(
 
         pttg_mod_wom:increase(10)
 
-        core:trigger_custom_event('pttg_idle', {})
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

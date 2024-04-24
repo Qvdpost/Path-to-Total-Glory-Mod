@@ -1,12 +1,16 @@
 local pttg = core:get_static_object("pttg");
 local pttg_events = core:get_static_object("pttg_event_pool")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
+
 
 core:add_listener(
-    "pttg_EventRoomChosen",
+    "pttg_EventRoom",
     "pttg_event_room",
     true,
     function(context)
         pttg:log("[pttg_EventRoom] resolving event: ")
+
+        pttg_upkeep:resolve("pttg_event_room")
 
         local chances = pttg:get_state('event_room_chances')
 
@@ -43,7 +47,7 @@ core:add_listener(
                     -- TODO: add event to the excluded events if non-repeatable.
 
                     pttg_events:get_event_callback(event)(context)
-                    core:trigger_custom_event('pttg_idle', {})
+                    core:trigger_custom_event('pttg_Idle', {})
                 end,
                 false
             )

@@ -1,14 +1,17 @@
 local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 
 core:add_listener(
-    "pttg_RoomBattle",
+    "pttg_RegularRoomBattle",
     "pttg_StartRoomBattle",
     true,
     function(context)
         local cursor = pttg:get_cursor()
+
+        pttg_upkeep:resolve("pttg_RegularRoomBattle")
 
         local invasion_template_army = pttg_battle_templates:get_random_battle_template(cursor.z)
         local invasion_template = invasion_template_army.template
@@ -56,7 +59,7 @@ core:add_listener(
         )
         pttg_glory:reward_glory(20, 10)
 
-        core:trigger_custom_event('pttg_phase3', {})
+        core:trigger_custom_event('pttg_Rewards', {})
     end,
     true
 )

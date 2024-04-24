@@ -27,7 +27,7 @@ core:add_listener(
             pttg_glory:reward_glory(40, 25)
         else                                        -- Decide Later
             pttg:set_state('pending_reward', true)
-            core:trigger_custom_event('pttg_idle', {})
+            core:trigger_custom_event('pttg_Idle', {})
             return true
         end
 

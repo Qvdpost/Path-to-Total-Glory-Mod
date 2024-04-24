@@ -40,7 +40,8 @@ local state = {
     excluded_event_pool = {},
     alignment = 0,
     glory_reward_modifier = 1,
-    glory_recruit_modifier = 1
+    glory_recruit_modifier = 1,
+    excluded_effect_pool = {}
 }
 
 local persistent_keys = {
@@ -61,7 +62,8 @@ local persistent_keys = {
     excluded_event_pool = true,
     alignment = true,
     glory_reward_modifier = true,
-    glory_recruit_modifier = true
+    glory_recruit_modifier = true,
+    excluded_effect_pool = true
 }
 
 -- UTILS --

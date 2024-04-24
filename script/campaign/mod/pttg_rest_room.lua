@@ -1,11 +1,15 @@
 local pttg = core:get_static_object("pttg");
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 core:add_listener(
-    "pttg_RestRoomChosen",
+    "pttg_RestRoom",
     "pttg_rest_room",
     true,
     function(context)
         pttg:log("[pttg_RestRoom] resolving rest: ")
+
+        pttg_upkeep:resolve("pttg_RestRoom")
+
         local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
         local unit_list = force:unit_list()
 
@@ -25,7 +29,7 @@ core:add_listener(
             end
         end
 
-        core:trigger_custom_event('pttg_idle', {})
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

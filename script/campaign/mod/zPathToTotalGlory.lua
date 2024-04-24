@@ -37,12 +37,15 @@ local function init()
     cm:disable_end_turn(true)
 
     -- Add upkeep callbacks
-    pttg_upkeep:add_callback("pttg_reset_recruit_glory", pttg_glory.reset_recruit_glory, pttg_glory)
-    pttg_upkeep:add_callback("pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
-    pttg_upkeep:add_callback("pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
-    pttg_upkeep:add_callback("pttg_reset_merc_pool", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
-    pttg_upkeep:add_callback("pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
-    pttg_upkeep:add_callback("pttg_center_camera", pttg_UI.center_camera, pttg_UI)
+    pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_recruit_glory", pttg_glory.reset_recruit_glory, pttg_glory)
+    pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_merc_pool", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
+    pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
+    pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
+
+    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
+    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, 3)
+
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera", pttg_UI.center_camera, pttg_UI)
 
 
     if not pttg:get_state('army_cqi') then
@@ -51,7 +54,7 @@ local function init()
 
 
     if pttg:get_state('cur_phase') == "" then
-        pttg:set_state('cur_phase', "pttg_idle")
+        pttg:set_state('cur_phase', "pttg_Idle")
     end
 
     pttg_UI:enable_next_phase_button()
@@ -70,11 +73,13 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_ChooseStartPath",
-    "pttg_phase0",
+    "pttg_Main",
+    "pttg_ChooseStart",
     true,
     function(context)
-        pttg:set_state('cur_phase', "pttg_phase0")
+        pttg:set_state('cur_phase', "pttg_ChooseStart")
+
+        pttg_upkeep:resolve("pttg_ChooseStart")
 
         local cursor = pttg:get_cursor()
         local act = 1
@@ -91,13 +96,15 @@ core:add_listener(
 )
 
 core:add_listener(
+    "pttg_Main",
     "pttg_ChoosePath",
-    "pttg_phase1",
     true,
     function(context)
-        pttg:set_state('cur_phase', "pttg_phase1")
+        pttg:set_state('cur_phase', "pttg_ChoosePath")
 
         local cursor = pttg:get_cursor()
+
+        pttg_upkeep:resolve("pttg_ChoosePath")
 
         map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[cursor.z], cursor))
 
@@ -128,15 +135,15 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_PathChosen",
-    "pttg_phase2",
+    "pttg_Main",
+    "pttg_ResolveRoom",
     true,
     function(context)
-        pttg:set_state('cur_phase', "pttg_phase2")
+        pttg:set_state('cur_phase', "pttg_ResolveRoom")
 
         local cursor = pttg:get_cursor()
 
-        pttg_upkeep:resolve()
+        pttg_upkeep:resolve("pttg_ResolveRoom")
 
         -- Trigger chosen room
         map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[cursor.z], cursor))
@@ -147,13 +154,13 @@ core:add_listener(
         elseif cursor.class == pttg_RoomType.MonsterRoomElite then
             core:trigger_custom_event('pttg_StartEliteRoomBattle', {})
         elseif cursor.class == pttg_RoomType.BossRoom then
-            core:trigger_custom_event('pttg_idle', {})
+            core:trigger_custom_event('pttg_Idle', {})
         elseif cursor.class == pttg_RoomType.RestRoom then
             core:trigger_custom_event('pttg_rest_room', {})
         elseif cursor.class == pttg_RoomType.EventRoom then
             core:trigger_custom_event('pttg_event_room', {})
         elseif cursor.class == pttg_RoomType.ShopRoom then
-            cm:trigger_incident(cm:get_local_faction():name(), 'pttg_shop_room', true)
+            core:trigger_custom_event('pttg_shop_room', {})
         elseif cursor.class == pttg_RoomType.TreasureRoom then
             core:trigger_custom_event('pttg_treasure_room', {})
         end
@@ -162,23 +169,27 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_RoomCompleted",
-    "pttg_phase3",
+    "pttg_Main",
+    "pttg_Rewards",
     true,
     function(context)
-        pttg:set_state('cur_phase', "pttg_phase3")
-        -- Trigger reward dilemma
+        pttg:set_state('cur_phase', "pttg_Rewards")
+        
+        pttg_upkeep:resolve("pttg_Rewards")
+
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
     end,
     true
 )
 
 core:add_listener(
-    "pttg_IdleMode",
-    "pttg_idle",
+    "pttg_Main",
+    "pttg_Idle",
     true,
     function(context)
-        pttg:set_state('cur_phase', "pttg_idle")
+        pttg:set_state('cur_phase', "pttg_Idle")
+
+        pttg_upkeep:resolve("pttg_Idle")
 
         if pttg:get_cursor() then
             pttg_UI:center_camera()

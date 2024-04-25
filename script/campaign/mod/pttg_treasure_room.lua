@@ -48,7 +48,7 @@ local function pttg_small_treasure_callback(context)
         return false
     end
 
-    cm:add_ancillary_to_faction(context:faction(), random_item.info.item, false)
+    cm:add_ancillary_to_faction(context:faction(), random_item.key, false)
 
     if cm:random_number(100) <= 50 then
         pttg_glory:reward_glory(27, 23)
@@ -74,7 +74,7 @@ local function pttg_medium_treasure_callback(context)
         return false
     end
 
-    cm:add_ancillary_to_faction(context:faction(), random_item.info.item, false)
+    cm:add_ancillary_to_faction(context:faction(), random_item.key, false)
 
     if cm:random_number(100) <= 35 then
         pttg_glory:reward_glory(55, 45)
@@ -97,7 +97,7 @@ local function pttg_large_treasure_callback(context)
         return false
     end
 
-    cm:add_ancillary_to_faction(context:faction(), random_item.info.item, false)
+    cm:add_ancillary_to_faction(context:faction(), random_item.key, false)
 
     if cm:random_number(100) <= 50 then
         pttg_glory:reward_glory(82, 68)

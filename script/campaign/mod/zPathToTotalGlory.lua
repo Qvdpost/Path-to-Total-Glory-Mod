@@ -43,7 +43,7 @@ local function init()
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
 
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
-    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, 3)
+    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3)
 
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera", pttg_UI.center_camera, pttg_UI)
 

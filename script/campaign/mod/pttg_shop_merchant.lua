@@ -22,20 +22,20 @@ function pttg_glory_shop:reset_rituals()
 end
 
 function pttg_glory_shop:unlock_ritual(shop_item)
-    pttg:log(string.format('[pttg_glory_shop]Unlocking ritual %s', shop_item.info.ritual))
+    pttg:log(string.format('[pttg_glory_shop]Unlocking ritual %s', shop_item.ritual))
     local faction = cm:get_local_faction()
 
-    cm:unlock_ritual(faction, shop_item.info.ritual, 1)
-    self.active_shop_items[shop_item.info.ritual] = shop_item.info
+    cm:unlock_ritual(faction, shop_item.ritual, 1)
+    self.active_shop_items[shop_item.ritual] = shop_item
     pttg:set_state('active_shop_items', self.active_shop_items)
 end
 
 function pttg_glory_shop:unlock_rituals(shop_items)
     local faction = cm:get_local_faction()
     for _, shop_item in pairs(shop_items) do
-        pttg:log(string.format('[pttg_glory_shop] Unlocking ritual %s', tostring(shop_item.info.ritual)))
-        cm:unlock_ritual(faction, shop_item.info.ritual, 1)
-        self.active_shop_items[shop_item.info.ritual] = shop_item.info
+        pttg:log(string.format('[pttg_glory_shop] Unlocking ritual %s', tostring(shop_item.ritual)))
+        cm:unlock_ritual(faction, shop_item.ritual, 1)
+        self.active_shop_items[shop_item.ritual] = shop_item
     end
     pttg:set_state('active_shop_items', self.active_shop_items)
 end
@@ -72,31 +72,6 @@ function pttg_glory_shop:init_shop()
     self.shop_items.merchandise = pttg_item_pool:get_craftable_items(self.excluded_shop_items)
 
     self.shop_items.units = pttg_item_pool:get_purchaseable_units()
-
-    -- TODO: this does not always trigger.
-    core:add_listener(
-        "pttg_merc_unlock",
-        "RitualCompletedEvent",
-        function(context)
-            return self.active_shop_items[context:ritual():ritual_key()]
-        end,
-        function(context)
-            local performing_faction = context:performing_faction();
-            local faction_key = performing_faction:name();
-            local ritual_key = context:ritual():ritual_key();
-            pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A item was purchased with %s", ritual_key))
-
-            local shop_item = self.active_shop_items[ritual_key]
-
-            if shop_item and shop_item.category == 'unit' then
-                pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A unit was purchased: %s", shop_item.item))
-                pttg_merc_pool:add_unit_to_pool(shop_item.item, 1)
-                pttg_glory:add_recruit_glory(1)
-                return;
-            end;
-        end,
-        true
-    );
 
     self.active_shop_items = pttg:get_state('active_shop_items')
     self.excluded_shop_items = pttg:get_state('excluded_shop_items')
@@ -209,23 +184,37 @@ function pttg_glory_shop:enable_shop_button()
 end
 
 core:add_listener(
-    "remove_BoughtItem",
+    "pttg_Merchant",
     "RitualCompletedEvent",
     function(context)
         return pttg_glory_shop.active_shop_items[context:ritual():ritual_key()]
     end,
     function(context)
         local ritual_key = context:ritual():ritual_key()
-        if pttg_glory_shop.active_shop_items[ritual_key] ~= 'unit' then
+        pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A item was purchased with %s", ritual_key))
+        local shop_item = pttg_glory_shop.active_shop_items[ritual_key]
+
+        if not shop_item then
+            return
+        end
+
+        pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] The purchased item is: %s(%s)", shop_item.key, shop_item.category))
+
+
+        if shop_item.category == 'merchandise' then
             pttg_glory_shop.excluded_shop_items[context:ritual():ritual_key()] = true
             pttg:set_state('excluded_shop_items', pttg_glory_shop.excluded_shop_items)
+        elseif shop_item.category == 'unit' then
+            pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A unit was purchased: %s", shop_item.key))
+            pttg_merc_pool:add_unit_to_pool(shop_item.key, 1)
+            pttg_glory:add_recruit_glory(1)
         end
     end,
     true
 )
 
 core:add_listener(
-    "populate_GloryShop",
+    "pttg_Merchant",
     "pttg_populate_shop",
     true,
     function(context)

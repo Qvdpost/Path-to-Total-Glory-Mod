@@ -32,7 +32,7 @@ core:add_listener(
         end
 
         pttg:set_state('pending_reward', false)
-        core:trigger_custom_event('pttg_idle', {})
+        core:trigger_custom_event('pttg_Idle', {})
 
         return true
     end,

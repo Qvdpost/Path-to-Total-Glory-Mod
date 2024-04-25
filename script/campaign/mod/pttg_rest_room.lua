@@ -25,7 +25,7 @@ core:add_listener(
                 cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + bonus, 0.01, 1))
             else -- TODO: Heal characters for half (should we?)
                 ---@diagnostic disable-next-line: undefined-field
-                cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + bonus / 2, 0.01, 1))
+                cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + (bonus / 2), 0.01, 1))
             end
         end
 

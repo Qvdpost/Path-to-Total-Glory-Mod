@@ -1,14 +1,18 @@
 local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 core:add_listener(
-    "pttg_RewardChosenRecruit",
+    "pttg_RecruitReward",
     "pttg_recruit_reward",
     true,
     function(context)
         local faction = cm:get_local_faction()
-        pttg:log(string.format("[pttg_RewardChosenRecruit] Recruiting units for %s", faction:culture()))
+
+        pttg_upkeep:resolve("pttg_RecruitReward")
+
+        pttg:log(string.format("[pttg_RecruitReward] Recruiting units for %s", faction:culture()))
 
         local recruit_chances = context.recruit_chances or pttg:get_state('recruit_chances')
         local rando_tiers = { 0, 0, 0 }
@@ -16,7 +20,7 @@ core:add_listener(
         for i = 1, pttg:get_state('recruit_count') do
             local offset = pttg:get_state('recruit_rarity_offset')
             local rando_tier = cm:random_number(100) - offset
-            pttg:log(string.format("[pttg_RewardChosenRecruit] Adding tier for roll %s(%s)", rando_tier, offset))
+            pttg:log(string.format("[pttg_RecruitReward] Adding tier for roll %s(%s)", rando_tier, offset))
             if rando_tier < recruit_chances[1] then
                 rando_tiers[1] = rando_tiers[1] + 1
                 pttg:set_state('recruit_rarity_offset', math.min(40, offset + 1))
@@ -30,7 +34,7 @@ core:add_listener(
 
         for tier, count in pairs(rando_tiers) do
             if count > 0 then
-                pttg:log(string.format("[pttg_RewardChosenRecruit] Addign %s units of tier %s", count, tier))
+                pttg:log(string.format("[pttg_RecruitReward] Addign %s units of tier %s", count, tier))
                 local available_merc_pool = pttg_merc_pool.merc_pool[faction:culture()][tier]
 
 

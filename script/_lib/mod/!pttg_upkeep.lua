@@ -2,7 +2,7 @@ local pttg = core:get_static_object("pttg");
 
 local pttg_upkeep = {
     callbacks = {},
-    valid_phase ={
+    valid_phases ={
         ['pttg_ChooseStart'] = true,
         ['pttg_Idle'] = true,
         ['pttg_Rewards'] = true,
@@ -15,11 +15,12 @@ local pttg_upkeep = {
         ['pttg_EliteRoomBattle'] = true,
         ['pttg_BossRoomBattle'] = true,
         ['pttg_RegularRoomBattle'] = true,
+        ['pttg_RecruitReward'] = true
     }
 }
 
 function pttg_upkeep:is_valid_phase(phase_key)
-    return self.valid_phase[phase_key]
+    return self.valid_phases[phase_key]
 end
 
 function pttg_upkeep:add_callback(phase, name, func, object, payload, prio)
@@ -56,7 +57,7 @@ function pttg_upkeep:resolve(phase)
 end
 
 function pttg_upkeep:init()
-    for key, _ in pairs(self.valid_events) do
+    for key, _ in pairs(self.valid_phases) do
         self.callbacks[key] = { {}, {}, {} }
     end
 end

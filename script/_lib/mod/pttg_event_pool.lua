@@ -1,6 +1,38 @@
 local pttg = core:get_static_object("pttg");
 local pttg_pool_manager = core:get_static_object("pttg_pool_manager")
 
+PttG_Event = {
+
+}
+
+function PttG_Event:new(key, faction_set, weight, acts, alignment, callback)
+    local self = {}
+    if not key or not faction_set then
+        script_error("Cannot add event without a name_key and faction_set.")
+        return false
+    end
+
+    if not (acts[1] or acts[2] or acts[3]) then
+        script_error("Cannot add event without any acts to trigger it.")
+        return false
+    end
+
+    self.key = key
+    self.tier = tier
+    self.faction_set = faction_set
+    self.acts = acts
+    self.weight = weight
+    self.alignment = alignment
+    self.callback = callback
+
+    setmetatable(self, { __index = PttG_Event })
+    return self
+end
+
+function PttG_Event.repr(self)
+    return string.format("Event(%s): %s, %s", self.key, self.faction_set, self.weight)
+end
+
 local pttg_event_pool = {
     event_pool = {},
     active_event_pool = {},
@@ -8,17 +40,13 @@ local pttg_event_pool = {
 }
 
 function pttg_event_pool:add_event(event, info)
-    pttg:log(string.format(
-        '[pttg_event_pool] Adding event: %s (weight:%s, faction_set%s, acts(%s,%s), alignment(%s,%s))',
-        event,
-        tostring(info.weight),
-        tostring(info.faction_set),
-        tostring(info.acts.upper),
-        tostring(info.acts.lower),
-        tostring(info.alignment.upper),
-        tostring(info.alignment.lower)
-    )
-    )
+    local event = PttG_Event:new(event, info.faction_set, info.weight, info.acts, info.alignment, info.callback)
+    if not event then
+        script_error("Could not add evetn. Skipping")
+        return false
+    end
+    
+    pttg:log(string.format('[pttg_event_pool] Adding event: %s', event:repr()))
     self.event_pool[event] = info
 end
 

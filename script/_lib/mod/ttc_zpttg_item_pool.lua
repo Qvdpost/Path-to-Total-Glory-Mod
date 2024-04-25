@@ -1,6 +1,31 @@
 local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 
+PttG_Item = {
+
+}
+
+function PttG_Item:new(key, tier, category, faction_set, ritual)
+    local self = {}
+    if not key or not category or not faction_set then
+        script_error("Cannot add item without a name_key, category and faction_set.")
+        return false
+    end
+
+    self.key = key
+    self.tier = tier
+    self.category = category
+    self.faction_set = faction_set
+    self.ritual = ritual
+
+    setmetatable(self, { __index = PttG_Item })
+    return self
+end
+
+function PttG_Item.repr(self)
+    return string.format("Item(%s): %s, %s, %s, %s", self.key, self.faction_set, self.category, self.tier, self.ritual or 'no ritual')
+end
+
 local pttg_item_pool = {
     item_pool = {
         craftable = { {}, {}, {}, {} },
@@ -15,39 +40,37 @@ local pttg_item_pool = {
 }
 
 function pttg_item_pool:add_item(item, info)
-    pttg:log(string.format('[pttg_item_pool] Adding item: %s (%s, %s, %s, %s)',
-        item,
-        tostring(info.uniqueness),
-        tostring(info.category),
-        tostring(info.faction_set),
-        tostring(info.ritual)
-    )
-    )
+    local item = PttG_Item:new(item, self:item_tier(info.uniqueness), info.category, info.faction_set, info.ritual)
+    if not item then
+        pttg:log(string.format("[pttg_item_pool] Cound not add item: %s. Skipping.", item))
+        return
+    end
+
+    pttg:log(string.format('[pttg_item_pool] Adding item: %s', item:repr()))
 
     local pool = nil
-    if info.category == 'unit' then
+    if item.category == 'unit' then
         pool = self.unit_pool
     else
         pool = self.item_pool
     end
 
-    local tier = self:item_tier(info.uniqueness)
 
-    if pool['rewards'][tier][info.faction_set] then
-        table.insert(pool['rewards'][tier][info.faction_set], { item = item, info = info })
+    if pool['rewards'][item.tier][item.faction_set] then
+        table.insert(pool['rewards'][item.tier][item.faction_set], item)
     else
-        pool['rewards'][tier][info.faction_set] = { { item = item, info = info } }
+        pool['rewards'][item.tier][item.faction_set] = { item }
     end
 
-    if info.ritual then
-        if pool['craftable'][tier][info.faction_set] then
-            table.insert(pool['craftable'][tier][info.faction_set], { item = item, info = info })
+    if item.ritual then
+        if pool['craftable'][item.tier][item.faction_set] then
+            table.insert(pool['craftable'][item.tier][item.faction_set], item)
         else
-            pool['craftable'][tier][info.faction_set] = { { item = item, info = info } }
+            pool['craftable'][item.tier][item.faction_set] = { item }
         end
     end
 
-    self.items[item] = info
+    self.items[item.key] = item
 end
 
 function pttg_item_pool:add_items(items)

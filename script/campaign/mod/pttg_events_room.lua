@@ -10,7 +10,7 @@ core:add_listener(
     function(context)
         pttg:log("[pttg_EventRoom] resolving event: ")
 
-        pttg_upkeep:resolve("pttg_event_room")
+        pttg_upkeep:resolve("pttg_EventRoom")
 
         local chances = pttg:get_state('event_room_chances')
 

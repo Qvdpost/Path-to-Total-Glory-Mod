@@ -63,16 +63,6 @@ local function init()
 end
 
 core:add_listener(
-    "init_PathToTotalGlory",
-    "pttg_procgen_finished",
-    true,
-    function(context)
-        init()
-    end,
-    false
-)
-
-core:add_listener(
     "pttg_Main",
     "pttg_ChooseStart",
     true,
@@ -198,4 +188,14 @@ core:add_listener(
         pttg_UI:enable_next_phase_button()
     end,
     true
+)
+
+core:add_listener(
+    "init_PathToTotalGlory",
+    "pttg_procgen_finished",
+    true,
+    function(context)
+        init()
+    end,
+    false
 )

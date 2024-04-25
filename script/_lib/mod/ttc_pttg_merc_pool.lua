@@ -182,7 +182,7 @@ end
 
 local tiers = { ["core"] = 1, ["special"] = 2, ["rare"] = 3 }
 local function get_tier(group)
-    tier = tiers[group]
+    local tier = tiers[group]
 
     if not tier then
         return 4
@@ -213,7 +213,7 @@ function pttg_merc_pool:init_merc_pool()
 
             pttg:log(string.format("[pttg_MercPool] Adding unit %s", merc_info:repr()))
 
-            table.insert(self.merc_pool[merc_info.culture][tier], merc_info)
+            table.insert(self.merc_pool[merc_info.culture][merc_info.tier], merc_info)
         end
     end
     fix_daemons()

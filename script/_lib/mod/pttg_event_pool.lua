@@ -16,9 +16,8 @@ function PttG_Event:new(key, faction_set, weight, acts, alignment, callback)
         script_error("Cannot add event without any acts to trigger it.")
         return false
     end
-
+    
     self.key = key
-    self.tier = tier
     self.faction_set = faction_set
     self.acts = acts
     self.weight = weight
@@ -39,15 +38,15 @@ local pttg_event_pool = {
     excluded_event_pool = {}
 }
 
-function pttg_event_pool:add_event(event, info)
-    local event = PttG_Event:new(event, info.faction_set, info.weight, info.acts, info.alignment, info.callback)
+function pttg_event_pool:add_event(key, info)
+    local event = PttG_Event:new(key, info.faction_set, info.weight, info.acts, info.alignment, info.callback)
     if not event then
-        script_error("Could not add evetn. Skipping")
+        script_error("Could not add event. Skipping")
         return false
     end
-    
+
     pttg:log(string.format('[pttg_event_pool] Adding event: %s', event:repr()))
-    self.event_pool[event] = info
+    self.event_pool[event.key] = event
 end
 
 function pttg_event_pool:add_events(events)

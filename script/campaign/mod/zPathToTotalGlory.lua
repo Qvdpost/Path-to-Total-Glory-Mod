@@ -8,31 +8,10 @@ local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
-local mct = get_mct();
-
-local map_notif = mct:get_notification_system():create_error_notification()
-
-map_notif:set_title("This is the PtTG Map!")
-    :set_short_text("See the paths you can take here:")
-    :set_error_text(
-        "Below you can see the map and choose a path accordingly. The path of Order is on the left, Chaos to the right and the Neutral path is in the middle.")
-    :set_persistent(true)
 
 local function init()
     pttg:load_state();
     pttg_merc_pool:init_active_merc_pool()
-    mct = get_mct();
-
-    mct:get_notification_system():get_ui():populate_banner()
-    mct:get_notification_system():get_ui():refresh_button()
-
-    local cursor = pttg:get_cursor()
-    local act = 1
-    if cursor then
-        act = cursor.z
-    end
-
-    map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[act], cursor))
 
     cm:disable_end_turn(true)
 
@@ -45,7 +24,13 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3)
 
-    pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera", pttg_UI.center_camera, pttg_UI)
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
+
+    pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
+    pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_show_map_path",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
+
+    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_hide_map_resolve_room", pttg_UI.hide_map, pttg_UI, {}, 1)
+    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_update_map", pttg_UI.populate_map, pttg_UI, {}, 3)
 
 
     if not pttg:get_state('army_cqi') then
@@ -71,15 +56,6 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_ChooseStart")
 
-        local cursor = pttg:get_cursor()
-        local act = 1
-        if cursor then
-            act = cursor.z + 1
-        end
-
-        map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[act], cursor))
-
-
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseStart')
     end,
     true
@@ -96,7 +72,6 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_ChoosePath")
 
-        map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[cursor.z], cursor))
 
         -- Choose a path dilemma
         if #cursor.edges == 3 then
@@ -134,10 +109,6 @@ core:add_listener(
         local cursor = pttg:get_cursor()
 
         pttg_upkeep:resolve("pttg_ResolveRoom")
-
-        -- Trigger chosen room
-        map_notif:set_long_text(procgen:format_map(pttg:get_state('maps')[cursor.z], cursor))
-        mct:get_notification_system():get_ui():refresh_button()
 
         if cursor.class == pttg_RoomType.MonsterRoom then
             core:trigger_custom_event('pttg_StartRoomBattle', {})

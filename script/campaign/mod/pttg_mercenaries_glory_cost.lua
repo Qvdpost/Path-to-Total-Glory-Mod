@@ -31,6 +31,7 @@ local function hide_disabled()
 
             if unit_uic then
                 if unit_uic:CurrentState() == "active" then
+                    pttg:log(string.format("[pttg_glory_cost] - Adding %s to available mercs.", unit))
                     available_merc_units[unit] = unit_info
                 else
                     unit_uic:SetVisible(false)
@@ -58,7 +59,6 @@ local function finalise_uics()
 
                 if recruitment_cost_uic then
                     recruitment_cost_uic:SetVisible(false)
-                    return
                 end
 
                 local faction = cm:get_faction(cm:get_local_faction_name(true))

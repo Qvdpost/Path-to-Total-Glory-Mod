@@ -4,9 +4,198 @@ local pttg_shop = core:get_static_object("pttg_glory_shop");
 
 function pttg_UI:init()
     pttg:log("[pttg_ui] Initialising UI and listeners")
-    core:add_ui_created_callback(function()
-        self:ui_created()
-    end)
+    self:ui_created()
+end
+
+function pttg_UI:get_or_create_map()
+    local cursor = pttg:get_cursor()
+    local act = 1
+    if cursor then
+        act = cursor.z
+    end
+    local map = pttg:get_state('maps')[act]
+
+    local parent = core:get_ui_root()
+    local map_ui_name = "pttg_map"
+    local map_ui = core:get_or_create_component(map_ui_name, "ui/campaign ui/pttg_map_panel", parent)
+
+    map_ui:MoveTo(40, 80)
+
+    map_ui:Resize(420, 900)
+
+    local map_title = find_uicomponent(map_ui, 'panel_title')
+    if not map_title then
+        script_error("Could not find the map title! How can this be?")
+        return
+    end
+    map_title:SetStateText("The Path Act "..act)
+
+    local rows = core:get_or_create_component("rows", "ui/campaign ui/vlist", map_ui)
+
+    local boss = core:get_or_create_component('boss', "ui/templates/panel_title", rows)
+    local boss_text = core:get_or_create_component('text', "ui/common ui/text_box", boss)
+    boss_text:SetDockOffset(0,0)
+    boss_text:SetDockingPoint(5)
+    boss_text:SetStateText("Boss")
+    boss:SetInteractive(false)
+    
+    for i = pttg:get_config("map_height"), 1, -1 do
+        local row = core:get_or_create_component("row"..i, "ui/campaign ui/hlist", rows)
+        for j = 1, pttg:get_config("map_width") do
+            local node = core:get_or_create_component("node"..i..","..j, "ui/templates/room_frame", row)
+            local map_node = map[i][j]
+            node:Resize(50,50)
+
+            if #map_node.edges > 0 and node then
+                if i == cursor.y and j == cursor.x then
+                    node:SetState('ActiveState')
+                else
+                    node:SetState("NewState")
+                end
+
+                node:SetTextHAlign('centre')
+                node:SetTextVAlign('centre')
+                node:SetStateText(pttg_get_room_symbol(map_node.class))
+                
+                for k, edge in ipairs(map_node.edges) do
+                    local connection = UIComponent(node:CreateComponent("connection"..k, "ui/templates/line_smoke"))
+                    connection:PropagatePriority(55)
+                    if edge.dst_x == map_node.x then
+                        connection:Resize(30,30,true)
+                        connection:SetCurrentStateImageDockingPoint(0, 5)
+                        connection:SetDockOffset(0, -30)
+                        connection:ResizeCurrentStateImage(0, 20, 15)
+                        connection:SetImageRotation(0, math.pi * 0.5)
+                    elseif edge.dst_x < map_node.x then
+                        connection:Resize(30,30,true)
+                        connection:SetCurrentStateImageDockingPoint(0, 5)
+                        connection:SetDockOffset(-28, -28)
+                        connection:ResizeCurrentStateImage(0, 45, 15)
+                        connection:SetImageRotation(0, math.pi * 0.25)
+                    else
+                        connection:Resize(30,30,true)
+                        connection:SetCurrentStateImageDockingPoint(0, 5)
+                        connection:SetDockOffset(28, -28)
+                        connection:ResizeCurrentStateImage(0, 45, 15)
+                        connection:SetImageRotation(0, math.pi * 0.75)
+                    end
+                end
+            else
+                node:SetState('EmptyState')
+            end
+        end
+    end
+
+    local seed = core:get_or_create_component('seed', "ui/common ui/text_box", rows)
+    seed:SetStateText("Seed: "..pttg:get_state("gen_seed"))
+    seed:SetInteractive(false)
+
+    local close_button_uic = core:get_or_create_component("pttg_map_close", "ui/templates/round_small_button", rows)
+    close_button_uic:SetImagePath("ui/skins/warhammer3/icon_check.png")
+    close_button_uic:SetTooltipText("Close map", true)
+    close_button_uic:SetDockingPoint(5)
+
+
+    self:hide_map()
+end
+
+function pttg_UI:show_map()
+    local parent = core:get_ui_root()
+    local map_ui_name = "pttg_map"
+    local map_ui = find_uicomponent(parent, map_ui_name)
+    if not map_ui then
+        script_error("Could not find the map! How can this be?")
+        return
+    end
+    map_ui:SetVisible(true)
+end
+
+function pttg_UI:populate_and_show_map()
+    self:populate_map()
+    self:show_map()
+end
+
+
+function pttg_UI:hide_map()
+    local parent = core:get_ui_root()
+    local map_ui_name = "pttg_map"
+    local map_ui = find_uicomponent(parent, map_ui_name)
+    if not map_ui then
+        script_error("Could not find the map! How can this be?")
+        return
+    end
+    map_ui:SetVisible(false)
+end
+
+
+function pttg_UI:populate_map()
+    local cursor = pttg:get_cursor()
+    local act = 1
+    if cursor then
+        act = cursor.z
+    end
+    local map = pttg:get_state('maps')[act]
+
+    local parent = core:get_ui_root()
+    local map_ui_name = "pttg_map"
+    local map_ui = find_uicomponent(parent, map_ui_name)
+
+    local map_title = find_uicomponent(map_ui, 'panel_title')
+    if not map_title then
+        script_error("Could not find the map title! How can this be?")
+        return
+    end
+    map_title:SetStateText("The Path Act "..act)
+
+    local rows = find_uicomponent(map_ui, 'rows')
+
+    -- TODO: Preset boss?
+    -- local boss = core:get_or_create_component('boss', "ui/templates/panel_title", rows)
+    -- boss:SetStateText("Boss")
+    
+    for i = pttg:get_config("map_height"), 1, -1 do
+        local row = find_uicomponent(rows, "row"..i)
+        for j = 1, #map[i] do
+            local node = find_uicomponent(row, "node"..i..","..j)
+            local map_node = map[i][j]
+
+            -- TODO: add visited nodes and mark them
+            if #map_node.edges > 0 and node then
+                if i == cursor.y and j == cursor.x then
+                    node:SetState('ActiveState')
+                else
+                    node:SetState("NewState")
+                end
+            end
+        end
+    end
+end
+
+function pttg_UI:get_or_create_map_buttion()
+    local parent = find_uicomponent("menu_bar", "buttongroup")
+    local map_button = core:get_or_create_component("pttg_map_button", "ui/templates/round_small_button_toggle", parent)
+    
+    map_button:SetImagePath("ui/skins/warhammer3/icon_cathay_compass.png")
+    map_button:SetTooltipText(common.get_localised_string("pttg_map_tooltip"), true)
+    map_button:SetVisible(true)
+    map_button:SetDockingPoint(6)
+    map_button:SetDockOffset(map_button:Width() * -2.8, 0)
+
+    core:add_listener(
+        "pttg_UI_button",
+        "ComponentLClickUp",
+        function(context)
+            return context.string == "pttg_map_button"
+        end,
+        function(context)
+            core:get_tm():real_callback(function()
+                self:show_map()
+            end, 5, "pttg_map_button")
+        end,
+        true
+    )
+
+    return map_button   
 end
 
 function pttg_UI:ui_created()
@@ -14,11 +203,22 @@ function pttg_UI:ui_created()
     local root = core:get_ui_root()
     local faction_buttons = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management")
 
+    if not faction_buttons then
+        script_error("Could not find the map title! How can this be?")
+        return
+    end
+
     local pttg_next_phase = UIComponent(faction_buttons:CreateComponent("pttg_next_phase",
         "ui/templates/round_hud_button_toggle"))
 
     pttg_next_phase:SetImagePath("ui/skins/default/button_indicator_arrow_active.png")
     pttg_next_phase:SetTooltipText("Proceed to the next phase.", true)
+
+    pttg:log("[pttg_ui] Creating The Path")
+    self:get_or_create_map()
+
+    self:get_or_create_map_buttion()
+
 end
 
 function pttg_UI:disable_next_phase_button()
@@ -65,6 +265,19 @@ function pttg_UI:center_camera()
         0.2
     )
 end
+
+core:add_listener(
+    "pttg_UI_button_listener",
+    "ComponentLClickUp",
+    function(context)
+        return context.string == "pttg_map_close"
+    end,
+    function(context)
+        pttg_UI:hide_map()
+    end,
+    true
+)
+
 
 core:add_listener(
     "pttg_next_phase_listener",
@@ -123,6 +336,16 @@ core:add_listener(
     true
 )
 
-pttg_UI:init()
+
+
+core:add_listener(
+    "pttg_UI",
+    "pttg_init_complete",
+    true,
+    function(context)
+        pttg_UI:init()
+    end,
+    false
+)
 
 core:add_static_object("pttg_UI", pttg_UI);

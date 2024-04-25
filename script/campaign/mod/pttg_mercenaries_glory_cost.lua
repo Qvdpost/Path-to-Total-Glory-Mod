@@ -44,7 +44,6 @@ end
 local function finalise_uics()
     pttg:log("[pttg_glory_cost] - Handling components.")
 
-
     local recruitment_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker",
         "recruitment_options", "mercenary_display")
     if recruitment_uic then
@@ -52,37 +51,27 @@ local function finalise_uics()
             pttg:log("[pttg_glory_cost] - Available Merc: " .. string.format("%s (%s)", unit, unit_info.cost))
             local glory_cost = unit_info.cost
             local listview_uic = find_uicomponent(recruitment_uic, "frame", "listview")
-
             local unit_uic = find_uicomponent(listview_uic, "list_clip", "list_box", unit .. "_mercenary")
-
 
             if unit_uic then
                 local recruitment_cost_uic = find_uicomponent(unit_uic, "unit_icon", "RecruitmentCost")
 
-                local glory_cost_uic_check = find_uicomponent(unit_uic, "unit_icon", "glory_cost")
-
-                if glory_cost_uic_check == false then
-                    UIComponent(recruitment_cost_uic:CopyComponent("glory_cost"))
+                if recruitment_cost_uic then
+                    recruitment_cost_uic:SetVisible(false)
+                    return
                 end
-
-                -- repositioning cost components
-                local glory_cost_parent_uic = find_uicomponent(unit_uic, "unit_icon", "glory_cost")
-                local glory_cost_uic = find_uicomponent(glory_cost_parent_uic, "Cost")
-                glory_cost_parent_uic:SetDockOffset(8, -5)
 
                 local faction = cm:get_faction(cm:get_local_faction_name(true))
                 local player_glory = faction:pooled_resource_manager():resource("pttg_unit_reward_glory"):value()
 
                 if player_glory >= glory_cost then
                     -- setting cost text
-                    glory_cost_uic:SetStateText(tostring(glory_cost), "")
                     unit_uic:SetState("active")
                     unit_uic:SetDisabled(false)
 
                     pttg:log("[pttg_glory_cost] - Enabling component: " .. unit)
                 else
                     -- setting cost text
-                    glory_cost_uic:SetStateText(tostring("[[col:red]]" .. glory_cost .. "[[/col]]"), "")
                     local unit_uic_tooltip = unit_uic:GetTooltipText()
                     local cannot_recruit_loc = common.get_localised_string(
                         "random_localisation_strings_string_StratHudbutton_Cannot_Recruit_Unit0")
@@ -104,94 +93,9 @@ local function finalise_uics()
                     unit_uic:SetState("inactive")
                     unit_uic:SetDisabled(true)
                 end
-
-                -- setting cost icon
-                glory_cost_uic:SetImagePath("ui/skins/default/icon_oathgold.png", 0)
-
-                -- setting cost tooltip
-                glory_cost_parent_uic:SetTooltipText(common.get_localised_string("pttg_glory_cost_tooltip"), "", true)
-
-                -- setting the cost modified icon to invisible as the CCO is still for recruitment cost so make it appear when intended
-                local cost_modified_icon_uic = find_uicomponent(glory_cost_uic, "cost_modified_icon")
-                cost_modified_icon_uic:SetVisible(false)
             end
         end
     end
-end
-
-
-local function initialise_uics()
-    pttg:log("[pttg_glory_cost] - Initialising components.")
-
-    local recruitment_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker",
-        "recruitment_options", "mercenary_display")
-    if recruitment_uic then
-        local recruitment_docker_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel",
-            "recruitment_docker")
-        local unit_list = find_uicomponent(recruitment_uic, "mercenary_display", "frame")
-        local listview_uic = find_uicomponent(unit_list, "listview")
-        local hslider_uic = find_uicomponent(listview_uic, "hslider")
-        local list_clip_uic = find_uicomponent(listview_uic, "list_clip")
-        local list_box_uic = find_uicomponent(list_clip_uic, "list_box")
-
-        -- TODO: Is any of this necessary??
-
-        -- gets the reference unit from the table
-        local reference_unit = nil
-        for unit, unit_info in pairs(pttg_merc_pool.merc_units) do
-            local unit_uic = find_uicomponent(list_box_uic, unit .. "_mercenary")
-
-            if unit_uic then
-                reference_unit = unit .. "_mercenary"
-                break
-            end
-        end
-
-        pttg:log("[pttg_glory_cost] - Reference_unit is: " .. tostring(reference_unit))
-        if reference_unit ~= nil then
-            local unit_uic = find_uicomponent(list_box_uic, reference_unit)
-            local recruitment_cost_uic = find_uicomponent(unit_uic, "unit_icon", "RecruitmentCost")
-
-            -- dimensions for resizing components
-            local width_rcc, height_rcc = recruitment_cost_uic:Dimensions()
-
-            -- if the slider if there to scroll through multiple units we need to resize things differently
-            if hslider_uic then
-                -- resizing recruitment_docker
-                local width_rdc, height_rdc = recruitment_docker_uic:Dimensions()
-                recruitment_docker_uic:SetCanResizeHeight(true)
-                recruitment_docker_uic:SetCanResizeWidth(true)
-                recruitment_docker_uic:Resize(width_rdc, (height_rdc + (height_rcc * 4)), false)
-
-                -- resizing unit_list
-                local width_lrc, height_lrc = unit_list:Dimensions()
-                unit_list:SetCanResizeHeight(true)
-                unit_list:SetCanResizeWidth(true)
-                unit_list:Resize(width_lrc, (height_lrc + (height_rcc * 2)), false)
-            else
-                -- resizing recruitment_docker
-                local width_rdc, height_rdc = recruitment_docker_uic:Dimensions()
-                recruitment_docker_uic:SetCanResizeHeight(true)
-                recruitment_docker_uic:SetCanResizeWidth(true)
-                recruitment_docker_uic:Resize(width_rdc, (height_rdc + (height_rcc * 2)), false)
-
-                -- resizing unit_list
-                local width_lrc, height_lrc = unit_list:Dimensions()
-                unit_list:SetCanResizeHeight(true)
-                unit_list:SetCanResizeWidth(true)
-                unit_list:Resize(width_lrc, (height_lrc + height_rcc), false)
-            end
-
-            -- resizing list_clip
-            local width_lcc, height_lcc = list_clip_uic:Dimensions()
-            list_clip_uic:SetCanResizeHeight(true)
-            list_clip_uic:SetCanResizeWidth(true)
-            list_clip_uic:Resize(width_lcc, (height_lcc + (height_rcc * 2) + 5), false) -- the plus 5 is to make sure there's no clipping at the bottom of the upkeep cost component
-        end
-    end
-    -- handling pr cost components
-    pttg:log("[pttg_glory_cost] - finalise_uics() from initialise_uics().")
-    finalise_uics()
 end
 
 
@@ -214,15 +118,8 @@ local function glory_cost_listeners()
                 table.remove(merc_in_queue, int_pos)
             end
 
-            if cm:get_saved_value("pttg_glory_cost_uics_initialised") ~= true then
-                cm:set_saved_value("pttg_glory_cost_uics_initialised", true)
-                hide_disabled()
-                initialise_uics()
-            else
-                pttg:log("[pttg_glory_cost] - finalise_uics() from pr_unit_cost_units_recruitment_opened.")
-                hide_disabled()
-                finalise_uics()
-            end
+            hide_disabled()
+            finalise_uics()
         end,
         true
     )
@@ -296,23 +193,7 @@ local function glory_cost_listeners()
             end
         end,
         true);
-
-
-    -- handles the saved values
-    core:add_listener(
-        "pttg_glory_unit_cost_units_panel_closed",
-        "PanelClosedCampaign",
-        function(context)
-            return context.string == "mercenary_recruitment"
-        end,
-        function(context)
-            pttg:log("[pttg_glory_cost] - mercenary_panel panel closed.")
-            cm:set_saved_value("pttg_glory_cost_uics_initialised", false)
-        end,
-        true
-    )
 end
-
 
 cm:add_first_tick_callback(function() init_glory_units() end)
 cm:add_first_tick_callback(function() glory_cost_listeners() end)

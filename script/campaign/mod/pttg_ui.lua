@@ -28,23 +28,23 @@ function pttg_UI:get_or_create_map()
         script_error("Could not find the map title! How can this be?")
         return
     end
-    map_title:SetStateText("The Path Act "..act)
+    map_title:SetStateText("The Path Act " .. act)
 
     local rows = core:get_or_create_component("rows", "ui/campaign ui/vlist", map_ui)
 
     local boss = core:get_or_create_component('boss', "ui/templates/panel_title", rows)
     local boss_text = core:get_or_create_component('text', "ui/common ui/text_box", boss)
-    boss_text:SetDockOffset(0,0)
+    boss_text:SetDockOffset(0, 0)
     boss_text:SetDockingPoint(5)
     boss_text:SetStateText("Boss")
     boss:SetInteractive(false)
-    
+
     for i = pttg:get_config("map_height"), 1, -1 do
-        local row = core:get_or_create_component("row"..i, "ui/campaign ui/hlist", rows)
+        local row = core:get_or_create_component("row" .. i, "ui/campaign ui/hlist", rows)
         for j = 1, pttg:get_config("map_width") do
-            local node = core:get_or_create_component("node"..i..","..j, "ui/templates/room_frame", row)
+            local node = core:get_or_create_component("node" .. i .. "," .. j, "ui/templates/room_frame", row)
             local map_node = map[i][j]
-            node:Resize(50,50)
+            node:Resize(50, 50)
 
             if #map_node.edges > 0 and node then
                 if i == cursor.y and j == cursor.x then
@@ -56,24 +56,24 @@ function pttg_UI:get_or_create_map()
                 node:SetTextHAlign('centre')
                 node:SetTextVAlign('centre')
                 node:SetStateText(pttg_get_room_symbol(map_node.class))
-                
+
                 for k, edge in ipairs(map_node.edges) do
-                    local connection = UIComponent(node:CreateComponent("connection"..k, "ui/templates/line_smoke"))
+                    local connection = UIComponent(node:CreateComponent("connection" .. k, "ui/templates/line_smoke"))
                     connection:PropagatePriority(55)
                     if edge.dst_x == map_node.x then
-                        connection:Resize(30,30,true)
+                        connection:Resize(30, 30, true)
                         connection:SetCurrentStateImageDockingPoint(0, 5)
                         connection:SetDockOffset(0, -30)
                         connection:ResizeCurrentStateImage(0, 20, 15)
                         connection:SetImageRotation(0, math.pi * 0.5)
                     elseif edge.dst_x < map_node.x then
-                        connection:Resize(30,30,true)
+                        connection:Resize(30, 30, true)
                         connection:SetCurrentStateImageDockingPoint(0, 5)
                         connection:SetDockOffset(-28, -28)
                         connection:ResizeCurrentStateImage(0, 45, 15)
                         connection:SetImageRotation(0, math.pi * 0.25)
                     else
-                        connection:Resize(30,30,true)
+                        connection:Resize(30, 30, true)
                         connection:SetCurrentStateImageDockingPoint(0, 5)
                         connection:SetDockOffset(28, -28)
                         connection:ResizeCurrentStateImage(0, 45, 15)
@@ -87,7 +87,7 @@ function pttg_UI:get_or_create_map()
     end
 
     local seed = core:get_or_create_component('seed', "ui/common ui/text_box", rows)
-    seed:SetStateText("Seed: "..pttg:get_state("gen_seed"))
+    seed:SetStateText("Seed: " .. pttg:get_state("gen_seed"))
     seed:SetInteractive(false)
 
     local close_button_uic = core:get_or_create_component("pttg_map_close", "ui/templates/round_small_button", rows)
@@ -115,7 +115,6 @@ function pttg_UI:populate_and_show_map()
     self:show_map()
 end
 
-
 function pttg_UI:hide_map()
     local parent = core:get_ui_root()
     local map_ui_name = "pttg_map"
@@ -126,7 +125,6 @@ function pttg_UI:hide_map()
     end
     map_ui:SetVisible(false)
 end
-
 
 function pttg_UI:populate_map()
     local cursor = pttg:get_cursor()
@@ -145,18 +143,18 @@ function pttg_UI:populate_map()
         script_error("Could not find the map title! How can this be?")
         return
     end
-    map_title:SetStateText("The Path Act "..act)
+    map_title:SetStateText("The Path Act " .. act)
 
     local rows = find_uicomponent(map_ui, 'rows')
 
     -- TODO: Preset boss?
     -- local boss = core:get_or_create_component('boss', "ui/templates/panel_title", rows)
     -- boss:SetStateText("Boss")
-    
+
     for i = pttg:get_config("map_height"), 1, -1 do
-        local row = find_uicomponent(rows, "row"..i)
+        local row = find_uicomponent(rows, "row" .. i)
         for j = 1, #map[i] do
-            local node = find_uicomponent(row, "node"..i..","..j)
+            local node = find_uicomponent(row, "node" .. i .. "," .. j)
             local map_node = map[i][j]
 
             -- TODO: add visited nodes and mark them
@@ -166,6 +164,7 @@ function pttg_UI:populate_map()
                 else
                     node:SetState("NewState")
                 end
+                node:SetStateText(pttg_get_room_symbol(map_node.class))
             end
         end
     end
@@ -174,7 +173,7 @@ end
 function pttg_UI:get_or_create_map_buttion()
     local parent = find_uicomponent("menu_bar", "buttongroup")
     local map_button = core:get_or_create_component("pttg_map_button", "ui/templates/round_small_button_toggle", parent)
-    
+
     map_button:SetImagePath("ui/skins/warhammer3/icon_cathay_compass.png")
     map_button:SetTooltipText(common.get_localised_string("pttg_map_tooltip"), true)
     map_button:SetVisible(true)
@@ -195,7 +194,7 @@ function pttg_UI:get_or_create_map_buttion()
         true
     )
 
-    return map_button   
+    return map_button
 end
 
 function pttg_UI:ui_created()
@@ -218,7 +217,6 @@ function pttg_UI:ui_created()
     self:get_or_create_map()
 
     self:get_or_create_map_buttion()
-
 end
 
 function pttg_UI:disable_next_phase_button()

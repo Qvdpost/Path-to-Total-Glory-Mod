@@ -14,8 +14,8 @@ core:add_listener(
         pttg_upkeep:resolve("pttg_RegularRoomBattle")
 
         local invasion_template_army = pttg_battle_templates:get_random_battle_template(cursor.z)
-        local invasion_template = invasion_template_army.template
-        local invasion_faction = invasion_template_army.info.faction
+        local invasion_template = invasion_template_army.key
+        local invasion_faction = invasion_template_army.faction
 
         local invasion_power = cursor.z
         local invasion_size = ((cursor.z - 1) * 5) + cursor.y + 2

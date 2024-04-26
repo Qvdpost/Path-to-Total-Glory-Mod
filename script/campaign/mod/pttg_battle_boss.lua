@@ -15,8 +15,8 @@ core:add_listener(
         pttg_upkeep:resolve("pttg_BossRoomBattle")
 
         local invasion_template_army = pttg_battle_templates:get_random_elite_battle_template(cursor.z)
-        local invasion_template = invasion_template_army.template
-        local invasion_faction = invasion_template_army.info.faction
+        local invasion_template = invasion_template_army.key
+        local invasion_faction = invasion_template_army.faction
 
 
         local invasion_power = cursor.z

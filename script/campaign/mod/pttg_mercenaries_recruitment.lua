@@ -14,7 +14,13 @@ core:add_listener(
 
         pttg:log(string.format("[pttg_RecruitReward] Recruiting units for %s", faction:culture()))
 
-        local recruit_chances = context.recruit_chances or pttg:get_state('recruit_chances')
+
+        local recruit_chances 
+        if context.recruit_chances then
+            recruit_chances = context.recruit_chances()
+        else
+            recruit_chances = pttg:get_state('recruit_chances')
+        end
         local rando_tiers = { 0, 0, 0 }
 
         for i = 1, pttg:get_state('recruit_count') do

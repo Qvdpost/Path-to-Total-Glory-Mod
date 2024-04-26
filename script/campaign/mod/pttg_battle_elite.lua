@@ -54,8 +54,14 @@ core:add_listener(
         pttg_glory:reward_glory(35, 25)
 
         core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances") })
+        pttg_glory:add_initial_recruit_glory(1)
 
-        pttg_mod_wom:increase(10)
+        cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
+            function()
+                pttg_mod_wom:increase(10)
+            end,
+            0.4
+        )
 
         core:trigger_custom_event('pttg_Idle', {})
     end,

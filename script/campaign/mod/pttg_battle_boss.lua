@@ -46,24 +46,21 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_EliteBattleWon",
+    "pttg_BossBattleWon",
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_boss_battle_victory" end,
     function(context)
-        cm:callback( -- we need to wait a tick for this to work, for some reason
-            function()
-                local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
-                cm:replenish_action_points(cm:char_lookup_str(character));
-                cm:scroll_camera_from_current(false, 1,
-                    { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
-            end,
-            0.2
-        )
         pttg_glory:reward_glory(105, 95)
 
         core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("boss_recruit_chances") })
+        pttg_glory:add_initial_recruit_glory(1)
 
-        pttg_mod_wom:increase(10)
+        cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
+            function()
+                pttg_mod_wom:increase(10)
+            end,
+            0.4
+        )
 
         cm:heal_military_force(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
 

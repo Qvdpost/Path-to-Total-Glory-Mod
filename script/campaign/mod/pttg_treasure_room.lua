@@ -15,8 +15,8 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_TreasureRoom")
 
-
         local rando = cm:random_number(100)
+        pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
         if rando <= 50 then
             cm:trigger_incident(cm:get_local_faction():name(), 'pttg_small_treasure', true)
         elseif rando <= 83 then
@@ -33,7 +33,9 @@ local function init()
 end
 
 local function pttg_small_treasure_callback(context)
+    pttg:log("[pttg_TreasureRoom] resolving small treasure: ")
     local rando = cm:random_number(100)
+    pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
     local random_item
     if rando <= 75 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
@@ -56,7 +58,9 @@ local function pttg_small_treasure_callback(context)
 end
 
 local function pttg_medium_treasure_callback(context)
+    pttg:log("[pttg_TreasureRoom] resolving medium treasure: ")
     local rando = cm:random_number(100)
+    pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
     local random_item
     if rando <= 35 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
@@ -82,7 +86,9 @@ local function pttg_medium_treasure_callback(context)
 end
 
 local function pttg_large_treasure_callback(context)
+    pttg:log("[pttg_TreasureRoom] resolving large treasure: ")
     local rando = cm:random_number(100)
+    pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
     local random_item
     if rando <= 75 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]

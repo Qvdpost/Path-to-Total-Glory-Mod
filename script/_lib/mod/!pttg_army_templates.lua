@@ -27,6 +27,39 @@
 
 local pttg = core:get_static_object("pttg");
 
+PttG_ArmyTemplate = {
+
+}
+
+function PttG_ArmyTemplate:new(key, faction, culture, subculture, alignment, units, mandatory_units, acts)
+    local self = {}
+    if not (key or faction or culture or subculture) then
+        script_error("Cannot add template without a name_key, faction, culture and subculture.")
+        return false
+    end
+    self.key = key
+    self.faction = faction
+    self.culture = culture
+    self.subculture = subculture
+
+    self.alignment = alignment or 'neutral'
+    self.units = units or {}
+    self.mandatory_units = mandatory_units or {}
+    self.acts = acts
+
+    setmetatable(self, { __index = PttG_ArmyTemplate })
+    return self
+end
+
+function PttG_ArmyTemplate.repr(self)
+    return string.format("ArmyTemplate(%s): %s, %s, %s", self.key, self.faction, self.culture, self.subculture)
+end
+
+local pttg_merc_pool = {
+    merc_pool = {},
+    merc_units = {},
+    active_merc_pool = {}
+}
 
 local pttg_battle_templates = {
     elites = {
@@ -78,45 +111,42 @@ local pttg_battle_templates = {
     }
 }
 
-function pttg_battle_templates:add_template(category, template, faction, culture, subculture, alignment, mandatory_units,
+function pttg_battle_templates:add_template(category, key, faction, culture, subculture, alignment, mandatory_units,
                                             units,
                                             act)
-    if self.templates[template] then
-        pttg:log(string.format("Template %s already exists. Skipping", template))
+    if self.templates[key] then
+        pttg:log(string.format("Template %s already exists. Skipping", key))
     end
 
-    pttg:log(string.format("Adding template: %s [%s](%s, %s, %s)",
-        template, category, faction, subculture, alignment)
-    )
-    alignment = alignment or 'neutral'
-    mandatory_units = mandatory_units or {}
-    units = units or {}
+    local template = PttG_ArmyTemplate:new(key, faction, culture, subculture, alignment, units, mandatory_units)
 
-    template_info = {
-        faction = faction,
-        culture = culture,
-        subculture = subculture,
-        alignment = alignment,
-        units = units,
-        mandatory_units = mandatory_units
-    }
+    if not template then
+        script_error(string.format("Template %s could not be created. Skipping", key))
+        return
+    end
+
+
+    pttg:log(string.format("Adding template: %s [%s](%s, %s, %s)",
+        key, category, faction, subculture, alignment)
+    )
+
 
     if category == 'random' then
         if not act then
             for act = 1, 3 do
-                table.insert(self.random[act][alignment], { template = template, info = template_info })
+                table.insert(self.random[act][alignment], template)
             end
         elseif type(act) == 'number' then
-            table.insert(self.random[act][alignment], { template = template, info = template_info })
+            table.insert(self.random[act][alignment], template)
         elseif type(act) == 'table' then
             for _, acts in pairs(act) do
-                table.insert(self.random[acts][alignment], { template = template, info = template_info })
+                table.insert(self.random[acts][alignment], template)
             end
         end
 
         -- TODO: figure out if elite and boss templates should also be in here.
         if self.factions[faction] then
-            table.insert(self.factions[faction], { template })
+            table.insert(self.factions[faction], template)
         else
             self.factions[faction] = { template }
         end
@@ -125,19 +155,19 @@ function pttg_battle_templates:add_template(category, template, faction, culture
             script_error("[pttg_army_templates] Elite templates require an 'act' parameter.")
             return false
         end
-        table.insert(self.elites[act][alignment], { template = template, info = template_info })
+        table.insert(self.elites[act][alignment], template)
     elseif category == 'boss' then
         if not act then
             script_error("[pttg_army_templates] Boss templates require an 'act' parameter.")
             return false
         end
-        table.insert(self.elites[act][alignment], { template = template, info = template_info })
+        table.insert(self.elites[act][alignment], template)
     else
         script_error(string.format("[pttg_army_templates] Category %s is not supported.", tostring(category)))
         return false
     end
 
-    self.templates[template] = template_info
+    self.templates[template.key] = template
 end
 
 function pttg_battle_templates:get_random_battle_template(act)
@@ -153,7 +183,7 @@ function pttg_battle_templates:get_random_battle_template(act)
     end
 
     local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
-    pttg:log(string.format("[pttg_army_templates] Random template: %s", random_encounter.template))
+    pttg:log(string.format("[pttg_army_templates] Random template: %s", random_encounter.key))
     return random_encounter
 end
 

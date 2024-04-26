@@ -81,16 +81,16 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 
 	self:new_force(key);
 
-	local template_info = pttg_battle_templates.templates[template_key]
+	local template = pttg_battle_templates.templates[template_key]
 
 	pttg:log(string.format("[generate_random_army] Generating army with template %s for %s", template_key,
-		template_info.culture))
-	pttg:log(string.format("[generate_random_army] %s, %s, %s, %s", template_info.faction, template_info.culture,
-		template_info.subculture, template_info.alignment))
-	pttg:log(string.format("[generate_random_army] %s, %s", #template_info.mandatory_units, #template_info.units))
+		template.culture))
+	pttg:log(string.format("[generate_random_army] %s, %s, %s, %s", template.faction, template.culture,
+		template.subculture, template.alignment))
+	pttg:log(string.format("[generate_random_army] %s, %s", #template.mandatory_units, #template.units))
 
-	if #template_info.mandatory_units > 0 then
-		for _, unit in pairs(template_info.mandatory_units) do
+	if #template.mandatory_units > 0 then
+		for _, unit in pairs(template.mandatory_units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]
 
 			self:add_mandatory_unit(key,
@@ -98,8 +98,8 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		end
 	end
 
-	if #template_info.units > 0 then
-		for _, unit in pairs(template_info.units) do
+	if #template.units > 0 then
+		for _, unit in pairs(template.units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]
 			local weighting_modifier = modifiers[unit_info.tier]
 			self:add_unit(key,
@@ -107,7 +107,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 				unit.weight * weighting_modifier)
 		end
 	else
-		for tier, units in pairs(pttg_merc_pool.merc_pool[template_info.culture]) do
+		for tier, units in pairs(pttg_merc_pool.merc_pool[template.culture]) do
 			local weighting_modifier = modifiers[tier]
 			for i, unit_info in ipairs(units) do
 				self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);

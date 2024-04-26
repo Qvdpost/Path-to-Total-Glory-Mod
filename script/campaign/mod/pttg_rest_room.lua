@@ -34,6 +34,7 @@ local function train_general()
     local lookup = cm:char_lookup_str(character)
     local current_character_rank = character:rank()
     local character_rank = 3
+    ---@diagnostic disable-next-line: undefined-field
     local xp = cm.character_xp_per_level[math.min(current_character_rank + character_rank, 50)] - cm.character_xp_per_level[current_character_rank]
 
     cm:add_agent_experience(lookup, xp)

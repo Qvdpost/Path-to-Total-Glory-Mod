@@ -41,7 +41,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 	end
 
 	--the formulae we use for each tier
-	local low_tier_modifier  = 1
+	local low_tier_modifier  = 10
 	local mid_tier_modifier  = power
 	local high_tier_modifier = power * 2
 
@@ -93,8 +93,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		for _, unit in pairs(template.mandatory_units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]
 
-			self:add_mandatory_unit(key,
-				{ key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category }, 1)
+			self:add_mandatory_unit(key, unit_info, 1)
 		end
 	end
 
@@ -102,9 +101,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		for _, unit in pairs(template.units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]
 			local weighting_modifier = modifiers[unit_info.tier]
-			self:add_unit(key,
-				{ key = unit.key, weight = unit_info.weight, cost = unit_info.cost, category = unit_info.category },
-				unit.weight * weighting_modifier)
+			self:add_unit(key, unit_info, unit.weight * weighting_modifier)
 		end
 	else
 		for tier, units in pairs(pttg_merc_pool.merc_pool[template.culture]) do

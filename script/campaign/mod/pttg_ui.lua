@@ -37,7 +37,7 @@ function pttg_UI:get_or_create_map()
     boss_text:SetDockOffset(0, 0)
     boss_text:SetDockingPoint(5)
     boss_text:SetStateText("Boss")
-    boss:SetInteractive(false)
+    boss_text:SetInteractive(false)
 
     for i = pttg:get_config("map_height"), 1, -1 do
         local row = core:get_or_create_component("row" .. i, "ui/campaign ui/hlist", rows)
@@ -47,10 +47,12 @@ function pttg_UI:get_or_create_map()
             node:Resize(50, 50)
 
             if #map_node.edges > 0 and node then
-                if i == cursor.y and j == cursor.x then
-                    node:SetState('ActiveState')
-                else
-                    node:SetState("NewState")
+                if cursor then
+                    if i == cursor.y and j == cursor.x then
+                        node:SetState('ActiveState')
+                    else
+                        node:SetState("NewState")
+                    end
                 end
 
                 node:SetTextHAlign('centre')
@@ -159,18 +161,22 @@ function pttg_UI:populate_map()
 
             -- TODO: add visited nodes and mark them
             if #map_node.edges > 0 and node then
-                if i == cursor.y and j == cursor.x then
-                    node:SetState('ActiveState')
-                else
-                    node:SetState("NewState")
+                if cursor then
+                    if i == cursor.y and j == cursor.x then
+                        node:SetState('ActiveState')
+                    else
+                        node:SetState("NewState")
+                    end
                 end
+                node:SetTextHAlign('centre')
+                node:SetTextVAlign('centre')
                 node:SetStateText(pttg_get_room_symbol(map_node.class))
             end
         end
     end
 end
 
-function pttg_UI:get_or_create_map_buttion()
+function pttg_UI:get_or_create_map_button()
     local parent = find_uicomponent("menu_bar", "buttongroup")
     local map_button = core:get_or_create_component("pttg_map_button", "ui/templates/round_small_button_toggle", parent)
 
@@ -197,13 +203,12 @@ function pttg_UI:get_or_create_map_buttion()
     return map_button
 end
 
-function pttg_UI:ui_created()
-    pttg:log("[pttg_ui] Creating UI")
+function pttg_UI:get_or_create_next_phase()
     local root = core:get_ui_root()
     local faction_buttons = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management")
 
     if not faction_buttons then
-        script_error("Could not find the map title! How can this be?")
+        script_error("Could not find the faction buttons! How can this be?")
         return
     end
 
@@ -213,10 +218,18 @@ function pttg_UI:ui_created()
     pttg_next_phase:SetImagePath("ui/skins/default/button_indicator_arrow_active.png")
     pttg_next_phase:SetTooltipText("Proceed to the next phase.", true)
 
+    return pttg_next_phase
+end
+
+function pttg_UI:ui_created()
+    pttg:log("[pttg_ui] Creating UI")
+    
+    self:get_or_create_next_phase()
+
     pttg:log("[pttg_ui] Creating The Path")
     self:get_or_create_map()
 
-    self:get_or_create_map_buttion()
+    self:get_or_create_map_button()
 end
 
 function pttg_UI:disable_next_phase_button()
@@ -333,8 +346,6 @@ core:add_listener(
     end,
     true
 )
-
-
 
 core:add_listener(
     "pttg_UI",

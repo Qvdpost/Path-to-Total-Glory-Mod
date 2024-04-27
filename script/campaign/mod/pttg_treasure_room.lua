@@ -24,6 +24,8 @@ core:add_listener(
         else
             cm:trigger_incident(cm:get_local_faction():name(), 'pttg_large_treasure', true)
         end
+
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )
@@ -39,10 +41,14 @@ local function pttg_small_treasure_callback(context)
     local random_item
     if rando <= 75 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
-        random_item = rewards[cm:random_number(#rewards)]
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
     else
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
-        random_item = rewards
+        if #rewards > 0 then
+            random_item = rewards
+        end
     end
 
     if not random_item then
@@ -64,13 +70,19 @@ local function pttg_medium_treasure_callback(context)
     local random_item
     if rando <= 35 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
-        random_item = rewards[cm:random_number(#rewards)]
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
     elseif rando <= 85 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
-        random_item = rewards[cm:random_number(#rewards)]
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
     else
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[3]
-        random_item = rewards[cm:random_number(#rewards)]
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
     end
 
     if not random_item then
@@ -92,10 +104,14 @@ local function pttg_large_treasure_callback(context)
     local random_item
     if rando <= 75 then
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
-        random_item = rewards[cm:random_number(#rewards)]
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
     else
         local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[3]
-        random_item = rewards[cm:random_number(#rewards)]
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
     end
 
     if not random_item then

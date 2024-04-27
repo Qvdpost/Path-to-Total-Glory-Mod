@@ -61,7 +61,7 @@ end
 
 function pttg_event_pool:init_events()
     local events_all = {
-        ["pttg_EventGlory"] = { weight = 10, acts = { [1] = true, [2] = true }, alignment = { upper = 10, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
+        ["pttg_EventGlory"] = { weight = 10, acts = { [1] = true, [2] = true }, alignment = { upper = nil, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
     }
     self:add_events(events_all)
 

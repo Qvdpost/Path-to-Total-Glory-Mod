@@ -45,7 +45,7 @@ function pttg_glory_shop:lock_rituals(shop_items)
     local faction = cm:get_local_faction()
     for _, shop_item in pairs(shop_items) do
         cm:lock_ritual(faction, shop_item.ritual)
-        self.active_shop_items[shop_item.ritual] = false
+        self.active_shop_items[shop_item.ritual] = nil
     end
     pttg:set_state('active_shop_items', self.active_shop_items)
 end
@@ -55,7 +55,7 @@ function pttg_glory_shop:lock_ritual(shop_item)
     local faction = cm:get_local_faction()
 
     cm:lock_ritual(faction, shop_item.ritual)
-    self.active_shop_items[shop_item.ritual] = false
+    self.active_shop_items[shop_item.ritual] = nil
     pttg:set_state('active_shop_items', self.active_shop_items)
 end
 

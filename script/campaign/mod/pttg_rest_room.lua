@@ -1,5 +1,6 @@
 local pttg = core:get_static_object("pttg");
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
+local pttg_glory = core:get_static_object("pttg_glory")
 
 local function rest()
     pttg:log("[pttg_RestRoom] Resting troops: ")
@@ -26,6 +27,7 @@ local function rest()
 end
 
 local function train_mercenary()
+    pttg_glory:add_training_glory(1)
     core:trigger_custom_event('pttg_Idle', {})
 end
 
@@ -41,6 +43,18 @@ local function train_general()
     
     core:trigger_custom_event('pttg_Idle', {})
 end
+
+
+core:add_listener(
+    "pttg_rest_train",
+    "UnitEffectPurchased",
+    true,
+    function(context)
+        pttg:log("Training merc: ", context:unit():unit_key())
+        cm:add_experience_to_unit(context:unit(), 9);
+    end,
+    true
+)
 
 core:add_listener(
     "path_chose_LMR",

@@ -62,7 +62,7 @@ local function finalise_uics()
                 end
 
                 local faction = cm:get_faction(cm:get_local_faction_name(true))
-                local player_glory = faction:pooled_resource_manager():resource("pttg_unit_reward_glory"):value()
+                local player_glory = pttg_glory:get_recruit_glory_value()
 
                 if player_glory >= glory_cost then
                     -- setting cost text

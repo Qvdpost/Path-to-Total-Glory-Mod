@@ -60,6 +60,8 @@ core:add_listener(
         pttg_glory:reward_glory(20, 10)
 
         core:trigger_custom_event('pttg_Rewards', {})
+
+        pttg_upkeep:resolve("pttg_PostRoomBattle")
     end,
     true
 )

@@ -7,6 +7,7 @@ local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
+local pttg_side_effects = core:get_static_object("pttg_side_effects")
 
 
 local function init()
@@ -25,12 +26,15 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3)
 
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
 
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_show_map_path",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
 
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_hide_map_resolve_room", pttg_UI.hide_map, pttg_UI, {}, 1)
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_update_map", pttg_UI.populate_map, pttg_UI, {}, 3)
+
+    pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
 
 
     if not pttg:get_state('army_cqi') then
@@ -115,7 +119,7 @@ core:add_listener(
         elseif cursor.class == pttg_RoomType.MonsterRoomElite then
             core:trigger_custom_event('pttg_StartEliteRoomBattle', {})
         elseif cursor.class == pttg_RoomType.BossRoom then
-            core:trigger_custom_event('pttg_Idle', {})
+            core:trigger_custom_event('pttg_StartBossRoomBattle', {})
         elseif cursor.class == pttg_RoomType.RestRoom then
             core:trigger_custom_event('pttg_rest_room', {})
         elseif cursor.class == pttg_RoomType.EventRoom then

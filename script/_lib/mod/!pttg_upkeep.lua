@@ -15,7 +15,8 @@ local pttg_upkeep = {
         ['pttg_EliteRoomBattle'] = true,
         ['pttg_BossRoomBattle'] = true,
         ['pttg_RegularRoomBattle'] = true,
-        ['pttg_RecruitReward'] = true
+        ['pttg_RecruitReward'] = true,
+        ['pttg_PostRoomBattle'] = true
     }
 }
 

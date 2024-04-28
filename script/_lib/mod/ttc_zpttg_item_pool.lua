@@ -122,7 +122,7 @@ function pttg_item_pool:init()
 
     local tier_to_uniqueness = { 29, 49, 99 }
 
-    for tier, units in pairs(pttg_merc_pool.merc_pool[cm:get_local_faction():culture()]) do
+    for tier, units in pairs(pttg_merc_pool:get_pool(cm:get_local_faction_name())) do
         for _, unit_info in pairs(units) do
             unit_info.uniqueness = tier_to_uniqueness[tier]
             unit_info.category = 'unit'

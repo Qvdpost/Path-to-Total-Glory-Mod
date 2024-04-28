@@ -104,7 +104,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 			self:add_unit(key, unit_info, unit.weight * weighting_modifier)
 		end
 	else
-		for tier, units in pairs(pttg_merc_pool.merc_pool[template.culture]) do
+		for tier, units in pairs(pttg_merc_pool:get_pool(template.faction)) do
 			local weighting_modifier = modifiers[tier]
 			for i, unit_info in ipairs(units) do
 				self:add_unit(key, unit_info, unit_info.weight * weighting_modifier);

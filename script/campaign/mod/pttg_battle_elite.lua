@@ -21,7 +21,7 @@ core:add_listener(
 
 
         local invasion_power = cursor.z * 2 + cursor.z
-        local invasion_size = ((cursor.z - 1) * 5) + 10
+        local invasion_size = ((cursor.z - 1) * 5) + math.max(10, cursor.y + 4)
         local general_level = cursor.z + cursor.y
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
@@ -54,7 +54,7 @@ core:add_listener(
         pttg_glory:reward_glory(35, 25)
 
         core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances") })
-        pttg_glory:add_initial_recruit_glory(1)
+        pttg_glory:add_initial_recruit_glory(2)
 
         cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
             function()
@@ -62,6 +62,8 @@ core:add_listener(
             end,
             0.4
         )
+
+        pttg_upkeep:resolve("pttg_PostRoomBattle")
 
         core:trigger_custom_event('pttg_Idle', {})
     end,

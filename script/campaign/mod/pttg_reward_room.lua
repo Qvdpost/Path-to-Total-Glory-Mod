@@ -17,7 +17,7 @@ core:add_listener(
         local node = pttg:get_cursor()
 
         if context:choice_key() == 'FIRST' then -- Recruit Reward
-            pttg_glory:add_initial_recruit_glory(1)
+            pttg_glory:add_initial_recruit_glory(2)
 
             core:trigger_custom_event('pttg_recruit_reward', {})
         elseif context:choice_key() == 'SECOND' then -- WoM reward

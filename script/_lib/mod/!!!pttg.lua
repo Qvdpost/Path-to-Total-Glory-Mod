@@ -29,7 +29,7 @@ local state = {
     },
     active_shop_items = {},
     recruitable_mercs = {},
-    recruit_chances = { 75, 87, 100 },
+    recruit_chances = { 85, 95, 100 },
     elite_recruit_chances = { 50, 90, 100 },
     boss_recruit_chances = { -5, -5, 100 },
     recruit_rarity_offset = -5,

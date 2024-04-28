@@ -38,20 +38,21 @@ core:add_listener(
             end
         end
 
+        local merc_pool = pttg_merc_pool:get_pool(cm:get_local_faction_name())
         for tier, count in pairs(rando_tiers) do
             if count > 0 then
                 pttg:log(string.format("[pttg_RecruitReward] Addign %s units of tier %s", count, tier))
-                local available_merc_pool = pttg_merc_pool.merc_pool[faction:culture()][tier]
+                local available_merc_pool = merc_pool[tier]
 
 
                 local recruit_pool_key = "pttg_recruit_reward"
                 pttg_pool_manager:new_pool(recruit_pool_key)
 
                 for _, merc in pairs(available_merc_pool) do
-                    pttg_pool_manager:add_item(recruit_pool_key, merc.key, 1)
+                    pttg_pool_manager:add_item(recruit_pool_key, merc.key, merc.weight)
                 end
 
-                pttg_merc_pool:add_active_units(pttg_pool_manager:generate_pool(recruit_pool_key, count, true))
+                pttg_merc_pool:add_active_units(pttg_pool_manager:generate_pool(recruit_pool_key, count, true, true))
             end
         end
     end,

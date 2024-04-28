@@ -89,6 +89,7 @@ function Forced_Battle_Manager:pttg_trigger_forced_elite_battle_with_generated_a
     local generated_force = WH_Random_Army_Generator:generate_random_army(forced_battle_key, generated_force_template,
         generated_force_size, generated_force_power, true, false)
 
+    -- TODO: fix general leven not applying...
     forced_battle:add_new_force(forced_battle_key, generated_force, generated_force_faction,
         destroy_generated_force_after_battle, opt_effect_bundle, opt_general_subtype, opt_general_level)
 

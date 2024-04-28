@@ -61,7 +61,7 @@ function pttg_pool_manager:add_item(pool_key, key, weight)
     self:add_item(pool_key, key, weight);
 end;
 
-function pttg_pool_manager:generate_pool(pool_key, item_count, return_as_table)
+function pttg_pool_manager:generate_pool(pool_key, item_count, return_as_table, unique)
     local pool = {};
     local pool_data = self:get_pool_by_key(pool_key);
 
@@ -103,10 +103,15 @@ function pttg_pool_manager:generate_pool(pool_key, item_count, return_as_table)
         return false;
     end;
 
+    local distinct_items = {}
 
     for i = 1, item_count - mandatory_items_added do
         local item_index = cm:random_number(#pool_data.items);
+        while unique and distinct_items[pool_data.items[item_index]] do
+            item_index = cm:random_number(#pool_data.items);
+        end
         table.insert(pool, pool_data.items[item_index]);
+        distinct_items[pool_data.items[item_index]] = true
     end;
 
     if #pool == 0 then

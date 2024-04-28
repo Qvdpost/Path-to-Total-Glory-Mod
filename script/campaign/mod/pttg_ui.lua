@@ -145,7 +145,7 @@ function pttg_UI:populate_map()
         script_error("Could not find the map title! How can this be?")
         return
     end
-    map_title:SetStateText("The Path Act " .. act)
+    map_title:SetStateText("The Path Act " .. tostring(act))
 
     local rows = find_uicomponent(map_ui, 'rows')
 

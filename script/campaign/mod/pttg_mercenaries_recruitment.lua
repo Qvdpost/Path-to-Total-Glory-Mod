@@ -38,10 +38,10 @@ core:add_listener(
             end
         end
 
-        local merc_pool = pttg_merc_pool:get_pool(cm:get_local_faction_name())
+        local merc_pool = pttg_merc_pool:get_pool(faction:name())
         for tier, count in pairs(rando_tiers) do
             if count > 0 then
-                pttg:log(string.format("[pttg_RecruitReward] Addign %s units of tier %s", count, tier))
+                pttg:log(string.format("[pttg_RecruitReward] Adding %s units of tier %s", count, tier))
                 local available_merc_pool = merc_pool[tier]
 
 

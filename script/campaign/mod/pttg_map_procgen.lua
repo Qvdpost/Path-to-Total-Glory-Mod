@@ -362,7 +362,7 @@ local function create_nodes(act, height, width)
 end
 
 local function add_boss(map)
-    local boss_node = MapRoomNode:new(math.ceil(#map[1] / 2), #map + 1)
+    local boss_node = MapRoomNode:new(math.ceil(#map[1] / 2), #map + 1, map[1][1].z)
     boss_node.class = pttg_RoomType.BossRoom
     for _, node in pairs(map[#map]) do
         if #node.parents > 0 then

@@ -56,7 +56,7 @@ core:add_listener(
 
         return false
     end,
-    false
+    true
 )
 
 core:add_listener(

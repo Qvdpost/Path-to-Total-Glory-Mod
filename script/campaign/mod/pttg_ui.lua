@@ -8,16 +8,25 @@ function pttg_UI:init()
 end
 
 function pttg_UI:get_or_create_map()
+    local parent = core:get_ui_root()
+    local map_ui_name = "pttg_map"
+    local map_ui = find_uicomponent(parent, map_ui_name)
+    if map_ui then
+        return map_ui
+    end
+
     local cursor = pttg:get_cursor()
     local act = 1
     if cursor then
         act = cursor.z
+        if cursor.class == pttg_RoomType.BossRoom then
+            act = act + 1
+            cursor = nil
+        end
     end
     local map = pttg:get_state('maps')[act]
 
-    local parent = core:get_ui_root()
-    local map_ui_name = "pttg_map"
-    local map_ui = core:get_or_create_component(map_ui_name, "ui/campaign ui/pttg_map_panel", parent)
+    map_ui = core:get_or_create_component(map_ui_name, "ui/campaign ui/pttg_map_panel", parent)
 
     map_ui:MoveTo(40, 80)
 
@@ -101,6 +110,17 @@ function pttg_UI:get_or_create_map()
     self:hide_map()
 end
 
+function pttg_UI:destroy_map()
+    local parent = core:get_ui_root()
+    local map_ui_name = "pttg_map"
+    local map_ui = core:get_or_create_component(map_ui_name, "ui/campaign ui/pttg_map_panel", parent)
+    if map_ui then
+        pttg:log("Destroying map.")
+        map_ui:Destroy()
+    end
+    pttg:log("No map to destroy.")
+end
+
 function pttg_UI:show_map()
     local parent = core:get_ui_root()
     local map_ui_name = "pttg_map"
@@ -129,16 +149,19 @@ function pttg_UI:hide_map()
 end
 
 function pttg_UI:populate_map()
+    local map_ui = self:get_or_create_map()
+
     local cursor = pttg:get_cursor()
     local act = 1
     if cursor then
         act = cursor.z
+        if cursor.class == pttg_RoomType.BossRoom then
+            act = act + 1
+            cursor = nil
+        end
     end
     local map = pttg:get_state('maps')[act]
 
-    local parent = core:get_ui_root()
-    local map_ui_name = "pttg_map"
-    local map_ui = find_uicomponent(parent, map_ui_name)
 
     local map_title = find_uicomponent(map_ui, 'panel_title')
     if not map_title then
@@ -277,6 +300,10 @@ function pttg_UI:center_camera()
     )
 end
 
+function pttg_UI:flush_event_feed()
+    
+end
+
 core:add_listener(
     "pttg_UI_button_listener",
     "ComponentLClickUp",
@@ -310,6 +337,8 @@ core:add_listener(
             else
                 if pttg:get_cursor() == nil or pttg:get_cursor().class == pttg_RoomType.BossRoom then
                     pttg:log("[pttg_ui] Triggering start")
+                    pttg_UI:destroy_map()
+                    pttg_UI:get_or_create_map()
                     core:trigger_custom_event('pttg_ChooseStart', {})
                     return
                 end

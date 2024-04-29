@@ -23,18 +23,18 @@ local function init()
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
 
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
-    pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3)
+    -- pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3) -- causes visual glitches maybe?
 
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
-    pttg_upkeep:add_callback("pttg_Idle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
-
+    
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_show_map_path",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
-
+    
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_hide_map_resolve_room", pttg_UI.hide_map, pttg_UI, {}, 1)
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_update_map", pttg_UI.populate_map, pttg_UI, {}, 3)
-
+    
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
+    pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
 
 
     if not pttg:get_state('army_cqi') then

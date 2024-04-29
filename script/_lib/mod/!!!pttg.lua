@@ -69,7 +69,9 @@ local pttg = {
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},
 
     difficulty_modifiers = {
-        encounter_size = {2, 4, 6}
+        encounter_size = {2, 4, 6},
+        random_start_recruit_glory = {16, 12, 12},
+        random_start_recruit_merc_count = {25, 20, 20}
     }
 };
 
@@ -82,6 +84,10 @@ function table.contains(tbl, element)
         end
     end
     return false;
+end
+
+function math:huge(number)
+    return number + 1
 end
 
 -- GENERIC --
@@ -198,10 +204,6 @@ end
 function pttg:get_difficulty_mod(key)
     local index = self.difficulties[self:get_config('difficulty')]
     return self.difficulty_modifiers[key][index]
-end
-
-function math:huge(number)
-    return number + 1
 end
 
 core:add_static_object("pttg", pttg);

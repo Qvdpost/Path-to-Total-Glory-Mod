@@ -31,6 +31,31 @@ function pttg_side_effects:heal_force(factor, use_tier_scale)
     end
 end
 
+function pttg_side_effects:attrition_force(factor, use_tier_scale)
+    local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
+    local unit_list = force:unit_list()
+
+    local scale = 1
+
+    for i = 0, unit_list:num_items() - 1 do
+        local unit = unit_list:item_at(i);
+        local base = unit:percentage_proportion_of_full_strength() / 100
+
+        pttg:log(string.format("[pttg_RestRoom] Attritioning %s to  %s(%s - %s).", unit:unit_key(), base - factor, base,
+        factor))
+        if unit:unit_class() ~= "com" then
+            if use_tier_scale then
+                scale = 1 / pttg_merc_pool.merc_units[unit:unit_key()].tier
+            end
+            ---@diagnostic disable-next-line: undefined-field
+            cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base - (factor * scale), 0.01, 1))
+        else -- TODO: Heal characters for half (should we?)
+            ---@diagnostic disable-next-line: undefined-field
+            cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base - (factor / 2), 0.01, 1))
+        end
+    end
+end
+
 function pttg_side_effects:grant_general_levels(amount)
     local character = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
     local lookup = cm:char_lookup_str(character)
@@ -67,8 +92,8 @@ function pttg_RandomStart_callback(context)
         local general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
         cm:remove_all_units_from_general(general)
         cm:wound_character(cm:char_lookup_str(general), 1)
-        pttg_merc_pool:trigger_recruitment(20, pttg:get_state('recruit_chances'))
-        pttg_glory:add_recruit_glory(12)
+        pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_state('recruit_chances'))
+        pttg_glory:add_recruit_glory(pttg:get_difficulty_mod('random_start_recruit_glory'))
     end
 
 end

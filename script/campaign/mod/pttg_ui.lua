@@ -327,8 +327,10 @@ core:add_listener(
         pttg:log("[pttg_ui] Next phase triggered")
 
         if not cm:get_saved_value("pttg_RandomStart") then
+            pttg_UI:hide_map()
             cm:trigger_dilemma(cm:get_local_faction_name(), 'pttg_RandomStart')
             cm:set_saved_value("pttg_RandomStart", true)
+            return
         end
 
         pttg_UI:disable_next_phase_button()

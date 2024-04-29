@@ -42,6 +42,19 @@ function pttg_upkeep:add_callback(phase, name, func, object, payload, prio)
     return true
 end
 
+function pttg_upkeep:remove_callback(phase, name)
+    for _, callbacks in pairs(self.callbacks[phase]) do
+        if callbacks[name] then
+            pttg:log(string.format("[pttg_upkeep] Removing callback %s from phase %s.", name, phase))
+            callbacks[name] = nil
+            return true
+        end
+    end
+
+    pttg:log(string.format("[pttg_upkeep] Cannot remove callback %s from phase %s, since it does not exist.", name, phase))
+    return false
+end
+
 function pttg_upkeep:resolve(phase)
     if not self:is_valid_phase(phase) then
         script_error("Phase ["..phase.."] is not a valid phase to add resolve callbacks.")

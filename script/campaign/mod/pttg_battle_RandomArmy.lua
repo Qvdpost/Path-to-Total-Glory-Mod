@@ -187,10 +187,10 @@ function WH_Random_Army_Generator:add_unit(force_key, unit, weight)
 	local force_data = self:get_force_by_key(force_key);
 
 	if force_data then
+		pttg:log("[generate_random_army] Random Army Manager: Adding Unit- [" ..
+				unit.key .. "] with weight: [" .. weight .. "] to force: [" .. force_key .. "]");
 		for i = 1, weight do
 			table.insert(force_data.units, unit);
-			pttg:log("[generate_random_army] Random Army Manager: Adding Unit- [" ..
-				unit.key .. "] with weight: [" .. weight .. "] to force: [" .. force_key .. "]");
 		end;
 		return;
 	end;

@@ -27,7 +27,6 @@ local function init()
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_reset_glory_shop_start", pttg_glory_shop.reset_rituals, pttg_glory_shop)
 
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
-    -- pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3) -- causes visual glitches maybe?
 
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
     

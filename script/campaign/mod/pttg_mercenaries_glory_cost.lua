@@ -147,9 +147,7 @@ local function glory_cost_listeners()
 
             if component_id == "button_hire_mercenary" then
                 pttg:log("Mercenaries hired. Clearing queue.")
-                for int_pos, merc in pairs(merc_in_queue) do
-                    table.remove(merc_in_queue, int_pos)
-                end
+                merc_in_queue = {}
             elseif string.find(component_id, "_mercenary") and not uic:IsDisabled() then
                 pttg:log("Component Clicked was a mercenary")
                 local unit_key = string.gsub(component_id, "_mercenary", "")

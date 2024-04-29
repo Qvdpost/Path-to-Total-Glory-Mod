@@ -22,6 +22,10 @@ local function init()
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
 
+    pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_reset_recruit_glory_start", pttg_glory.reset_recruit_glory, pttg_glory)
+    pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_reset_merc_pool_start", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
+    pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_reset_glory_shop_start", pttg_glory_shop.reset_rituals, pttg_glory_shop)
+
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
     -- pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera", pttg_UI.center_camera, pttg_UI, {}, 3) -- causes visual glitches maybe?
 
@@ -44,6 +48,10 @@ local function init()
 
     if pttg:get_state('cur_phase') == "" then
         pttg:set_state('cur_phase', "pttg_Idle")
+    end
+
+    if cm:is_new_game() then
+        pttg_side_effects:zero_merc_cost()     
     end
 
     pttg_UI:enable_next_phase_button()

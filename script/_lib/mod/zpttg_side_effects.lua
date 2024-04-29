@@ -1,6 +1,6 @@
 local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
-
+local pttg_glory = core:get_static_object("pttg_glory")
 
 local pttg_side_effects = {
 
@@ -57,6 +57,51 @@ function pttg_side_effects:grant_characters_levels(amount)
         cm:add_agent_experience(lookup, xp)
     end
    
+end
+
+function pttg_RandomStart_callback(context)
+	-- body of the callback; what should happen for each choice?
+    local choice = context:choice_key()
+
+    if choice == 'SECOND' then
+        local general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
+        cm:remove_all_units_from_general(general)
+        cm:wound_character(cm:char_lookup_str(general), 1)
+        pttg_merc_pool:trigger_recruitment(20, pttg:get_state('recruit_chances'))
+        pttg_glory:add_recruit_glory(12)
+    end
+
+end
+
+core:add_listener(
+    "pttg_event_resolved",
+    "DilemmaChoiceMadeEvent",
+    function(context)
+        return context:dilemma() == 'pttg_RandomStart'
+    end,
+    function(context)
+        pttg_RandomStart_callback(context)
+    end,
+    false
+)
+
+function pttg_side_effects:zero_merc_cost()
+    local recruitment_cost_bundle_key = "pttg_merc_recruit_cost_down";
+	local faction = cm:get_local_faction()
+
+    if faction:has_effect_bundle(recruitment_cost_bundle_key) then
+        return
+    end
+
+    local recruitment_cost_bundle = cm:create_new_custom_effect_bundle(recruitment_cost_bundle_key);
+    
+    recruitment_cost_bundle:add_effect("wh3_main_effect_mercenary_cost_mod", "faction_to_character_own_factionwide_armytext", -10000);
+    recruitment_cost_bundle:set_duration(0);
+
+    recruitment_cost_bundle:add_effect("wh_main_effect_force_all_campaign_recruitment_cost_all", "faction_to_character_own_factionwide_armytext", -10000);
+    recruitment_cost_bundle:set_duration(0);
+
+    cm:apply_custom_effect_bundle_to_faction(recruitment_cost_bundle, faction);
 end
 
 core:add_static_object("pttg_side_effects", pttg_side_effects);

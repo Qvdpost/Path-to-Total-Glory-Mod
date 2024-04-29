@@ -61,7 +61,12 @@ local function finalise_uics()
                     recruitment_cost_uic:SetVisible(false)
                 end
 
-                local faction = cm:get_faction(cm:get_local_faction_name(true))
+                local upkeep_cost_uic = find_uicomponent(unit_uic, "unit_icon", "UpkeepCost")
+
+                if upkeep_cost_uic then
+                    upkeep_cost_uic:SetVisible(false)
+                end
+
                 local player_glory = pttg_glory:get_recruit_glory_value()
 
                 if player_glory >= glory_cost then
@@ -113,10 +118,11 @@ local function glory_cost_listeners()
             pttg:log(string.format("Refunding %i mercenaries.", #merc_in_queue))
             for int_pos, merc in pairs(merc_in_queue) do
                 local unit_record = pttg_merc_pool.merc_units[merc]
-
                 pttg_glory:add_recruit_glory(unit_record.cost)
-                table.remove(merc_in_queue, int_pos)
+                
+                pttg:log(string.format("Refunding %s for %i", merc, unit_record.cost))
             end
+            merc_in_queue = {}
 
             hide_disabled()
             finalise_uics()
@@ -154,7 +160,7 @@ local function glory_cost_listeners()
                     { "units_panel", "main_units_panel", "units" })
                 local merc = find_uicomponent(armyList, "temp_merc_" .. tostring(#merc_in_queue - 1))
                 if merc ~= false then
-                    pttg:log("The new queued mercenary appeared")
+                    pttg:log("The new queued mercenary appeared: "..unit_key)
                     local unit_record = pttg_merc_pool.merc_units[unit_key]
                     pttg_glory:remove_recruit_glory(unit_record.cost)
                 else

@@ -16,16 +16,17 @@ function pttg_side_effects:heal_force(factor, use_tier_scale)
         local unit = unit_list:item_at(i);
         local base = unit:percentage_proportion_of_full_strength() / 100
 
-        pttg:log(string.format("[pttg_RestRoom] Healing %s to  %s(%s + %s).", unit:unit_key(), base + factor, base,
-        factor))
+        
         if unit:unit_class() ~= "com" then
             if use_tier_scale then
                 scale = 1 / pttg_merc_pool.merc_units[unit:unit_key()].tier
             end
+            pttg:log(string.format("[pttg_RestRoom] Healing unit %s to  %s(%s + %s).", unit:unit_key(), base + (factor * scale), base, (factor * scale)))
             ---@diagnostic disable-next-line: undefined-field
             cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + (factor * scale), 0.01, 1))
         else -- TODO: Heal characters for half (should we?)
             ---@diagnostic disable-next-line: undefined-field
+            pttg:log(string.format("[pttg_RestRoom] Healing character %s to  %s(%s + %s).", unit:unit_key(), base + (factor / 2), base, (factor / 2)))
             cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + (factor / 2), 0.01, 1))
         end
     end

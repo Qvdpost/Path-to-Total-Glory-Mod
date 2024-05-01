@@ -163,9 +163,12 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 
 	for i = 1, unit_count - mandatory_units_added do
 		local category = get_random_category(troop_distribution)
+		
 		while #categorized_units[category] == 0 do
 			category = get_random_category(troop_distribution)
 		end
+
+		pttg:log("Adding from random category: "..category)
 
 		local unit_index = cm:random_number(#categorized_units[category]);
 
@@ -188,7 +191,7 @@ function WH_Random_Army_Generator:add_unit(force_key, unit, weight)
 
 	if force_data then
 		pttg:log("[generate_random_army] Random Army Manager: Adding Unit- [" ..
-				unit.key .. "] with weight: [" .. weight .. "] to force: [" .. force_key .. "]");
+				unit.key .. "] with weight: [" .. weight .. "] in cat: [".. unit.category .. "] to force: [" .. force_key .. "]");
 		for i = 1, weight do
 			table.insert(force_data.units, unit);
 		end;

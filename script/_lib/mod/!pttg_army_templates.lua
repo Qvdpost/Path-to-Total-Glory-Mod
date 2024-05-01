@@ -100,13 +100,39 @@ local pttg_battle_templates = {
     },
     templates = {},
     distributions = {
+        -- ["default"] = {
+        --     inf_melee = 30,
+        --     inf_ranged = 20,
+        --     cavalry = 15,
+        --     war_beast = 15,
+        --     artillery = 10,
+        --     war_machine = 10,
+        -- }
+        -- ["default"] = {
+        --     melee_infantry     = 10,
+        --     missile_infantry   = 4,
+        --     monstrous_infantry = 2,
+        --     melee_cavalry      = 2,
+        --     missile_cavalry    = 2,
+        --     generic            = 2, -- nor_cav_chaos_chariot
+        --     war_beast          = 2,
+        --     chariot            = 2,
+        --     monstrous_cavalry  = 2,
+        --     warmachine         = 1,
+        --     monster            = 1,
+        --     -- hero = 0,
+        -- }
         ["default"] = {
-            inf_melee = 30,
-            inf_ranged = 20,
-            cavalry = 15,
-            war_beast = 15,
-            artillery = 10,
-            war_machine = 10,
+            melee_infantry     = 35,
+            missile_infantry   = 15,
+            monstrous_infantry = 5,
+            melee_cavalry      = 10,
+            missile_cavalry    = 5, -- 70
+            war_beast          = 7,
+            chariot            = 7,
+            monstrous_cavalry  = 6,
+            warmachine         = 5,
+            monster            = 5,
         }
     }
 }

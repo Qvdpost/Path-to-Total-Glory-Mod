@@ -116,7 +116,7 @@ local function glory_cost_listeners()
             pttg:log("[pttg_glory_cost] - mercenary_recruitment panel opened.")
 
             pttg:log(string.format("Refunding %i mercenaries.", #merc_in_queue))
-            for int_pos, merc in pairs(merc_in_queue) do
+            for _, merc in pairs(merc_in_queue) do
                 local unit_record = pttg_merc_pool.merc_units[merc]
                 pttg_glory:add_recruit_glory(unit_record.cost)
                 

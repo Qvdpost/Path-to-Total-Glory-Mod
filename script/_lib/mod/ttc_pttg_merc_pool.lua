@@ -189,10 +189,6 @@ end
 function pttg_merc_pool:init_merc_pool()
     pttg:log(string.format("[pttg_MercPool] Initialising units merc pool."))
 
-    for _, military_group in pairs(self.faction_to_military_grouping) do
-        self.merc_pool[military_group] = { {}, {}, {}, {} }
-    end
-
     for unit_key, info in pairs(ttc.units) do
         local merc_info = self.merc_units[unit_key]
         if merc_info then
@@ -200,9 +196,10 @@ function pttg_merc_pool:init_merc_pool()
 
             for _, military_group in pairs(merc_info.military_groupings) do
                 pttg:log(string.format("[pttg_MercPool] Inserting in %s at %s", military_group, merc_info.tier))
-                if self.merc_pool[military_group] then
-                    table.insert(self.merc_pool[military_group][merc_info.tier], merc_info)
+                if not self.merc_pool[military_group] then
+                    self.merc_pool[military_group] = { {}, {}, {}, {} }
                 end
+                table.insert(self.merc_pool[military_group][merc_info.tier], merc_info)
             end
         end
     end
@@ -311,7 +308,7 @@ function pttg_merc_pool:trigger_recruitment(amount, recruit_chances, unique_only
 
     for i = 1, amount do
         local offset = pttg:get_state('recruit_rarity_offset')
-        local rando_tier = cm:random_number(100) - offset
+        local rando_tier = cm:random_number(100) + offset
         pttg:log(string.format("[pttg_RecruitReward] Adding tier for roll %s(%s)", rando_tier, offset))
         if rando_tier < recruit_chances[1] then
             rando_tiers[1] = rando_tiers[1] + 1

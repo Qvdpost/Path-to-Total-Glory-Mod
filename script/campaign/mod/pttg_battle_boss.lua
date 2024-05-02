@@ -19,7 +19,7 @@ core:add_listener(
         local invasion_faction = invasion_template_army.faction
 
 
-        local invasion_power = cursor.z * 2 + cursor.z + 2
+        local invasion_power = (cursor.z - 1) * 2 + 5
         local invasion_size = ((cursor.z - 1) * 5) + cursor.y + 4 + pttg:get_difficulty_mod('encounter_size')
         local general_level = (cursor.z - 1) * 20 + cursor.y + 10
 

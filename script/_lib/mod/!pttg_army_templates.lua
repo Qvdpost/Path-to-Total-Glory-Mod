@@ -58,12 +58,6 @@ function PttG_ArmyTemplate.repr(self)
     return string.format("ArmyTemplate(%s): %s, %s, %s", self.key, self.faction, self.culture, self.subculture)
 end
 
-local pttg_merc_pool = {
-    merc_pool = {},
-    merc_units = {},
-    active_merc_pool = {}
-}
-
 local pttg_battle_templates = {
     elites = {
         {
@@ -238,6 +232,7 @@ local function init()
         ["wh_dlc03_bst_malagor"] = { faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", mandatory_units = {}, units = {}, alignment = 'chaos', act = 1 },
     }
 
+    -- TODO fix the commented templates with cool mili groups or units
     local random = {
         ["pttg_tomb_kings"] = { faction = "pttg_tmb_tomb_kings", culture = "wh2_dlc09_tmb_tomb_kings", subculture = "wh2_dlc09_sc_tmb_tomb_kings", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_empire"] = { faction = "pttg_emp_empire", culture = "wh_main_emp_empire", subculture = "wh_main_sc_emp_empire", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
@@ -254,14 +249,14 @@ local function init()
         ["pttg_greenskins"] = { faction = "pttg_grn_greenskins", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_greenskins", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_beastmen"] = { faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         -- ["pttg_lzd_dino_rampage"] = { faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
-        -- ["pttg_lzd_host_of_tepok"] = { faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", military_grouping = "wh3_dlc23_rogue_sacred_host_of_tepok", mandatory_units = {}, units = {}, alignment = 'order', act = { 2, 3 } },
+        ["pttg_lzd_host_of_tepok"] = { faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", military_grouping = "wh3_dlc23_rogue_sacred_host_of_tepok", mandatory_units = {}, units = {}, alignment = 'order', act = { 2, 3 } },
         ["pttg_lizardmen"] = { faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", mandatory_units = {}, units = {}, alignment = 'order', act = nil },
         ["pttg_dark_elves"] = { faction = "pttg_def_dark_elves", culture = "wh2_main_def_dark_elves", subculture = "wh2_main_sc_def_dark_elves", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
-        ["pttg_def_corsairs"] = { faction = "pttg_def_dark_elves", culture = "wh2_main_def_dark_elves", subculture = "wh2_main_sc_def_dark_elves", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
+        -- ["pttg_def_corsairs"] = { faction = "pttg_def_dark_elves", culture = "wh2_main_def_dark_elves", subculture = "wh2_main_sc_def_dark_elves", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_slaanesh"] = { faction = "pttg_sla_slaanesh", culture = "wh3_main_sla_slaanesh", subculture = "wh3_main_sc_sla_slaanesh", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         -- ["pttg_skv_skryre_drill_team"] = { faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
-        ["pttg_skv_moulder"] = { faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
-        ["pttg_skv_pestilens_and_rats"] = { faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
+        -- ["pttg_skv_moulder"] = { faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
+        -- ["pttg_skv_pestilens_and_rats"] = { faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_skaven"] = { faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_savage_orcs"] = { faction = "pttg_grn_savage_orcs", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_savage_orcs", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_ogre_kingdoms"] = { faction = "pttg_ogr_ogre_kingdoms", culture = "wh3_main_ogr_ogre_kingdoms", subculture = "wh3_main_sc_ogr_ogre_kingdoms", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },

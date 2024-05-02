@@ -69,6 +69,7 @@ function pttg_UI:get_or_create_map()
                 node:SetStateText(pttg_get_room_symbol(map_node.class))
 
                 for k, edge in ipairs(map_node.edges) do
+                    -- TODO Maybe use better connectors (these cost a lot of frames). E.G. beastemen link pngs
                     local connection = UIComponent(node:CreateComponent("connection" .. k, "ui/templates/line_smoke"))
                     connection:PropagatePriority(55)
                     if edge.dst_x == map_node.x then
@@ -289,13 +290,10 @@ function pttg_UI:enable_next_phase_button()
 end
 
 function pttg_UI:center_camera()
-    cm:callback( -- we need to wait a tick for this to work, for some reason
+    cm:callback(
         function()
             local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
             cm:replenish_action_points(cm:char_lookup_str(character));
-            -- cm:scroll_camera_from_current(false, 1,
-            --     { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
-
             common.call_context_command("CcoCampaignCharacter", character:command_queue_index(), "SelectAndZoom(false)")
         end,
         0.2

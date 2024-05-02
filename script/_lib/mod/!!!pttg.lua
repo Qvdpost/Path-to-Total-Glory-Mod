@@ -72,7 +72,8 @@ local pttg = {
     difficulty_modifiers = {
         encounter_size = {2, 4, 6},
         random_start_recruit_glory = {16, 14, 12},
-        random_start_recruit_merc_count = {25, 20, 20}
+        random_start_recruit_merc_count = {25, 20, 20},
+        random_start_chances = {{ 70, 200, 100 }, { 90, 200, 100 }, { 90, 200, 100 }}
     }
 };
 

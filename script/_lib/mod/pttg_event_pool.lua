@@ -5,31 +5,20 @@ PttG_Event = {
 
 }
 
-function PttG_Event:new(key, faction_set, weight, acts, alignment, callback)
+function PttG_Event:new(key, callback, eligibility_callback, weight)
     local self = {}
-    if not key or not faction_set then
-        script_error("Cannot add event without a name_key and faction_set.")
-        return false
-    end
-
-    if not (acts[1] or acts[2] or acts[3]) then
-        script_error("Cannot add event without any acts to trigger it.")
-        return false
-    end
-    
+        
     self.key = key
-    self.faction_set = faction_set
-    self.acts = acts
     self.weight = weight
-    self.alignment = alignment
     self.callback = callback
+    self.eligibility_callback = eligibility_callback
 
     setmetatable(self, { __index = PttG_Event })
     return self
 end
 
 function PttG_Event.repr(self)
-    return string.format("Event(%s): %s, %s", self.key, self.faction_set, self.weight)
+    return string.format("Event(%s): %s", self.key, self.weight)
 end
 
 local pttg_event_pool = {
@@ -39,13 +28,16 @@ local pttg_event_pool = {
 }
 
 function pttg_event_pool:add_event(key, info)
-    local event = PttG_Event:new(key, info.faction_set, info.weight, info.acts, info.alignment, info.callback)
+    local event = PttG_Event:new(key, info.callback, info.eligibility_callback, info.weight)
     if not event then
         script_error("Could not add event. Skipping")
         return false
     end
 
     pttg:log(string.format('[pttg_event_pool] Adding event: %s', event:repr()))
+    if self.event_pool[event.key] then
+        pttg:log("Even already exists. Skipping!")
+    end
     self.event_pool[event.key] = event
 end
 
@@ -61,7 +53,7 @@ end
 
 function pttg_event_pool:init_events()
     local events_all = {
-        ["pttg_EventGlory"] = { weight = 10, acts = { [1] = true, [2] = true }, alignment = { upper = nil, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
+        ["pttg_EventGlory"] = { weight = 10, callback = pttg_EventGlory_callback, eligibility_callback = pttg_EventGlory_eligibility_callback },
     }
     self:add_events(events_all)
 
@@ -76,25 +68,19 @@ function pttg_event_pool:get_event_callback(event)
     return function() return nil end
 end
 
-function pttg_event_pool:is_eligible(event, info)
-    local cursor = pttg:get_cursor()
-    local alignment = pttg:get_state('alignment')
-    local faction = cm:get_local_faction()
-    pttg:log(string.format("[pttg_event_pool] Checking eligibility for: %s with alignment %s at %s.", faction:name(),
-        tostring(alignment), tostring(cursor.z)));
-    return info.acts[cursor.z] and
-        (alignment > (info.alignment.lower or -math:huge(alignment)) and (alignment < (info.alignment.upper or math:huge(alignment)))) and
-        ---@diagnostic disable-next-line: undefined-field
-        faction:is_contained_in_faction_set(info.faction_set or "all")
-end
-
 function pttg_event_pool:random_event()
     local event_pool_key = "pttg_events"
 
     pttg_pool_manager:new_pool(event_pool_key)
 
+    local context = {
+        act = pttg:get_cursor().z,
+        alignment = pttg:get_state('alignment'),
+        faction = cm:get_local_faction()
+    }
+
     for event, info in pairs(self.event_pool) do
-        if self:is_eligible(event, info) then
+        if info.eligibility_callback(context) then
             pttg_pool_manager:add_item(event_pool_key, event, info.weight)
         end
     end

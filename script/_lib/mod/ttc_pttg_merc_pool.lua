@@ -157,14 +157,6 @@ local pttg_merc_pool = {
         
 }
 
--- TODO: implement special rules
-local units_with_special_rules = {
-    { "wh2_main_skv_inf_plague_monks",                  { subtype = "wh2_main_skv_lord_skrolk" } },
-    { "wh3_dlc23_chd_inf_infernal_guard",               { subtype = "wh3_dlc23_chd_drazhoath" } },
-    { "wh3_dlc23_chd_inf_infernal_guard_fireglaives",   { subtype = "wh3_dlc23_chd_drazhoath" } },
-    { "wh3_dlc23_chd_inf_infernal_guard_great_weapons", { subtype = "wh3_dlc23_chd_drazhoath" } }
-}
-
 
 function pttg_merc_pool:reset_merc_pool()
     for _, tiers in pairs(self.merc_pool) do
@@ -298,10 +290,10 @@ function pttg_merc_pool:get_active_units_with_counts()
     return self.active_merc_pool
 end
 
-function pttg_merc_pool:get_pool(faction_name)
+function pttg_merc_pool:get_pool(key)
     pttg:log("Getting mercenary pool")
-    local military_grouping = self.faction_to_military_grouping[faction_name]
-    pttg:log("Getting pool ["..military_grouping.."] for faction with name: "..faction_name)
+    local military_grouping = self.faction_to_military_grouping[key] or key
+    pttg:log("Getting pool ["..military_grouping.."] for key: "..key)
     if not self.merc_pool[military_grouping] then
         script_error("Could not find a mercenary pool for given military grouping.")
         return false
@@ -1338,6 +1330,38 @@ local function init_merc_list()
     }
     
     pttg_merc_pool:add_unit_list(mercenaries)
+    pttg_merc_pool:fix_factions()
+end
+
+function pttg_merc_pool:fix_factions()
+    local mercenaries = {
+        -- Fix orges being a little too monstrous
+        { key = "wh3_main_ogr_inf_ogres_0", info = { military_groupings = nil, category = "melee_infantry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_inf_ogres_1", info = { military_groupings = nil, category = "melee_infantry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_inf_ogres_2", info = { military_groupings = nil, category = "melee_infantry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_cav_mournfang_cavalry_0", info = { military_groupings = nil, category = "melee_cavalry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_cav_mournfang_cavalry_1", info = { military_groupings = nil, category = "melee_cavalry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_cav_mournfang_cavalry_2", info = { military_groupings = nil, category = "melee_cavalry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_inf_ironguts_0", info = { military_groupings = nil, category = "melee_infantry", tier = nil, cost = nil }},
+        { key = "wh3_main_ogr_inf_leadbelchers_0", info = { military_groupings = nil, category = "missile_infantry", tier = nil, cost = nil }},
+
+        { key = "wh2_dlc16_wef_mon_cave_bats", info = { military_groupings = {"wh2_dlc16_group_drycha"}, category = nil, tier = nil, cost = 1 }},
+
+    }
+    for _, merc in pairs(mercenaries) do
+        merc_info = self.merc_units[merc.key]
+        for key, val in pairs(merc.info) do
+            if val ~= nil then
+                if type(val) == 'table' then
+                    for _, item in pairs(val) do
+                        table.insert(merc_info[key], item)
+                    end
+                else
+                    merc_info[key] = val
+                end
+            end
+        end
+    end
 end
 
 cm:add_first_tick_callback(function() init_merc_list() end);

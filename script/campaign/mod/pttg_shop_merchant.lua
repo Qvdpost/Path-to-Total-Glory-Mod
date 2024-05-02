@@ -200,7 +200,7 @@ core:add_listener(
             pttg:set_state('excluded_shop_items', pttg_glory_shop.excluded_shop_items)
         elseif shop_item.category == 'unit' then
             pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] A unit was purchased: %s", shop_item.key))
-            pttg_merc_pool:add_unit_to_pool(shop_item.key, 1)
+            pttg_merc_pool:add_active_unit(shop_item.key, 1)
             pttg_glory:add_recruit_glory(pttg_merc_pool.merc_units[shop_item.key].cost)
         end
     end,

@@ -8,11 +8,29 @@ local available_merc_units = {}
 local merc_in_queue = {}
 
 local function init_glory_units()
-    pttg_merc_pool = core:get_static_object("pttg_merc_pool");
-    pttg = core:get_static_object("pttg");
-
     -- Disable TTC MercPanel Listeners
     ttc.add_listeners_to_mercenary_panel = function() return nil end
+end
+
+
+local function get_or_create_recruit_glory()
+    local docker_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker", "recruitment_options", "title_docker")
+    local recruit_glory_uic = find_uicomponent(docker_uic, "recruit_glory")
+    local mercenary_cost = find_uicomponent(docker_uic, "tx_mercenariers_cost")
+    if not mercenary_cost then
+        script_error("Could not locate mercenary cost component")
+        return false
+    end
+    if not recruit_glory_uic then
+        recruit_glory_uic = UIComponent(mercenary_cost:CopyComponent("recruit_glory"))
+        recruit_glory_uic:SetImagePath("ui/skins/default/icon_oathgold.png", 0)
+        recruit_glory_uic:SetStateText(tostring(pttg_glory:get_recruit_glory_value()), "")
+        recruit_glory_uic:SetTooltipText("Total Available Recruitment Glory Points", true)
+        recruit_glory_uic:SetVisible(true)
+    end
+    
+    mercenary_cost:SetVisible(false)
+    return recruit_glory_uic
 end
 
 local function hide_disabled()
@@ -30,7 +48,7 @@ local function hide_disabled()
             local unit_uic = find_uicomponent(list_box_uic, reference_unit)
 
             if unit_uic then
-                if unit_uic:CurrentState() == "active" then
+                if pttg_merc_pool.active_merc_pool[unit] then-- unit_uic:CurrentState() == "active" then
                     pttg:log(string.format("[pttg_glory_cost] - Adding %s to available mercs.", unit))
                     available_merc_units[unit] = unit_info
                 else
@@ -55,19 +73,33 @@ local function finalise_uics()
             local unit_uic = find_uicomponent(listview_uic, "list_clip", "list_box", unit .. "_mercenary")
 
             if unit_uic then
-                local recruitment_cost_uic = find_uicomponent(unit_uic, "unit_icon", "RecruitmentCost")
+                local recruitment_cost_uic = find_uicomponent(unit_uic, "external_holder", "RecruitmentCost")
 
                 if recruitment_cost_uic then
+                    local glory_cost_uic = find_uicomponent(unit_uic, "external_holder", "glory_cost")
+                    if glory_cost_uic == false then
+                        glory_cost_uic = UIComponent(recruitment_cost_uic:CopyComponent("glory_cost"))
+                    end
+
+                    local cost_glory_cost_uic = find_uicomponent(glory_cost_uic, "Cost")
+                    if cost_glory_cost_uic then
+                        cost_glory_cost_uic:SetStateText(tostring(glory_cost), "")
+                        cost_glory_cost_uic:SetImagePath("ui/skins/default/icon_oathgold.png", 0)
+                    end
                     recruitment_cost_uic:SetVisible(false)
                 end
 
-                local upkeep_cost_uic = find_uicomponent(unit_uic, "unit_icon", "UpkeepCost")
+
+                local upkeep_cost_uic = find_uicomponent(unit_uic, "external_holder", "UpkeepCost")
 
                 if upkeep_cost_uic then
                     upkeep_cost_uic:SetVisible(false)
                 end
 
                 local player_glory = pttg_glory:get_recruit_glory_value()
+
+                local recruit_glory_uic = get_or_create_recruit_glory()
+                recruit_glory_uic:SetStateText(tostring(pttg_glory:get_recruit_glory_value()), "")
 
                 if player_glory >= glory_cost then
                     -- setting cost text
@@ -103,8 +135,6 @@ local function finalise_uics()
     end
 end
 
-
-
 local function glory_cost_listeners()
     core:add_listener(
         "pttg_MercPanelOpened",
@@ -123,7 +153,7 @@ local function glory_cost_listeners()
                 pttg:log(string.format("Refunding %s for %i", merc, unit_record.cost))
             end
             merc_in_queue = {}
-
+            get_or_create_recruit_glory()
             hide_disabled()
             finalise_uics()
         end,

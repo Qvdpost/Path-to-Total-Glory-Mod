@@ -76,11 +76,15 @@ function pttg_side_effects:grant_characters_levels(amount)
         local lookup = cm:char_lookup_str(character)
         local current_character_rank = character:rank()
         local character_rank = amount
+
+        pttg:log("Adding experience to: "..character:get_forename().." with rank "..tostring(current_character_rank))
     
-        ---@diagnostic disable-next-line: undefined-field
-        local xp = cm.character_xp_per_level[math.min(current_character_rank + character_rank, 50)] - cm.character_xp_per_level[current_character_rank]
-    
-        cm:add_agent_experience(lookup, xp)
+        if current_character_rank > 0 then
+            ---@diagnostic disable-next-line: undefined-field
+            local xp = cm.character_xp_per_level[math.min(current_character_rank + character_rank, 50)] - cm.character_xp_per_level[current_character_rank]
+        
+            cm:add_agent_experience(lookup, xp)
+        end
     end
    
 end
@@ -89,12 +93,19 @@ function pttg_RandomStart_callback(context)
 	-- body of the callback; what should happen for each choice?
     local choice = context:choice_key()
 
-    if choice == 'SECOND' then
+    if choice == 'SECOND' or choice == 'THIRD' then
         local general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
         cm:remove_all_units_from_general(general)
-        cm:wound_character(cm:char_lookup_str(general), 1)
+
+        if choice == 'SECOND' then
+            cm:wound_character(cm:char_lookup_str(general), 1)
+        end
         
-        pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_state('recruit_chances'))
+        pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))
+
+        -- Guarantee one rare.
+        pttg_merc_pool:trigger_recruitment(1, { -10, -10, 100 })
+        
         pttg_glory:add_recruit_glory(pttg:get_difficulty_mod('random_start_recruit_glory'))
     end
 

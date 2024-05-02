@@ -17,9 +17,9 @@ core:add_listener(
         local invasion_template = invasion_template_army.key
         local invasion_faction = invasion_template_army.faction
 
-        local invasion_power = cursor.z
-        local invasion_size = ((cursor.z - 1) * 5) + cursor.y + pttg:get_difficulty_mod('encounter_size')
-        local general_level = cursor.z + cursor.y
+        local invasion_power = cursor.z + (cursor.z - 1) * 2
+        local invasion_size = ((cursor.z - 1) * 7) + cursor.y + pttg:get_difficulty_mod('encounter_size')
+        local general_level = (cursor.z - 1) * 20 + cursor.y
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))

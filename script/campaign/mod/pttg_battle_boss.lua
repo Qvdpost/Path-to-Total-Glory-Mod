@@ -52,9 +52,6 @@ core:add_listener(
     function(context)
         pttg_glory:reward_glory(105, 95)
 
-        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("boss_recruit_chances") })
-        pttg_glory:add_initial_recruit_glory(2)
-
         cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
             function()
                 pttg_mod_wom:increase(10)
@@ -66,7 +63,7 @@ core:add_listener(
 
         cm:heal_military_force(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
 
-        core:trigger_custom_event('pttg_Idle', {})
+        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("boss_recruit_chances") })
     end,
     true
 )

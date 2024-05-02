@@ -120,15 +120,16 @@ function pttg_item_pool:init()
 
     self.excluded_items = pttg:get_state('excluded_items')
 
-    local tier_to_uniqueness = { 29, 49, 99 }
+    local tier_to_uniqueness = { 29, 49, 99, 999 }
 
     for tier, units in pairs(pttg_merc_pool:get_pool(cm:get_local_faction_name())) do
         for _, unit_info in pairs(units) do
-            unit_info.uniqueness = tier_to_uniqueness[tier]
-            unit_info.category = 'unit'
-            unit_info.ritual = "pttg_ritual_" .. unit_info.key
-            unit_info.faction_set = 'all'
-            self:add_item(unit_info.key, unit_info)
+            local item_info = {}
+            item_info.uniqueness = tier_to_uniqueness[tier]
+            item_info.category = 'unit'
+            item_info.ritual = "pttg_ritual_" .. unit_info.key
+            item_info.faction_set = 'all'
+            self:add_item(unit_info.key, item_info)
         end
     end
 end

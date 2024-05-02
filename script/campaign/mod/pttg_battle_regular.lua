@@ -30,7 +30,7 @@ core:add_listener(
             invasion_template,          --	generated_force_template
             invasion_size,              --	generated_force_size
             invasion_power,             --	generated_force_power
-            false,                      --	generated_force_is_attacker
+            cm:random_number(2) == 1, -- Does this hinder the victory_incident? Fixed it in the forced battle manager.                     --	generated_force_is_attacker
             true,                       --	destroy_generated_force_after_battle
             false,                      --	is_ambush
             "pttg_battle_victory",      --	opt_player_victory_incident
@@ -48,20 +48,12 @@ core:add_listener(
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_battle_victory" end,
     function(context)
-        cm:callback( -- we need to wait a tick for this to work, for some reason
-            function()
-                local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
-                cm:replenish_action_points(cm:char_lookup_str(character));
-                cm:scroll_camera_from_current(false, 1,
-                    { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
-            end,
-            0.2
-        )
+        pttg:log("[pttg_battle_victory] Victory event received.")
         pttg_glory:reward_glory(20, 10)
+        
+        pttg_upkeep:resolve("pttg_PostRoomBattle")
 
         core:trigger_custom_event('pttg_Rewards', {})
-
-        pttg_upkeep:resolve("pttg_PostRoomBattle")
     end,
     true
 )

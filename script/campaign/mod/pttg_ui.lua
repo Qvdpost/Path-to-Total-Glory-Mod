@@ -293,8 +293,10 @@ function pttg_UI:center_camera()
         function()
             local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
             cm:replenish_action_points(cm:char_lookup_str(character));
-            cm:scroll_camera_from_current(false, 1,
-                { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
+            -- cm:scroll_camera_from_current(false, 1,
+            --     { character:display_position_x(), character:display_position_y(), 14.7, 0.0, 12.0 });
+
+            common.call_context_command("CcoCampaignCharacter", character:command_queue_index(), "SelectAndZoom(false)")
         end,
         0.2
     )

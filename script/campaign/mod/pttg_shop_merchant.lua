@@ -60,13 +60,6 @@ function pttg_glory_shop:lock_ritual(shop_item)
 end
 
 function pttg_glory_shop:init_shop()
-    pttg = core:get_static_object("pttg");
-
-    pttg_merc_pool = core:get_static_object("pttg_merc_pool");
-    pttg_item_pool = core:get_static_object("pttg_item_pool");
-
-
-
     pttg:log(string.format('[pttg_glory_shop] Initialising shop.'))
 
     self.shop_items.merchandise = pttg_item_pool:get_craftable_items(self.excluded_shop_items)
@@ -84,6 +77,7 @@ function pttg_glory_shop:init_shop()
 end
 
 function pttg_glory_shop:populate_items(num_items, chances, category)
+    pttg:log("Populating shop with items from category: "..category)
     local faction = cm:get_local_faction()
 
     local rando_tiers = { 0, 0, 0 }
@@ -121,7 +115,7 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
             end
 
             if pttg_pool_manager:get_item_count(shop_pool_key) == 0 then
-                script_error("Item Pool Manager is empty. Cannot generate any pruchaseable items.")
+                pttg:log("Item Pool Manager is empty. Cannot generate any pruchaseable items for tier: "..tier)
             else
                 pttg:log(string.format("Generating %s items from a pool of size: %s", count,
                     pttg_pool_manager:get_item_count(shop_pool_key)))
@@ -219,6 +213,7 @@ core:add_listener(
     true,
     function(context)
         pttg_glory_shop:populate_shop()
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

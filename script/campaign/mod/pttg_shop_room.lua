@@ -28,9 +28,8 @@ core:add_listener(
     function(context)
         pttg:log("[pttg_ShopRoom] resolving shop: ")
 
-        core:trigger_custom_event('pttg_populate_shop', {})
         pttg_shop:enable_shop_button()
-        core:trigger_custom_event('pttg_Idle', {})
+        core:trigger_custom_event('pttg_populate_shop', {})
     end,
     true
 )

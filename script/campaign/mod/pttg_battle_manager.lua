@@ -128,8 +128,49 @@ function Forced_Battle_Manager:pttg_trigger_forced_elite_battle_with_generated_a
     local x, y = cm:find_valid_spawn_location_for_character_from_character(generated_force_faction,
         "character_cqi:" .. player_force_general_cqi, false, 6)
 
+    local character = cm:get_military_force_by_cqi(target_force_cqi):general_character()
+    local lookup = cm:char_lookup_str(character)
+    local current_character_rank = character:rank()
+    local character_rank = opt_general_level
+
+    ---@diagnostic disable-next-line: undefined-field
+    local xp = cm.character_xp_per_level[math.min(current_character_rank + character_rank, 50)] - cm.character_xp_per_level[current_character_rank]
+
+    cm:add_agent_experience(lookup, xp)
+
     pttg:log(string.format("[trigger_forced_battle] Forced battle spawned at %i,%i.", x, y))
 
     ---@diagnostic disable-next-line: param-type-mismatch
     forced_battle:trigger_battle(attacker, defender, x, y, is_ambush)
+end
+
+function forced_battle:trigger_post_battle_events(attacker_victory)
+
+	local event_type = ""
+	local event_key = ""
+
+	if attacker_victory and self.attacker_victory_event~= nil then
+		event_type = self.attacker_victory_event.event_type
+		event_key = self.attacker_victory_event.event_key
+	elseif not attacker_victory and self.defender_victory_event ~= nil then
+		event_type = self.defender_victory_event.event_type
+		event_key = self.defender_victory_event.event_key
+	else 
+		-- supressing events here so that the player doesn't get a bunch of "faction/army destroyed events for an army they didn't even fight"
+		local callback_delay = 0.2
+		cm:disable_event_feed_events(true, "wh_event_category_diplomacy", "", "")
+		cm:disable_event_feed_events(true, "wh_event_category_character", "", "")
+		cm:callback(function() 
+			cm:callback(function() cm:disable_event_feed_events(false, "wh_event_category_diplomacy", "", "") end, callback_delay)
+			cm:callback(function() cm:disable_event_feed_events(false, "wh_event_category_character", "", "") end, callback_delay)
+		end, callback_delay)
+		return
+	end
+
+    -- NOTE: original used the self.attacker.faction exclusively which messes with swapping the roles.
+	if event_type == "incident" then
+        cm:trigger_incident(cm:get_local_faction_name(), event_key, true)
+    elseif event_type == "dilemma" then
+        cm:trigger_dilemma(cm:get_local_faction_name(), event_key)
+    end
 end

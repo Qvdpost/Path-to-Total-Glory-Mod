@@ -14,12 +14,8 @@ function pttg_glory:reward_glory(amount, min)
         amount)
 end
 
-function pttg_glory:add_initial_recruit_glory(amount)
-    if amount < 0 then
-        pttg:log("[pttg_glory] Cannot add negative glory.")
-        return false
-    end
-    amount = amount * pttg:get_state("glory_recruit_modifier")
+function pttg_glory:add_initial_recruit_glory()
+    local amount = pttg:get_state("glory_recruit_default") * pttg:get_state("glory_recruit_modifier")
 
     cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory",
         "pttg_glory_unit_recruitment", amount)

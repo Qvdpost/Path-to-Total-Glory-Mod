@@ -7,8 +7,6 @@ core:add_listener(
     "pttg_recruit_reward",
     true,
     function(context)
-        
-
         pttg_upkeep:resolve("pttg_RecruitReward")
 
         local recruit_chances
@@ -19,6 +17,8 @@ core:add_listener(
         end
         
         pttg_merc_pool:trigger_recruitment(pttg:get_state('recruit_count'), recruit_chances, true)
+        
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

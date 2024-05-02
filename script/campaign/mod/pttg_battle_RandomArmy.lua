@@ -76,7 +76,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		end
 	end
 
-	local modifiers = { low_tier_modifier, mid_tier_modifier, high_tier_modifier }
+	local modifiers = { low_tier_modifier, mid_tier_modifier, high_tier_modifier, 0 }
 
 
 	self:new_force(key);
@@ -158,7 +158,12 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 	end
 
 	for _, unit_info in pairs(force_data.units) do
-		table.insert(categorized_units[unit_info.category], unit_info.key)
+		if categorized_units[unit_info.category] then 
+			table.insert(categorized_units[unit_info.category], unit_info.key)
+		else
+			script_error("[generate_random_army] Unit category not present in distribution categories. Skipping unit with key "..unit_info.key.." in category: "..unit_info.category)
+		end
+
 	end
 
 	for i = 1, unit_count - mandatory_units_added do

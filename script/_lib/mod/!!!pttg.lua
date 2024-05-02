@@ -41,7 +41,8 @@ local pttg = {
         alignment = 0,
         glory_reward_modifier = 1,
         glory_recruit_modifier = 1,
-        excluded_effect_pool = {}
+        excluded_effect_pool = {},
+        glory_recruit_default = 3
     },
     
     persistent_keys = {
@@ -70,7 +71,7 @@ local pttg = {
 
     difficulty_modifiers = {
         encounter_size = {2, 4, 6},
-        random_start_recruit_glory = {16, 12, 12},
+        random_start_recruit_glory = {16, 14, 12},
         random_start_recruit_merc_count = {25, 20, 20}
     }
 };

@@ -28,6 +28,8 @@ local function init()
 
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
 
+    pttg_upkeep:add_callback("pttg_RecruitReward", "pttg_add_initial_recruit_glory", pttg_glory.add_initial_recruit_glory, pttg_glory)
+
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
     
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
@@ -38,6 +40,8 @@ local function init()
     
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
+    pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_center_camera_post_battle",  pttg_UI.center_camera, pttg_UI)
+
 
 
     if not pttg:get_state('army_cqi') then
@@ -162,10 +166,6 @@ core:add_listener(
         pttg:set_state('cur_phase', "pttg_Idle")
 
         pttg_upkeep:resolve("pttg_Idle")
-
-        if pttg:get_cursor() then
-            pttg_UI:center_camera()
-        end
 
         pttg_UI:enable_next_phase_button()
     end,

@@ -33,7 +33,7 @@ core:add_listener(
             invasion_template,           --	generated_force_template
             invasion_size,               --	generated_force_size
             invasion_power,              --	generated_force_power
-            false,                       --	generated_force_is_attacker
+            cm:random_number(2) == 1,                       --	generated_force_is_attacker
             true,                        --	destroy_generated_force_after_battle
             false,                       --	is_ambush
             "pttg_elite_battle_victory", --	opt_player_victory_incident
@@ -53,8 +53,6 @@ core:add_listener(
     function(context)
         pttg_glory:reward_glory(35, 25)
 
-        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances") })
-        pttg_glory:add_initial_recruit_glory(2)
 
         cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
             function()
@@ -65,7 +63,7 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_PostRoomBattle")
 
-        core:trigger_custom_event('pttg_Idle', {})
+        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances") })
     end,
     true
 )

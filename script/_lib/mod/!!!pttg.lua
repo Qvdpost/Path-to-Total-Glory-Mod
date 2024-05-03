@@ -97,6 +97,18 @@ function math:huge(number)
     return number + 1
 end
 
+function string.pttg_split(inputstr, sep)
+    if sep == nil then
+            sep = "%s"
+    end
+    local t={}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+            table.insert(t, str)
+    end
+    return t
+end
+
+
 -- GENERIC --
 function pttg:log(str)
     if pttg:get_config("logging_enabled") then

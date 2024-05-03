@@ -639,7 +639,7 @@ local regions = {
     "wh3_main_combi_region_zvorak"
 }
 
-local function get_random_region()
+function pttg_tele:get_random_region()
     local owner = nil
     local region
     -- Find a random region with an owner for recruitment.
@@ -686,7 +686,7 @@ function pttg_tele:teleport_to_random_region(distance_upper_bound)
     local distance
 
     while x == -1 do
-        random_region = get_random_region()
+        random_region = self:get_random_region()
 
         -- Cover some random distance to reach cool places for battle maps.
         distance = cm:random_number(distance_upper_bound or self.distance_upper_bound, 1)

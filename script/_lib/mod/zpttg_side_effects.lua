@@ -1,6 +1,8 @@
 local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_glory = core:get_static_object("pttg_glory")
+local pttg_tele = core:get_static_object("pttg_tele")
+
 
 local pttg_side_effects = {
 
@@ -89,17 +91,66 @@ function pttg_side_effects:grant_characters_levels(amount)
    
 end
 
+function pttg_side_effects:add_agent_to_force(agent_info)
+    local force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+    local faction = cm:get_local_faction()
+
+    local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), faction:home_region():name(), false, true, 10)
+    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.agent, agent_x, agent_y)
+
+    cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
+    cm:embed_agent_in_force(agent, force)
+end
+
 function pttg_RandomStart_callback(context)
-	-- body of the callback; what should happen for each choice?
-    local choice = context:choice_key()
+    local choice = 'SECOND' -- context:choice_key()
 
     if choice == 'SECOND' or choice == 'THIRD' then
-        local general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
-        cm:remove_all_units_from_general(general)
-
+        local military_force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+        local general = military_force:general_character()
         if choice == 'SECOND' then
-            cm:wound_character(cm:char_lookup_str(general), 1)
+            local faction = cm:get_local_faction()
+            local home = faction:home_region()
+            if not home.name then
+                home = pttg_tele:get_random_region()
+            end
+
+            x, y = cm:find_valid_spawn_location_for_character_from_settlement(cm:get_local_faction_name(),
+            home:name(), false, true, 10)
+
+            cm:disable_event_feed_events(true, "wh_event_category_character", "", "");
+            cm:set_character_immortality(cm:char_lookup_str(general), false);
+            cm:kill_character(cm:char_lookup_str(general), true);
+            cm:callback(function() cm:disable_event_feed_events(false, "wh_event_category_character", "", "") end, 1) 
+        
+            cm:create_force_with_general(
+                faction:name(),
+                "",
+                home:name(),
+                x,
+                y,
+                "general",
+                pttg_merc_pool:get_random_general(faction:name()),
+                "",
+                "",
+                "",
+                "",
+                true,			
+			    -- Generals created this way does not come with a trait and aren't immortal
+                function(cqi)
+					pttg:log("[pttg_side_effects] Post processing new lord");
+					local char_str = cm:char_lookup_str(cqi);
+					-- Adding a new trait to the above general
+					cm:set_character_unique(char_str, true);
+                    pttg:set_state('army_cqi', cm:get_character_by_cqi(cqi):military_force():command_queue_index())
+				end
+            );
+        else
+            cm:remove_all_units_from_general(general)
         end
+
+        local random_agent = pttg_merc_pool:get_random_agent(cm:get_local_faction_name())
+        pttg_side_effects:add_agent_to_force(random_agent)
         
         pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))
 

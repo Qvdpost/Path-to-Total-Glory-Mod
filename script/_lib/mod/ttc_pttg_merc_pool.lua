@@ -153,7 +153,811 @@ local pttg_merc_pool = {
         ["pttg_ksl_kislev"] = "wh3_main_ksl",
         ["pttg_chd_chaos_dwarfs"] = "wh3_dlc23_group_chaos_dwarfs",
         ["pttg_cth_cathay"] = "wh3_main_cth",
-    }
+    },
+    faction_to_agents = {
+        wh3_main_ogr_disciples_of_the_maw = {
+            general = { "wh3_main_ogr_slaughtermaster_beasts", "wh3_main_ogr_slaughtermaster_great_maw", "wh3_main_ogr_tyrant", },
+            wizard = { "wh3_main_ogr_butcher_beasts", "wh3_main_ogr_butcher_great_maw", },
+            colonel = { "wh3_main_ogr_tyrant", },
+            dignitary = { "wh3_main_ogr_firebelly", },
+            spy = { "wh3_main_ogr_hunter", },
+        },
+        wh_main_chs_chaos = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh3_dlc20_chs_azazel = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh3_dlc20_chs_sorcerer_shadows_msla", "wh3_dlc20_chs_sorcerer_slaanesh_msla", "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh3_main_cth_the_western_provinces = {
+            general = { "wh3_dlc24_cth_celestial_general_yang", "wh3_dlc24_cth_celestial_general_yin", "wh3_main_cth_dragon_blooded_shugengan_yang", "wh3_main_cth_dragon_blooded_shugengan_yin", "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+            wizard = { "wh3_main_cth_astromancer", },
+            engineer = { "wh3_main_cth_alchemist", },
+            champion = { "wh3_dlc24_cth_gate_master", },
+            colonel = { "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+            minister = { "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+        },
+        wh3_main_cth_the_northern_provinces = {
+            general = { "wh3_dlc24_cth_celestial_general_yang", "wh3_dlc24_cth_celestial_general_yin", "wh3_main_cth_dragon_blooded_shugengan_yang", "wh3_main_cth_dragon_blooded_shugengan_yin", "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+            wizard = { "wh3_main_cth_astromancer", },
+            engineer = { "wh3_main_cth_alchemist", },
+            champion = { "wh3_dlc24_cth_gate_master", },
+            colonel = { "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+            minister = { "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+        },
+        wh2_main_def_cult_of_pleasure = {
+            general = { "wh2_dlc10_def_supreme_sorceress_beasts", "wh2_dlc10_def_supreme_sorceress_dark", "wh2_dlc10_def_supreme_sorceress_death", "wh2_dlc10_def_supreme_sorceress_fire", "wh2_dlc10_def_supreme_sorceress_shadow", "wh2_dlc14_def_high_beastmaster", "wh2_main_def_black_ark", "wh2_main_def_dreadlord", "wh2_main_def_dreadlord_fem", },
+            wizard = { "wh2_dlc10_def_sorceress_beasts", "wh2_dlc10_def_sorceress_death", "wh2_main_def_sorceress_dark", "wh2_main_def_sorceress_fire", "wh2_main_def_sorceress_shadow", },
+            champion = { "wh2_dlc14_def_master", },
+            dignitary = { "wh2_main_def_death_hag", },
+            colonel = { "wh2_main_def_dreadlord", },
+            spy = { "wh2_main_def_khainite_assassin", },
+            minister = { "wh2_main_def_dreadlord", },
+        },
+        wh2_main_skv_clan_moulder = {
+            general = { "wh2_dlc12_skv_warlock_master", "wh2_dlc14_skv_master_assassin", "wh2_main_skv_grey_seer_plague", "wh2_main_skv_grey_seer_ruin", "wh2_main_skv_warlord", },
+            colonel = { "wh2_main_skv_warlord", },
+            wizard = { "wh2_dlc14_skv_eshin_sorcerer", "wh2_main_skv_plague_priest", },
+            engineer = { "wh2_main_skv_warlock_engineer", },
+            runesmith = { "wh2_dlc16_skv_packmaster", },
+            champion = { "wh2_dlc16_skv_chieftain", },
+            spy = { "wh2_main_skv_assassin", },
+            minister = { "wh2_main_skv_warlord", },
+        },
+        wh_main_grn_crooked_moon = {
+            general = { "wh_dlc06_grn_night_goblin_warboss", "wh_main_grn_goblin_great_shaman", "wh_main_grn_orc_warboss", },
+            wizard = { "wh_main_grn_night_goblin_shaman", "wh_main_grn_orc_shaman", },
+            champion = { "wh2_pro09_grn_black_orc_big_boss", },
+            colonel = { "wh_main_grn_orc_warboss", },
+            runesmith = { "wh2_dlc15_grn_river_troll_hag", },
+            spy = { "wh_main_grn_goblin_big_boss", },
+            minister = { "wh_main_grn_orc_warboss", },
+        },
+        wh2_dlc17_bst_malagor = {
+            general = { "wh2_dlc17_bst_doombull", "wh2_twa04_bst_great_bray_shaman_beasts", "wh2_twa04_bst_great_bray_shaman_death", "wh2_twa04_bst_great_bray_shaman_shadows", "wh2_twa04_bst_great_bray_shaman_wild", "wh_dlc03_bst_beastlord", },
+            wizard = { "wh_dlc03_bst_bray_shaman_beasts", "wh_dlc03_bst_bray_shaman_death", "wh_dlc03_bst_bray_shaman_shadows", "wh_dlc03_bst_bray_shaman_wild", },
+            champion = { "wh_dlc03_bst_gorebull", },
+            colonel = { "wh_dlc03_bst_beastlord", },
+            spy = { "wh2_dlc17_bst_wargor", },
+            minister = { "wh_dlc03_bst_beastlord", },
+        },
+        wh2_dlc15_hef_imrik = {
+            general = { "wh2_dlc15_hef_archmage_beasts", "wh2_dlc15_hef_archmage_death", "wh2_dlc15_hef_archmage_fire", "wh2_dlc15_hef_archmage_heavens", "wh2_dlc15_hef_archmage_high", "wh2_dlc15_hef_archmage_life", "wh2_dlc15_hef_archmage_light", "wh2_dlc15_hef_archmage_metal", "wh2_dlc15_hef_archmage_shadows", "wh2_main_hef_prince", "wh2_main_hef_princess", },
+            wizard = { "wh2_dlc10_hef_mage_heavens", "wh2_dlc10_hef_mage_shadows", "wh2_dlc15_hef_mage_beasts", "wh2_dlc15_hef_mage_death", "wh2_dlc15_hef_mage_fire", "wh2_dlc15_hef_mage_metal", "wh2_main_hef_mage_high", "wh2_main_hef_mage_life", "wh2_main_hef_mage_light", },
+            champion = { "wh2_main_hef_noble", },
+            dignitary = { "wh2_dlc10_hef_handmaiden", },
+            runesmith = { "wh2_main_hef_loremaster_of_hoeth", },
+            colonel = { "wh2_main_hef_prince", },
+        },
+        wh_main_brt_carcassonne = {
+            general = { "wh_dlc07_brt_prophetess_beasts", "wh_dlc07_brt_prophetess_heavens", "wh_dlc07_brt_prophetess_life", "wh_main_brt_lord", },
+            wizard = { "wh_dlc07_brt_damsel_beasts", "wh_dlc07_brt_damsel_life", "wh_main_brt_damsel_heavens", },
+            champion = { "wh_main_brt_paladin", },
+            colonel = { "wh_main_brt_lord", },
+            minister = { "wh_main_brt_lord", },
+        },
+        wh_dlc03_bst_beastmen = {
+            general = { "wh2_dlc17_bst_doombull", "wh2_twa04_bst_great_bray_shaman_beasts", "wh2_twa04_bst_great_bray_shaman_death", "wh2_twa04_bst_great_bray_shaman_shadows", "wh2_twa04_bst_great_bray_shaman_wild", "wh_dlc03_bst_beastlord", },
+            wizard = { "wh_dlc03_bst_bray_shaman_beasts", "wh_dlc03_bst_bray_shaman_death", "wh_dlc03_bst_bray_shaman_shadows", "wh_dlc03_bst_bray_shaman_wild", },
+            champion = { "wh_dlc03_bst_gorebull", },
+            colonel = { "wh_dlc03_bst_beastlord", },
+            spy = { "wh2_dlc17_bst_wargor", },
+            minister = { "wh_dlc03_bst_beastlord", },
+        },
+        wh_dlc05_wef_wood_elves = {
+            general = { "wh2_dlc16_wef_spellweaver_beasts", "wh2_dlc16_wef_spellweaver_dark", "wh2_dlc16_wef_spellweaver_high", "wh2_dlc16_wef_spellweaver_life", "wh2_dlc16_wef_spellweaver_shadows", "wh_dlc05_wef_ancient_treeman", "wh_dlc05_wef_glade_lord", "wh_dlc05_wef_glade_lord_fem", },
+            wizard = { "wh_dlc05_wef_spellsinger_beasts", "wh_dlc05_wef_spellsinger_life", "wh_dlc05_wef_spellsinger_shadow", },
+            champion = { "wh_dlc05_wef_branchwraith", },
+            dignitary = { "wh2_twa02_wef_glade_captain", },
+            colonel = { "wh_dlc05_wef_glade_lord", },
+            spy = { "wh_dlc05_wef_waystalker", },
+            minister = { "wh_dlc05_wef_glade_lord", },
+        },
+        wh_dlc05_bst_morghur_herd = {
+            general = { "wh2_dlc17_bst_doombull", "wh2_twa04_bst_great_bray_shaman_beasts", "wh2_twa04_bst_great_bray_shaman_death", "wh2_twa04_bst_great_bray_shaman_shadows", "wh2_twa04_bst_great_bray_shaman_wild", "wh_dlc03_bst_beastlord", },
+            wizard = { "wh_dlc03_bst_bray_shaman_beasts", "wh_dlc03_bst_bray_shaman_death", "wh_dlc03_bst_bray_shaman_shadows", "wh_dlc03_bst_bray_shaman_wild", },
+            champion = { "wh_dlc03_bst_gorebull", },
+            colonel = { "wh_dlc03_bst_beastlord", },
+            spy = { "wh2_dlc17_bst_wargor", },
+            minister = { "wh_dlc03_bst_beastlord", },
+        },
+        wh_main_grn_orcs_of_the_bloody_hand = {
+            general = { "wh_dlc06_grn_night_goblin_warboss", "wh_main_grn_goblin_great_shaman", "wh_main_grn_orc_warboss", },
+            wizard = { "wh_main_grn_night_goblin_shaman", "wh_main_grn_orc_shaman", },
+            champion = { "wh2_pro09_grn_black_orc_big_boss", },
+            colonel = { "wh_main_grn_orc_warboss", },
+            runesmith = { "wh2_dlc15_grn_river_troll_hag", },
+            spy = { "wh_main_grn_goblin_big_boss", },
+            minister = { "wh_main_grn_orc_warboss", },
+        },
+        wh2_main_skv_clan_skryre = {
+            general = { "wh2_dlc12_skv_warlock_master", "wh2_dlc14_skv_master_assassin", "wh2_main_skv_grey_seer_plague", "wh2_main_skv_grey_seer_ruin", "wh2_main_skv_warlord", },
+            colonel = { "wh2_main_skv_warlord", },
+            wizard = { "wh2_dlc14_skv_eshin_sorcerer", "wh2_main_skv_plague_priest", },
+            engineer = { "wh2_main_skv_warlock_engineer", },
+            runesmith = { "wh2_dlc16_skv_packmaster", },
+            champion = { "wh2_dlc16_skv_chieftain", },
+            spy = { "wh2_main_skv_assassin", },
+            minister = { "wh2_main_skv_warlord", },
+        },
+        wh_dlc05_wef_argwylon = {
+            general = { "wh2_dlc16_wef_spellweaver_beasts", "wh2_dlc16_wef_spellweaver_dark", "wh2_dlc16_wef_spellweaver_high", "wh2_dlc16_wef_spellweaver_life", "wh2_dlc16_wef_spellweaver_shadows", "wh_dlc05_wef_ancient_treeman", "wh_dlc05_wef_glade_lord", "wh_dlc05_wef_glade_lord_fem", },
+            wizard = { "wh_dlc05_wef_spellsinger_beasts", "wh_dlc05_wef_spellsinger_life", "wh_dlc05_wef_spellsinger_shadow", },
+            champion = { "wh_dlc05_wef_branchwraith", },
+            dignitary = { "wh2_twa02_wef_glade_captain", },
+            colonel = { "wh_dlc05_wef_glade_lord", },
+            spy = { "wh_dlc05_wef_waystalker", },
+            minister = { "wh_dlc05_wef_glade_lord", },
+        },
+        wh2_main_hef_order_of_loremasters = {
+            general = { "wh2_dlc15_hef_archmage_beasts", "wh2_dlc15_hef_archmage_death", "wh2_dlc15_hef_archmage_fire", "wh2_dlc15_hef_archmage_heavens", "wh2_dlc15_hef_archmage_high", "wh2_dlc15_hef_archmage_life", "wh2_dlc15_hef_archmage_light", "wh2_dlc15_hef_archmage_metal", "wh2_dlc15_hef_archmage_shadows", "wh2_main_hef_prince", "wh2_main_hef_princess", },
+            wizard = { "wh2_dlc10_hef_mage_heavens", "wh2_dlc10_hef_mage_shadows", "wh2_dlc15_hef_mage_beasts", "wh2_dlc15_hef_mage_death", "wh2_dlc15_hef_mage_fire", "wh2_dlc15_hef_mage_metal", "wh2_main_hef_mage_high", "wh2_main_hef_mage_life", "wh2_main_hef_mage_light", },
+            champion = { "wh2_main_hef_noble", },
+            dignitary = { "wh2_dlc10_hef_handmaiden", },
+            runesmith = { "wh2_main_hef_loremaster_of_hoeth", },
+            colonel = { "wh2_main_hef_prince", },
+            minister = { "wh2_main_hef_prince", },
+        },
+        wh2_dlc16_wef_sisters_of_twilight = {
+            general = { "wh2_dlc16_wef_spellweaver_beasts", "wh2_dlc16_wef_spellweaver_dark", "wh2_dlc16_wef_spellweaver_high", "wh2_dlc16_wef_spellweaver_life", "wh2_dlc16_wef_spellweaver_shadows", "wh_dlc05_wef_ancient_treeman", "wh_dlc05_wef_glade_lord", "wh_dlc05_wef_glade_lord_fem", },
+            wizard = { "wh_dlc05_wef_spellsinger_beasts", "wh_dlc05_wef_spellsinger_life", "wh_dlc05_wef_spellsinger_shadow", },
+            champion = { "wh_dlc05_wef_branchwraith", },
+            dignitary = { "wh2_twa02_wef_glade_captain", },
+            colonel = { "wh_dlc05_wef_glade_lord", },
+            spy = { "wh_dlc05_wef_waystalker", },
+            minister = { "wh_dlc05_wef_glade_lord", },
+        },
+        wh2_dlc11_cst_vampire_coast = {
+            general = { "wh2_dlc11_cst_admiral_death", "wh2_dlc11_cst_admiral_deep", "wh2_dlc11_cst_admiral_fem_death", "wh2_dlc11_cst_admiral_fem_deep", "wh2_dlc11_cst_admiral_fem_vampires", "wh2_dlc11_cst_admiral_vampires", },
+            engineer = { "wh2_dlc11_cst_gunnery_wight", },
+            dignitary = { "wh2_dlc11_cst_fleet_captain_death", "wh2_dlc11_cst_fleet_captain_deep", "wh2_dlc11_cst_fleet_captain_vampires", },
+            champion = { "wh2_dlc11_cst_mourngul", },
+            colonel = { "wh2_dlc11_cst_admiral_vampires", },
+            minister = { "wh2_dlc11_cst_admiral_vampires", },
+        },
+        wh2_dlc09_tmb_followers_of_nagash = {
+            general = { "wh2_dlc09_tmb_tomb_king", },
+            wizard = { "wh2_dlc09_tmb_liche_priest_death", "wh2_dlc09_tmb_liche_priest_light", "wh2_dlc09_tmb_liche_priest_nehekhara", "wh2_dlc09_tmb_liche_priest_shadow", },
+            engineer = { "wh2_dlc09_tmb_necrotect", },
+            champion = { "wh2_dlc09_tmb_tomb_prince", },
+            colonel = { "wh2_dlc09_tmb_tomb_king", },
+            minister = { "wh2_dlc09_tmb_tomb_king", },
+        },
+        wh2_dlc17_bst_taurox = {
+            general = { "wh2_dlc17_bst_doombull", "wh2_twa04_bst_great_bray_shaman_beasts", "wh2_twa04_bst_great_bray_shaman_death", "wh2_twa04_bst_great_bray_shaman_shadows", "wh2_twa04_bst_great_bray_shaman_wild", "wh_dlc03_bst_beastlord", },
+            wizard = { "wh_dlc03_bst_bray_shaman_beasts", "wh_dlc03_bst_bray_shaman_death", "wh_dlc03_bst_bray_shaman_shadows", "wh_dlc03_bst_bray_shaman_wild", },
+            champion = { "wh_dlc03_bst_gorebull", },
+            colonel = { "wh_dlc03_bst_beastlord", },
+            spy = { "wh2_dlc17_bst_wargor", },
+            minister = { "wh_dlc03_bst_beastlord", },
+        },
+        wh2_main_def_har_ganeth = {
+            general = { "wh2_dlc10_def_supreme_sorceress_beasts", "wh2_dlc10_def_supreme_sorceress_dark", "wh2_dlc10_def_supreme_sorceress_death", "wh2_dlc10_def_supreme_sorceress_fire", "wh2_dlc10_def_supreme_sorceress_shadow", "wh2_dlc14_def_high_beastmaster", "wh2_main_def_black_ark", "wh2_main_def_dreadlord", "wh2_main_def_dreadlord_fem", },
+            wizard = { "wh2_dlc10_def_sorceress_beasts", "wh2_dlc10_def_sorceress_death", "wh2_main_def_sorceress_dark", "wh2_main_def_sorceress_fire", "wh2_main_def_sorceress_shadow", },
+            champion = { "wh2_dlc14_def_master", },
+            dignitary = { "wh2_main_def_death_hag", },
+            colonel = { "wh2_main_def_dreadlord", },
+            spy = { "wh2_main_def_khainite_assassin", },
+            minister = { "wh2_main_def_dreadlord", },
+        },
+        wh_main_emp_wissenland = {
+            general = { "wh2_dlc13_emp_cha_huntsmarshal", "wh3_dlc25_emp_master_engineer", "wh_dlc04_emp_arch_lector", "wh_main_emp_lord", },
+            colonel = { "wh_main_emp_lord", },
+            wizard = { "wh2_pro07_emp_amethyst_wizard", "wh3_dlc25_emp_gold_wizard", "wh_dlc03_emp_amber_wizard", "wh_dlc05_emp_grey_wizard", "wh_dlc05_emp_jade_wizard", "wh_main_emp_bright_wizard", "wh_main_emp_celestial_wizard", "wh_main_emp_light_wizard", },
+            engineer = { "wh3_dlc25_emp_engineer", },
+            dignitary = { "wh_main_emp_warrior_priest", },
+            champion = { "wh_main_emp_captain", },
+            spy = { "wh_main_emp_witch_hunter", },
+            minister = { "wh_main_emp_lord", },
+        },
+        wh3_main_dwf_the_ancestral_throng = {
+            general = { "wh3_dlc25_dwf_daemon_slayer", "wh_dlc06_dwf_runelord", "wh_main_dwf_lord", },
+            runesmith = { "wh_main_dwf_runesmith", },
+            engineer = { "wh_main_dwf_master_engineer", },
+            dignitary = { "wh3_dlc25_dwf_dragon_slayer", },
+            champion = { "wh2_dlc17_dwf_thane_ghost_artifact", "wh_main_dwf_thane", },
+            colonel = { "wh_main_dwf_lord", },
+            minister = { "wh_main_dwf_lord", },
+        },
+        wh3_main_dae_daemon_prince = {
+            general = { "wh3_main_kho_herald_of_khorne", "wh3_main_nur_herald_of_nurgle_death", "wh3_main_nur_herald_of_nurgle_nurgle", "wh3_main_sla_herald_of_slaanesh_shadow", "wh3_main_sla_herald_of_slaanesh_slaanesh", "wh3_main_tze_herald_of_tzeentch_metal", "wh3_main_tze_herald_of_tzeentch_tzeentch", },
+            colonel = { "wh3_main_kho_herald_of_khorne", },
+            runesmith = { "wh3_main_tze_iridescent_horror_metal", "wh3_main_tze_iridescent_horror_tzeentch", },
+            engineer = { "wh3_main_sla_alluress_shadow", "wh3_main_sla_alluress_slaanesh", },
+            dignitary = { "wh3_main_kho_bloodreaper", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mkho", "wh3_dlc24_chs_exalted_hero_mtze", },
+            spy = { "wh3_main_nur_plagueridden_death", "wh3_main_nur_plagueridden_nurgle", },
+            minister = { "wh3_main_kho_herald_of_khorne", },
+        },
+        wh3_main_sla_seducers_of_slaanesh = {
+            general = { "wh3_dlc20_chs_lord_msla", "wh3_main_sla_exalted_keeper_of_secrets_shadow", "wh3_main_sla_exalted_keeper_of_secrets_slaanesh", "wh3_main_sla_herald_of_slaanesh_shadow", "wh3_main_sla_herald_of_slaanesh_slaanesh", },
+            wizard = { "wh3_dlc20_chs_sorcerer_shadows_msla", "wh3_dlc20_chs_sorcerer_slaanesh_msla", },
+            engineer = { "wh3_main_sla_alluress_shadow", "wh3_main_sla_alluress_slaanesh", },
+            dignitary = { "wh3_main_sla_cultist", },
+            colonel = { "wh3_main_sla_herald_of_slaanesh_slaanesh", },
+        },
+        wh2_dlc11_vmp_the_barrow_legion = {
+            general = { "wh_dlc04_vmp_strigoi_ghoul_king", "wh_main_vmp_lord", "wh_main_vmp_master_necromancer", },
+            wizard = { "wh_main_vmp_necromancer", },
+            champion = { "wh2_dlc17_vmp_kevon_lloydstein", "wh_main_vmp_wight_king", },
+            dignitary = { "wh_dlc05_vmp_vampire_shadow", "wh_main_vmp_vampire_death", },
+            colonel = { "wh_main_vmp_lord", },
+            spy = { "wh_main_vmp_banshee", },
+            minister = { "wh_main_vmp_lord", },
+        },
+        wh3_dlc20_chs_kholek = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh3_dlc23_chd_astragoth = {
+            general = { "wh3_dlc23_chd_overseer", "wh3_dlc23_chd_sorcerer_prophet_death", "wh3_dlc23_chd_sorcerer_prophet_fire", "wh3_dlc23_chd_sorcerer_prophet_hashut", "wh3_dlc23_chd_sorcerer_prophet_metal", },
+            wizard = { "wh3_dlc23_chd_daemonsmith_sorcerer_death", "wh3_dlc23_chd_daemonsmith_sorcerer_fire", "wh3_dlc23_chd_daemonsmith_sorcerer_hashut", "wh3_dlc23_chd_daemonsmith_sorcerer_metal", },
+            engineer = { "wh3_dlc23_chd_infernal_castellan", },
+            colonel = { "wh3_dlc23_chd_overseer", },
+            spy = { },
+            champion = { "wh3_dlc23_chd_bull_centaur_taurruk", },
+        },
+        wh2_dlc17_dwf_thorek_ironbrow = {
+            general = { "wh3_dlc25_dwf_daemon_slayer", "wh_dlc06_dwf_runelord", "wh_main_dwf_lord", },
+            runesmith = { "wh_main_dwf_runesmith", },
+            engineer = { "wh_main_dwf_master_engineer", },
+            dignitary = { "wh3_dlc25_dwf_dragon_slayer", },
+            champion = { "wh2_dlc17_dwf_thane_ghost_artifact", "wh_main_dwf_thane", },
+            colonel = { "wh_main_dwf_lord", },
+            minister = { "wh_main_dwf_lord", },
+        },
+        wh3_dlc24_ksl_daughters_of_the_forest = {
+            general = { "wh3_dlc24_ksl_druzhina", "wh3_main_ksl_ataman", "wh3_main_ksl_boyar", "wh3_main_ksl_ice_witch_ice", "wh3_main_ksl_ice_witch_tempest", },
+            wizard = { "wh3_main_ksl_frost_maiden_ice", "wh3_main_ksl_frost_maiden_tempest", },
+            runesmith = { "wh3_dlc24_ksl_hag_witch_beasts", "wh3_dlc24_ksl_hag_witch_death", "wh3_dlc24_ksl_hag_witch_hag", "wh3_dlc24_ksl_hag_witch_shadows", },
+            dignitary = { "wh3_main_ksl_patriarch", },
+            colonel = { "wh3_main_ksl_boyar", },
+        },
+        wh2_dlc11_cst_pirates_of_sartosa = {
+            general = { "wh2_dlc11_cst_admiral_death", "wh2_dlc11_cst_admiral_deep", "wh2_dlc11_cst_admiral_fem_death", "wh2_dlc11_cst_admiral_fem_deep", "wh2_dlc11_cst_admiral_fem_vampires", "wh2_dlc11_cst_admiral_vampires", },
+            engineer = { "wh2_dlc11_cst_gunnery_wight", },
+            dignitary = { "wh2_dlc11_cst_fleet_captain_death", "wh2_dlc11_cst_fleet_captain_deep", "wh2_dlc11_cst_fleet_captain_vampires", },
+            champion = { "wh2_dlc11_cst_mourngul", },
+            colonel = { "wh2_dlc11_cst_admiral_vampires", },
+            minister = { "wh2_dlc11_cst_admiral_vampires", },
+        },
+        wh3_dlc24_cth_the_celestial_court = {
+            general = { "wh3_dlc24_cth_celestial_general_yang", "wh3_dlc24_cth_celestial_general_yin", "wh3_main_cth_dragon_blooded_shugengan_yang", "wh3_main_cth_dragon_blooded_shugengan_yin", "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+            wizard = { "wh3_main_cth_astromancer", },
+            engineer = { "wh3_main_cth_alchemist", },
+            champion = { "wh3_dlc24_cth_gate_master", },
+            colonel = { "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+            minister = { "wh3_main_cth_lord_magistrate_yang", "wh3_main_cth_lord_magistrate_yin", },
+        },
+        wh2_dlc09_tmb_lybaras = {
+            general = { "wh2_dlc09_tmb_tomb_king", },
+            wizard = { "wh2_dlc09_tmb_liche_priest_death", "wh2_dlc09_tmb_liche_priest_light", "wh2_dlc09_tmb_liche_priest_nehekhara", "wh2_dlc09_tmb_liche_priest_shadow", },
+            engineer = { "wh2_dlc09_tmb_necrotect", },
+            champion = { "wh2_dlc09_tmb_tomb_prince", },
+            colonel = { "wh2_dlc09_tmb_tomb_king", },
+            minister = { "wh2_dlc09_tmb_tomb_king", },
+        },
+        wh2_dlc09_skv_clan_rictus = {
+            general = { "wh2_dlc12_skv_warlock_master", "wh2_dlc14_skv_master_assassin", "wh2_main_skv_grey_seer_plague", "wh2_main_skv_grey_seer_ruin", "wh2_main_skv_warlord", },
+            colonel = { "wh2_main_skv_warlord", },
+            wizard = { "wh2_dlc14_skv_eshin_sorcerer", "wh2_main_skv_plague_priest", },
+            engineer = { "wh2_main_skv_warlock_engineer", },
+            runesmith = { "wh2_dlc16_skv_packmaster", },
+            champion = { "wh2_dlc16_skv_chieftain", },
+            spy = { "wh2_main_skv_assassin", },
+            minister = { "wh2_main_skv_warlord", },
+        },
+        wh2_dlc14_brt_chevaliers_de_lyonesse = {
+            general = { "wh_dlc07_brt_prophetess_beasts", "wh_dlc07_brt_prophetess_heavens", "wh_dlc07_brt_prophetess_life", "wh_main_brt_lord", },
+            champion = { "wh_main_brt_paladin", },
+            wizard = { "wh_dlc07_brt_damsel_beasts", "wh_dlc07_brt_damsel_life", "wh_main_brt_damsel_heavens", },
+            colonel = { "wh_main_brt_lord", },
+        },
+        wh3_main_vmp_caravan_of_blue_roses = {
+            general = { "wh_dlc04_vmp_strigoi_ghoul_king", "wh_main_vmp_lord", "wh_main_vmp_master_necromancer", },
+            wizard = { "wh_main_vmp_necromancer", },
+            champion = { "wh2_dlc17_vmp_kevon_lloydstein", "wh_main_vmp_wight_king", },
+            dignitary = { "wh_dlc05_vmp_vampire_shadow", "wh_main_vmp_vampire_death", },
+            colonel = { "wh_main_vmp_lord", },
+            spy = { "wh_main_vmp_banshee", },
+            minister = { "wh_main_vmp_lord", },
+        },
+        wh_main_brt_bordeleaux = {
+            general = { "wh_dlc07_brt_prophetess_beasts", "wh_dlc07_brt_prophetess_heavens", "wh_dlc07_brt_prophetess_life", "wh_main_brt_lord", },
+            wizard = { "wh_dlc07_brt_damsel_beasts", "wh_dlc07_brt_damsel_life", "wh_main_brt_damsel_heavens", },
+            champion = { "wh_main_brt_paladin", },
+            colonel = { "wh_main_brt_lord", },
+            minister = { "wh_main_brt_lord", },
+        },
+        wh2_main_hef_nagarythe = {
+            general = { "wh2_dlc15_hef_archmage_beasts", "wh2_dlc15_hef_archmage_death", "wh2_dlc15_hef_archmage_fire", "wh2_dlc15_hef_archmage_heavens", "wh2_dlc15_hef_archmage_high", "wh2_dlc15_hef_archmage_life", "wh2_dlc15_hef_archmage_light", "wh2_dlc15_hef_archmage_metal", "wh2_dlc15_hef_archmage_shadows", "wh2_main_hef_prince", "wh2_main_hef_princess", },
+            colonel = { "wh2_main_hef_prince", },
+            wizard = { "wh2_dlc10_hef_mage_heavens", "wh2_dlc10_hef_mage_shadows", "wh2_dlc15_hef_mage_beasts", "wh2_dlc15_hef_mage_death", "wh2_dlc15_hef_mage_fire", "wh2_dlc15_hef_mage_metal", "wh2_main_hef_mage_high", "wh2_main_hef_mage_life", "wh2_main_hef_mage_light", },
+            champion = { "wh2_main_hef_noble", },
+            dignitary = { "wh2_dlc10_hef_handmaiden", },
+            runesmith = { "wh2_main_hef_loremaster_of_hoeth", },
+            spy = { "wh2_dlc10_hef_shadow_walker", },
+            minister = { "wh2_main_hef_prince", },
+        },
+        wh3_main_nur_poxmakers_of_nurgle = {
+            general = { "wh3_dlc20_chs_sorcerer_lord_death_mnur", "wh3_dlc20_chs_sorcerer_lord_nurgle_mnur", "wh3_dlc25_chs_lord_mnur", "wh3_main_nur_exalted_great_unclean_one_death", "wh3_main_nur_exalted_great_unclean_one_nurgle", "wh3_main_nur_herald_of_nurgle_death", "wh3_main_nur_herald_of_nurgle_nurgle", },
+            wizard = { "wh3_dlc25_chs_sorcerer_death_mnur", "wh3_dlc25_chs_sorcerer_nurgle_mnur", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mnur", },
+            dignitary = { "wh3_main_nur_cultist", },
+            spy = { "wh3_main_nur_plagueridden_death", "wh3_main_nur_plagueridden_nurgle", },
+            colonel = { "wh3_main_nur_herald_of_nurgle_nurgle", },
+        },
+        wh3_dlc25_dwf_malakai = {
+            general = { "wh3_dlc25_dwf_daemon_slayer", "wh_dlc06_dwf_runelord", "wh_main_dwf_lord", },
+            runesmith = { "wh_main_dwf_runesmith", },
+            engineer = { "wh_main_dwf_master_engineer", },
+            dignitary = { "wh3_dlc25_dwf_dragon_slayer", },
+            champion = { "wh_main_dwf_thane", },
+            colonel = { "wh_main_dwf_lord", },
+            minister = { "wh_main_dwf_lord", },
+        },
+        wh3_dlc20_chs_vilitch = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh3_dlc20_chs_sorcerer_metal_mtze", "wh3_dlc20_chs_sorcerer_tzeentch_mtze", "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh3_dlc24_chs_exalted_hero_mtze", "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh_main_brt_bretonnia = {
+            general = { "wh_dlc07_brt_prophetess_beasts", "wh_dlc07_brt_prophetess_heavens", "wh_dlc07_brt_prophetess_life", "wh_main_brt_lord", },
+            wizard = { "wh_dlc07_brt_damsel_beasts", "wh_dlc07_brt_damsel_life", "wh_main_brt_damsel_heavens", },
+            champion = { "wh_main_brt_paladin", },
+            colonel = { "wh_main_brt_lord", },
+            minister = { "wh_main_brt_lord", },
+        },
+        wh3_dlc20_chs_festus = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh3_dlc25_chs_sorcerer_death_mnur", "wh3_dlc25_chs_sorcerer_nurgle_mnur", "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mnur", "wh_main_chs_exalted_hero", },
+            dignitary = { },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh3_main_kho_exiles_of_khorne = {
+            general = { "wh3_dlc20_chs_lord_mkho", "wh3_main_kho_exalted_bloodthirster", "wh3_main_kho_herald_of_khorne", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mkho", },
+            dignitary = { "wh3_main_kho_bloodreaper", },
+            runesmith = { "wh3_main_kho_cultist", },
+            colonel = { "wh3_main_kho_herald_of_khorne", },
+        },
+        wh3_dlc20_chs_valkia = {
+            general = { "wh_main_chs_lord", },
+            wizard = { "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mkho", "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh2_main_lzd_hexoatl = {
+            general = { "wh2_dlc12_lzd_red_crested_skink_chief", "wh2_dlc13_lzd_kroxigor_ancient", "wh2_dlc13_lzd_slann_mage_priest_beasts", "wh2_dlc13_lzd_slann_mage_priest_death", "wh2_dlc13_lzd_slann_mage_priest_fire", "wh2_dlc13_lzd_slann_mage_priest_heavens", "wh2_dlc13_lzd_slann_mage_priest_high", "wh2_dlc13_lzd_slann_mage_priest_life", "wh2_dlc13_lzd_slann_mage_priest_metal", "wh2_dlc13_lzd_slann_mage_priest_shadows", "wh2_main_lzd_saurus_old_blood", "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_main_lzd_skink_priest_beasts", "wh2_main_lzd_skink_priest_heavens", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+            colonel = { "wh2_main_lzd_saurus_old_blood", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            spy = { "wh2_main_lzd_skink_chief", },
+            minister = { "wh2_main_lzd_saurus_old_blood", },
+        },
+        wh_main_vmp_schwartzhafen = {
+            general = { "wh_dlc04_vmp_strigoi_ghoul_king", "wh_main_vmp_lord", "wh_main_vmp_master_necromancer", },
+            colonel = { "wh_main_vmp_lord", },
+            wizard = { "wh_main_vmp_necromancer", },
+            champion = { "wh2_dlc17_vmp_kevon_lloydstein", "wh_main_vmp_wight_king", },
+            dignitary = { "wh_dlc05_vmp_vampire_shadow", "wh_main_vmp_vampire_death", },
+            runesmith = { },
+            spy = { "wh_main_vmp_banshee", },
+            minister = { "wh_main_vmp_lord", },
+        },
+        wh2_dlc12_lzd_cult_of_sotek = {
+            general = { "wh2_dlc12_lzd_red_crested_skink_chief", "wh2_dlc13_lzd_kroxigor_ancient", "wh2_dlc13_lzd_slann_mage_priest_beasts", "wh2_dlc13_lzd_slann_mage_priest_death", "wh2_dlc13_lzd_slann_mage_priest_fire", "wh2_dlc13_lzd_slann_mage_priest_heavens", "wh2_dlc13_lzd_slann_mage_priest_high", "wh2_dlc13_lzd_slann_mage_priest_life", "wh2_dlc13_lzd_slann_mage_priest_metal", "wh2_dlc13_lzd_slann_mage_priest_shadows", "wh2_main_lzd_saurus_old_blood", "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_main_lzd_skink_priest_beasts", "wh2_main_lzd_skink_priest_heavens", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+            colonel = { "wh2_main_lzd_saurus_old_blood", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            spy = { "wh2_main_lzd_skink_chief", },
+            minister = { "wh2_main_lzd_saurus_old_blood", },
+        },
+        wh3_dlc24_tze_the_deceivers = {
+            general = { "wh3_dlc20_chs_sorcerer_lord_metal_mtze", "wh3_dlc20_chs_sorcerer_lord_tzeentch_mtze", "wh3_dlc24_chs_lord_mtze", "wh3_main_tze_exalted_lord_of_change_metal", "wh3_main_tze_exalted_lord_of_change_tzeentch", "wh3_main_tze_herald_of_tzeentch_metal", "wh3_main_tze_herald_of_tzeentch_tzeentch", },
+            wizard = { "wh3_dlc20_chs_sorcerer_metal_mtze", "wh3_dlc20_chs_sorcerer_tzeentch_mtze", },
+            engineer = { },
+            dignitary = { "wh3_main_tze_cultist", },
+            runesmith = { "wh3_main_tze_iridescent_horror_metal", "wh3_main_tze_iridescent_horror_tzeentch", },
+            colonel = { "wh3_main_tze_herald_of_tzeentch_tzeentch", },
+            champion = { "wh3_dlc24_chs_exalted_hero_mtze", },
+        },
+        wh_main_dwf_karak_izor = {
+            general = { "wh3_dlc25_dwf_daemon_slayer", "wh_dlc06_dwf_runelord", "wh_main_dwf_lord", },
+            runesmith = { "wh_main_dwf_runesmith", },
+            engineer = { "wh_main_dwf_master_engineer", },
+            dignitary = { "wh3_dlc25_dwf_dragon_slayer", },
+            champion = { "wh_main_dwf_thane", },
+            colonel = { "wh_main_dwf_lord", },
+            minister = { "wh_main_dwf_lord", },
+        },
+        wh2_dlc09_tmb_khemri = {
+            general = { "wh2_dlc09_tmb_tomb_king", },
+            wizard = { "wh2_dlc09_tmb_liche_priest_death", "wh2_dlc09_tmb_liche_priest_light", "wh2_dlc09_tmb_liche_priest_nehekhara", "wh2_dlc09_tmb_liche_priest_shadow", },
+            engineer = { "wh2_dlc09_tmb_necrotect", },
+            champion = { "wh2_dlc09_tmb_tomb_prince", },
+            colonel = { "wh2_dlc09_tmb_tomb_king", },
+            minister = { "wh2_dlc09_tmb_tomb_king", },
+        },
+        wh2_twa03_def_rakarth = {
+            wizard = { "wh2_dlc10_def_sorceress_beasts", "wh2_dlc10_def_sorceress_death", "wh2_main_def_sorceress_dark", "wh2_main_def_sorceress_fire", "wh2_main_def_sorceress_shadow", },
+            colonel = { "wh2_main_def_dreadlord", },
+            minister = { "wh2_main_def_dreadlord", },
+            general = { "wh2_dlc10_def_supreme_sorceress_beasts", "wh2_dlc10_def_supreme_sorceress_dark", "wh2_dlc10_def_supreme_sorceress_death", "wh2_dlc10_def_supreme_sorceress_fire", "wh2_dlc10_def_supreme_sorceress_shadow", "wh2_dlc14_def_high_beastmaster", "wh2_main_def_black_ark", "wh2_main_def_dreadlord", "wh2_main_def_dreadlord_fem", },
+            runesmith = { "wh2_main_def_dreadlord", },
+            dignitary = { "wh2_main_def_death_hag", },
+            champion = { "wh2_dlc14_def_master", },
+            spy = { "wh2_main_def_khainite_assassin", },
+            engineer = { "wh2_main_def_dreadlord", },
+        },
+        wh3_main_ogr_goldtooth = {
+            general = { "wh3_main_ogr_slaughtermaster_beasts", "wh3_main_ogr_slaughtermaster_great_maw", "wh3_main_ogr_tyrant", },
+            wizard = { "wh3_main_ogr_butcher_beasts", "wh3_main_ogr_butcher_great_maw", },
+            colonel = { "wh3_main_ogr_tyrant", },
+            dignitary = { "wh3_main_ogr_firebelly", },
+            spy = { "wh3_main_ogr_hunter", },
+        },
+        wh_dlc08_nor_wintertooth = {
+            general = { "wh_main_nor_marauder_chieftain", },
+            wizard = { "wh_dlc08_nor_shaman_sorcerer_death", "wh_dlc08_nor_shaman_sorcerer_fire", "wh_dlc08_nor_shaman_sorcerer_metal", },
+            champion = { "wh_dlc08_nor_skin_wolf_werekin", },
+            dignitary = { "wh_dlc08_nor_fimir_balefiend_fire", "wh_dlc08_nor_fimir_balefiend_shadow", },
+            colonel = { "wh_main_nor_marauder_chieftain", },
+            minister = { "wh_main_nor_marauder_chieftain", },
+        },
+        wh_main_grn_greenskins = {
+            general = { "wh_dlc06_grn_night_goblin_warboss", "wh_main_grn_goblin_great_shaman", "wh_main_grn_orc_warboss", },
+            wizard = { "wh_main_grn_night_goblin_shaman", "wh_main_grn_orc_shaman", },
+            champion = { "wh2_pro09_grn_black_orc_big_boss", },
+            colonel = { "wh_main_grn_orc_warboss", },
+            runesmith = { "wh2_dlc15_grn_river_troll_hag", },
+            spy = { "wh_main_grn_goblin_big_boss", },
+            minister = { "wh_main_grn_orc_warboss", },
+        },
+        wh2_main_skv_clan_mors = {
+            general = { "wh2_dlc12_skv_warlock_master", "wh2_dlc14_skv_master_assassin", "wh2_main_skv_grey_seer_plague", "wh2_main_skv_grey_seer_ruin", "wh2_main_skv_warlord", },
+            colonel = { "wh2_main_skv_warlord", },
+            wizard = { "wh2_dlc14_skv_eshin_sorcerer", "wh2_main_skv_plague_priest", },
+            engineer = { "wh2_main_skv_warlock_engineer", },
+            runesmith = { "wh2_dlc16_skv_packmaster", },
+            champion = { "wh2_dlc16_skv_chieftain", },
+            spy = { "wh2_main_skv_assassin", },
+            minister = { "wh2_main_skv_warlord", },
+        },
+        wh2_dlc11_cst_noctilus = {
+            general = { "wh2_dlc11_cst_admiral_death", "wh2_dlc11_cst_admiral_deep", "wh2_dlc11_cst_admiral_fem_death", "wh2_dlc11_cst_admiral_fem_deep", "wh2_dlc11_cst_admiral_fem_vampires", "wh2_dlc11_cst_admiral_vampires", },
+            engineer = { "wh2_dlc11_cst_gunnery_wight", },
+            dignitary = { "wh2_dlc11_cst_fleet_captain_death", "wh2_dlc11_cst_fleet_captain_deep", "wh2_dlc11_cst_fleet_captain_vampires", },
+            champion = { "wh2_dlc11_cst_mourngul", },
+            colonel = { "wh2_dlc11_cst_admiral_vampires", },
+            minister = { "wh2_dlc11_cst_admiral_vampires", },
+        },
+        wh2_main_lzd_tlaqua = {
+            general = { "wh2_dlc12_lzd_red_crested_skink_chief", "wh2_dlc13_lzd_kroxigor_ancient", "wh2_dlc13_lzd_slann_mage_priest_beasts", "wh2_dlc13_lzd_slann_mage_priest_death", "wh2_dlc13_lzd_slann_mage_priest_fire", "wh2_dlc13_lzd_slann_mage_priest_heavens", "wh2_dlc13_lzd_slann_mage_priest_high", "wh2_dlc13_lzd_slann_mage_priest_life", "wh2_dlc13_lzd_slann_mage_priest_metal", "wh2_dlc13_lzd_slann_mage_priest_shadows", "wh2_main_lzd_saurus_old_blood", "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_dlc12_lzd_tlaqua_skink_priest_beasts", "wh2_dlc12_lzd_tlaqua_skink_priest_heavens", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+            colonel = { "wh2_main_lzd_saurus_old_blood", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            spy = { "wh2_dlc12_lzd_tlaqua_skink_chief", },
+            minister = { "wh2_main_lzd_saurus_old_blood", },
+        },
+        wh2_main_lzd_itza = {
+            general = { "wh2_dlc12_lzd_red_crested_skink_chief", "wh2_dlc13_lzd_kroxigor_ancient", "wh2_dlc13_lzd_slann_mage_priest_beasts", "wh2_dlc13_lzd_slann_mage_priest_death", "wh2_dlc13_lzd_slann_mage_priest_fire", "wh2_dlc13_lzd_slann_mage_priest_heavens", "wh2_dlc13_lzd_slann_mage_priest_high", "wh2_dlc13_lzd_slann_mage_priest_life", "wh2_dlc13_lzd_slann_mage_priest_metal", "wh2_dlc13_lzd_slann_mage_priest_shadows", "wh2_main_lzd_saurus_old_blood", "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_main_lzd_skink_priest_beasts", "wh2_main_lzd_skink_priest_heavens", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+            colonel = { "wh2_main_lzd_saurus_old_blood", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            spy = { "wh2_main_lzd_skink_chief", },
+            minister = { "wh2_main_lzd_saurus_old_blood", },
+        },
+        wh2_dlc15_grn_broken_axe = {
+            general = { "wh_dlc06_grn_night_goblin_warboss", "wh_main_grn_goblin_great_shaman", "wh_main_grn_orc_warboss", },
+            wizard = { "wh_main_grn_night_goblin_shaman", "wh_main_grn_orc_shaman", },
+            runesmith = { "wh2_dlc15_grn_river_troll_hag", },
+            colonel = { "wh_main_grn_orc_warboss", },
+            spy = { "wh_main_grn_goblin_big_boss", },
+            champion = { "wh2_pro09_grn_black_orc_big_boss", },
+        },
+        wh2_main_skv_clan_eshin = {
+            general = { "wh2_dlc12_skv_warlock_master", "wh2_dlc14_skv_master_assassin", "wh2_main_skv_grey_seer_plague", "wh2_main_skv_grey_seer_ruin", "wh2_main_skv_warlord", },
+            colonel = { "wh2_main_skv_warlord", },
+            wizard = { "wh2_dlc14_skv_eshin_sorcerer", "wh2_main_skv_plague_priest", },
+            engineer = { "wh2_main_skv_warlock_engineer", },
+            runesmith = { "wh2_dlc16_skv_packmaster", },
+            champion = { "wh2_dlc16_skv_chieftain", },
+            spy = { "wh2_main_skv_assassin", },
+            minister = { "wh2_main_skv_warlord", },
+        },
+        wh_main_dwf_karak_kadrin = {
+            general = { "wh3_dlc25_dwf_daemon_slayer", "wh_dlc06_dwf_runelord", "wh_main_dwf_lord", },
+            runesmith = { "wh_main_dwf_runesmith", },
+            engineer = { "wh_main_dwf_master_engineer", },
+            dignitary = { "wh3_dlc25_dwf_dragon_slayer", },
+            champion = { "wh_main_dwf_thane", },
+            colonel = { "wh_main_dwf_lord", },
+            minister = { "wh_main_dwf_lord", },
+        },
+        wh2_main_def_naggarond = {
+            general = { "wh2_dlc10_def_supreme_sorceress_beasts", "wh2_dlc10_def_supreme_sorceress_dark", "wh2_dlc10_def_supreme_sorceress_death", "wh2_dlc10_def_supreme_sorceress_fire", "wh2_dlc10_def_supreme_sorceress_shadow", "wh2_dlc14_def_high_beastmaster", "wh2_main_def_black_ark", "wh2_main_def_dreadlord", "wh2_main_def_dreadlord_fem", },
+            wizard = { "wh2_dlc10_def_sorceress_beasts", "wh2_dlc10_def_sorceress_death", "wh2_main_def_sorceress_dark", "wh2_main_def_sorceress_fire", "wh2_main_def_sorceress_shadow", },
+            champion = { "wh2_dlc14_def_master", },
+            dignitary = { "wh2_main_def_death_hag", },
+            colonel = { "wh2_main_def_dreadlord", },
+            spy = { "wh2_main_def_khainite_assassin", },
+            minister = { "wh2_main_def_dreadlord", },
+        },
+        wh2_dlc13_emp_the_huntmarshals_expedition = {
+            general = { "wh2_dlc13_emp_cha_huntsmarshal", "wh3_dlc25_emp_master_engineer", "wh_dlc04_emp_arch_lector", "wh_main_emp_lord", },
+            wizard = { "wh2_pro07_emp_amethyst_wizard", "wh3_dlc25_emp_gold_wizard", "wh_dlc03_emp_amber_wizard", "wh_dlc05_emp_grey_wizard", "wh_dlc05_emp_jade_wizard", "wh_main_emp_bright_wizard", "wh_main_emp_celestial_wizard", "wh_main_emp_light_wizard", },
+            engineer = { "wh3_dlc25_emp_engineer", },
+            dignitary = { "wh_main_emp_warrior_priest", },
+            colonel = { "wh_main_emp_lord", },
+            spy = { "wh_main_emp_witch_hunter", },
+            champion = { "wh_main_emp_captain", },
+        },
+        wh_main_vmp_vampire_counts = {
+            general = { "wh_dlc04_vmp_strigoi_ghoul_king", "wh_main_vmp_lord", "wh_main_vmp_master_necromancer", },
+            wizard = { "wh_main_vmp_necromancer", },
+            champion = { "wh2_dlc17_vmp_kevon_lloydstein", "wh_main_vmp_wight_king", },
+            dignitary = { "wh_dlc05_vmp_vampire_shadow", "wh_main_vmp_vampire_death", },
+            colonel = { "wh_main_vmp_lord", },
+            spy = { "wh_main_vmp_banshee", },
+            minister = { "wh_main_vmp_lord", },
+        },
+        wh_main_emp_empire = {
+            general = { "wh2_dlc13_emp_cha_huntsmarshal", "wh3_dlc25_emp_master_engineer", "wh_dlc04_emp_arch_lector", "wh_main_emp_lord", },
+            colonel = { "wh_main_emp_lord", },
+            wizard = { "wh2_pro07_emp_amethyst_wizard", "wh3_dlc25_emp_gold_wizard", "wh_dlc03_emp_amber_wizard", "wh_dlc05_emp_grey_wizard", "wh_dlc05_emp_jade_wizard", "wh_main_emp_bright_wizard", "wh_main_emp_celestial_wizard", "wh_main_emp_light_wizard", },
+            engineer = { "wh3_dlc25_emp_engineer", },
+            dignitary = { "wh_main_emp_warrior_priest", },
+            champion = { "wh_main_emp_captain", },
+            spy = { "wh_main_emp_witch_hunter", },
+            minister = { "wh_main_emp_lord", },
+        },
+        wh3_dlc23_chd_legion_of_azgorh = {
+            general = { "wh3_dlc23_chd_overseer", "wh3_dlc23_chd_sorcerer_prophet_death", "wh3_dlc23_chd_sorcerer_prophet_fire", "wh3_dlc23_chd_sorcerer_prophet_hashut", "wh3_dlc23_chd_sorcerer_prophet_metal", },
+            wizard = { "wh3_dlc23_chd_daemonsmith_sorcerer_death", "wh3_dlc23_chd_daemonsmith_sorcerer_fire", "wh3_dlc23_chd_daemonsmith_sorcerer_hashut", "wh3_dlc23_chd_daemonsmith_sorcerer_metal", },
+            engineer = { "wh3_dlc23_chd_infernal_castellan", },
+            colonel = { "wh3_dlc23_chd_overseer", },
+            spy = { },
+            champion = { "wh3_dlc23_chd_bull_centaur_taurruk", },
+        },
+        wh2_main_hef_yvresse = {
+            general = { "wh2_dlc15_hef_archmage_beasts", "wh2_dlc15_hef_archmage_death", "wh2_dlc15_hef_archmage_fire", "wh2_dlc15_hef_archmage_heavens", "wh2_dlc15_hef_archmage_high", "wh2_dlc15_hef_archmage_life", "wh2_dlc15_hef_archmage_light", "wh2_dlc15_hef_archmage_metal", "wh2_dlc15_hef_archmage_shadows", "wh2_main_hef_prince", "wh2_main_hef_princess", },
+            wizard = { "wh2_dlc10_hef_mage_heavens", "wh2_dlc10_hef_mage_shadows", "wh2_dlc15_hef_mage_beasts", "wh2_dlc15_hef_mage_death", "wh2_dlc15_hef_mage_fire", "wh2_dlc15_hef_mage_metal", "wh2_main_hef_mage_high", "wh2_main_hef_mage_life", "wh2_main_hef_mage_light", },
+            champion = { "wh2_main_hef_noble", },
+            dignitary = { "wh2_dlc10_hef_handmaiden", },
+            runesmith = { "wh2_main_hef_loremaster_of_hoeth", },
+            colonel = { "wh2_main_hef_prince", },
+            minister = { "wh2_main_hef_prince", },
+        },
+        wh3_main_ksl_the_great_orthodoxy = {
+            general = { "wh3_dlc24_ksl_druzhina", "wh3_main_ksl_ataman", "wh3_main_ksl_boyar", "wh3_main_ksl_ice_witch_ice", "wh3_main_ksl_ice_witch_tempest", },
+            wizard = { "wh3_main_ksl_frost_maiden_ice", "wh3_main_ksl_frost_maiden_tempest", },
+            runesmith = { "wh3_dlc24_ksl_hag_witch_beasts", "wh3_dlc24_ksl_hag_witch_death", "wh3_dlc24_ksl_hag_witch_hag", "wh3_dlc24_ksl_hag_witch_shadows", },
+            dignitary = { "wh3_main_ksl_patriarch", },
+            colonel = { "wh3_main_ksl_boyar", },
+        },
+        wh_dlc08_nor_norsca = {
+            general = { "wh_main_nor_marauder_chieftain", },
+            wizard = { "wh_dlc08_nor_shaman_sorcerer_death", "wh_dlc08_nor_shaman_sorcerer_fire", "wh_dlc08_nor_shaman_sorcerer_metal", },
+            champion = { "wh_dlc08_nor_skin_wolf_werekin", },
+            dignitary = { "wh_dlc08_nor_fimir_balefiend_fire", "wh_dlc08_nor_fimir_balefiend_shadow", },
+            colonel = { "wh_main_nor_marauder_chieftain", },
+            minister = { "wh_main_nor_marauder_chieftain", },
+        },
+        wh3_dlc20_chs_sigvald = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh_main_dwf_dwarfs = {
+            general = { "wh3_dlc25_dwf_daemon_slayer", "wh_dlc06_dwf_runelord", "wh_main_dwf_lord", },
+            runesmith = { "wh_main_dwf_runesmith", },
+            engineer = { "wh_main_dwf_master_engineer", },
+            dignitary = { "wh3_dlc25_dwf_dragon_slayer", },
+            champion = { "wh2_dlc17_dwf_thane_ghost_artifact", "wh_main_dwf_thane", },
+            colonel = { "wh_main_dwf_lord", },
+            minister = { "wh_main_dwf_lord", },
+        },
+        wh3_main_chs_shadow_legion = {
+            general = { "wh_dlc01_chs_sorcerer_lord_death", "wh_dlc01_chs_sorcerer_lord_fire", "wh_dlc01_chs_sorcerer_lord_metal", "wh_dlc07_chs_sorcerer_lord_shadow", "wh_main_chs_lord", },
+            wizard = { "wh_dlc07_chs_chaos_sorcerer_shadow", "wh_main_chs_chaos_sorcerer_death", "wh_main_chs_chaos_sorcerer_fire", "wh_main_chs_chaos_sorcerer_metal", },
+            champion = { "wh_main_chs_exalted_hero", },
+            colonel = { "wh_main_chs_lord", },
+            minister = { "wh_main_chs_lord", },
+        },
+        wh2_main_def_hag_graef = {
+            general = { "wh2_dlc10_def_supreme_sorceress_beasts", "wh2_dlc10_def_supreme_sorceress_dark", "wh2_dlc10_def_supreme_sorceress_death", "wh2_dlc10_def_supreme_sorceress_fire", "wh2_dlc10_def_supreme_sorceress_shadow", "wh2_dlc14_def_high_beastmaster", "wh2_main_def_black_ark", "wh2_main_def_dreadlord", "wh2_main_def_dreadlord_fem", },
+            wizard = { "wh2_dlc10_def_sorceress_beasts", "wh2_dlc10_def_sorceress_death", "wh2_main_def_sorceress_dark", "wh2_main_def_sorceress_fire", "wh2_main_def_sorceress_shadow", },
+            champion = { "wh2_dlc14_def_master", },
+            dignitary = { "wh2_main_def_death_hag", },
+            colonel = { "wh2_main_def_dreadlord", },
+            spy = { "wh2_main_def_khainite_assassin", },
+            minister = { "wh2_main_def_dreadlord", },
+        },
+        wh2_dlc15_grn_bonerattlaz = {
+            general = { "wh_dlc06_grn_night_goblin_warboss", "wh_main_grn_goblin_great_shaman", "wh_main_grn_orc_warboss", },
+            wizard = { "wh_main_grn_night_goblin_shaman", "wh_main_grn_orc_shaman", },
+            runesmith = { "wh2_dlc15_grn_river_troll_hag", },
+            colonel = { "wh_main_grn_orc_warboss", },
+            spy = { "wh_main_grn_goblin_big_boss", },
+            champion = { "wh2_pro09_grn_black_orc_big_boss", },
+        },
+        wh2_main_hef_avelorn = {
+            general = { "wh2_dlc15_hef_archmage_beasts", "wh2_dlc15_hef_archmage_death", "wh2_dlc15_hef_archmage_fire", "wh2_dlc15_hef_archmage_heavens", "wh2_dlc15_hef_archmage_high", "wh2_dlc15_hef_archmage_life", "wh2_dlc15_hef_archmage_light", "wh2_dlc15_hef_archmage_metal", "wh2_dlc15_hef_archmage_shadows", "wh2_main_hef_prince", "wh2_main_hef_princess", },
+            wizard = { "wh2_dlc10_hef_mage_heavens", "wh2_dlc10_hef_mage_shadows", "wh2_dlc15_hef_mage_beasts", "wh2_dlc15_hef_mage_death", "wh2_dlc15_hef_mage_fire", "wh2_dlc15_hef_mage_metal", "wh2_main_hef_mage_high", "wh2_main_hef_mage_life", "wh2_main_hef_mage_light", },
+            champion = { "wh2_main_hef_noble", },
+            dignitary = { "wh2_dlc10_hef_handmaiden", },
+            runesmith = { "wh2_main_hef_loremaster_of_hoeth", },
+            colonel = { "wh2_main_hef_prince", },
+            minister = { "wh2_main_hef_prince", },
+        },
+        wh3_main_ksl_ursun_revivalists = {
+            general = { "wh3_dlc24_ksl_druzhina", "wh3_main_ksl_ataman", "wh3_main_ksl_boyar", "wh3_main_ksl_ice_witch_ice", "wh3_main_ksl_ice_witch_tempest", },
+            wizard = { "wh3_main_ksl_frost_maiden_ice", "wh3_main_ksl_frost_maiden_tempest", },
+            runesmith = { "wh3_dlc24_ksl_hag_witch_beasts", "wh3_dlc24_ksl_hag_witch_death", "wh3_dlc24_ksl_hag_witch_hag", "wh3_dlc24_ksl_hag_witch_shadows", },
+            dignitary = { "wh3_main_ksl_patriarch", },
+            colonel = { "wh3_main_ksl_boyar", },
+        },
+        wh3_main_ksl_the_ice_court = {
+            general = { "wh3_dlc24_ksl_druzhina", "wh3_main_ksl_ataman", "wh3_main_ksl_boyar", "wh3_main_ksl_ice_witch_ice", "wh3_main_ksl_ice_witch_tempest", },
+            wizard = { "wh3_main_ksl_frost_maiden_ice", "wh3_main_ksl_frost_maiden_tempest", },
+            runesmith = { "wh3_dlc24_ksl_hag_witch_beasts", "wh3_dlc24_ksl_hag_witch_death", "wh3_dlc24_ksl_hag_witch_hag", "wh3_dlc24_ksl_hag_witch_shadows", },
+            dignitary = { "wh3_main_ksl_patriarch", },
+            colonel = { "wh3_main_ksl_boyar", },
+        },
+        wh2_dlc11_cst_the_drowned = {
+            general = { "wh2_dlc11_cst_admiral_death", "wh2_dlc11_cst_admiral_deep", "wh2_dlc11_cst_admiral_fem_death", "wh2_dlc11_cst_admiral_fem_deep", "wh2_dlc11_cst_admiral_fem_vampires", "wh2_dlc11_cst_admiral_vampires", },
+            colonel = { "wh2_dlc11_cst_admiral_vampires", },
+            engineer = { "wh2_dlc11_cst_gunnery_wight", },
+            dignitary = { "wh2_dlc11_cst_fleet_captain_death", "wh2_dlc11_cst_fleet_captain_deep", "wh2_dlc11_cst_fleet_captain_vampires", },
+            champion = { "wh2_dlc11_cst_mourngul", },
+            spy = { "wh2_dlc11_cst_ghost_paladin", },
+            minister = { "wh2_dlc11_cst_admiral_vampires", },
+        },
+        wh3_main_tze_oracles_of_tzeentch = {
+            general = { "wh3_dlc20_chs_sorcerer_lord_metal_mtze", "wh3_dlc20_chs_sorcerer_lord_tzeentch_mtze", "wh3_dlc24_chs_lord_mtze", "wh3_main_tze_exalted_lord_of_change_metal", "wh3_main_tze_exalted_lord_of_change_tzeentch", "wh3_main_tze_herald_of_tzeentch_metal", "wh3_main_tze_herald_of_tzeentch_tzeentch", },
+            wizard = { "wh3_dlc20_chs_sorcerer_metal_mtze", "wh3_dlc20_chs_sorcerer_tzeentch_mtze", },
+            champion = { "wh3_dlc24_chs_exalted_hero_mtze", },
+            dignitary = { "wh3_main_tze_cultist", },
+            runesmith = { "wh3_main_tze_iridescent_horror_metal", "wh3_main_tze_iridescent_horror_tzeentch", },
+            colonel = { "wh3_main_tze_herald_of_tzeentch_tzeentch", },
+        },
+        wh2_dlc11_def_the_blessed_dread = {
+            general = { "wh2_dlc10_def_supreme_sorceress_beasts", "wh2_dlc10_def_supreme_sorceress_dark", "wh2_dlc10_def_supreme_sorceress_death", "wh2_dlc10_def_supreme_sorceress_fire", "wh2_dlc10_def_supreme_sorceress_shadow", "wh2_dlc14_def_high_beastmaster", "wh2_main_def_black_ark", "wh2_main_def_black_ark_blessed_dread", "wh2_main_def_dreadlord", "wh2_main_def_dreadlord_fem", },
+            wizard = { "wh2_dlc10_def_sorceress_beasts", "wh2_dlc10_def_sorceress_death", "wh2_main_def_sorceress_dark", "wh2_main_def_sorceress_fire", "wh2_main_def_sorceress_shadow", },
+            champion = { "wh2_dlc14_def_master", },
+            dignitary = { "wh2_main_def_death_hag", },
+            colonel = { "wh2_main_def_dreadlord", },
+            spy = { "wh2_main_def_khainite_assassin", },
+            minister = { "wh2_main_def_dreadlord", },
+        },
+        wh3_dlc23_chd_zhatan = {
+            general = { "wh3_dlc23_chd_overseer", "wh3_dlc23_chd_sorcerer_prophet_death", "wh3_dlc23_chd_sorcerer_prophet_fire", "wh3_dlc23_chd_sorcerer_prophet_hashut", "wh3_dlc23_chd_sorcerer_prophet_metal", },
+            wizard = { "wh3_dlc23_chd_daemonsmith_sorcerer_death", "wh3_dlc23_chd_daemonsmith_sorcerer_fire", "wh3_dlc23_chd_daemonsmith_sorcerer_hashut", "wh3_dlc23_chd_daemonsmith_sorcerer_metal", },
+            engineer = { "wh3_dlc23_chd_infernal_castellan", },
+            colonel = { "wh3_dlc23_chd_overseer", },
+            spy = { },
+            champion = { "wh3_dlc23_chd_bull_centaur_taurruk", },
+        },
+        wh2_main_lzd_last_defenders = {
+            general = { "wh2_dlc12_lzd_red_crested_skink_chief", "wh2_dlc13_lzd_kroxigor_ancient", "wh2_dlc13_lzd_slann_mage_priest_beasts", "wh2_dlc13_lzd_slann_mage_priest_death", "wh2_dlc13_lzd_slann_mage_priest_fire", "wh2_dlc13_lzd_slann_mage_priest_heavens", "wh2_dlc13_lzd_slann_mage_priest_high", "wh2_dlc13_lzd_slann_mage_priest_life", "wh2_dlc13_lzd_slann_mage_priest_metal", "wh2_dlc13_lzd_slann_mage_priest_shadows", "wh2_main_lzd_saurus_old_blood", "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_main_lzd_skink_priest_beasts", "wh2_main_lzd_skink_priest_heavens", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+            colonel = { "wh2_main_lzd_saurus_old_blood", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            spy = { "wh2_main_lzd_skink_chief", },
+            minister = { "wh2_main_lzd_saurus_old_blood", },
+        },
+        wh2_main_skv_clan_pestilens = {
+            general = { "wh2_dlc12_skv_warlock_master", "wh2_dlc14_skv_master_assassin", "wh2_main_skv_grey_seer_plague", "wh2_main_skv_grey_seer_ruin", "wh2_main_skv_warlord", },
+            colonel = { "wh2_main_skv_warlord", },
+            wizard = { "wh2_dlc14_skv_eshin_sorcerer", "wh2_main_skv_plague_priest", },
+            engineer = { "wh2_main_skv_warlock_engineer", },
+            runesmith = { "wh2_dlc16_skv_packmaster", },
+            champion = { "wh2_dlc16_skv_chieftain", },
+            spy = { "wh2_main_skv_assassin", },
+            minister = { "wh2_main_skv_warlord", },
+        },
+        wh2_main_hef_eataine = {
+            general = { "wh2_dlc15_hef_archmage_beasts", "wh2_dlc15_hef_archmage_death", "wh2_dlc15_hef_archmage_fire", "wh2_dlc15_hef_archmage_heavens", "wh2_dlc15_hef_archmage_high", "wh2_dlc15_hef_archmage_life", "wh2_dlc15_hef_archmage_light", "wh2_dlc15_hef_archmage_metal", "wh2_dlc15_hef_archmage_shadows", "wh2_main_hef_prince", "wh2_main_hef_princess", },
+            wizard = { "wh2_dlc10_hef_mage_heavens", "wh2_dlc10_hef_mage_shadows", "wh2_dlc15_hef_mage_beasts", "wh2_dlc15_hef_mage_death", "wh2_dlc15_hef_mage_fire", "wh2_dlc15_hef_mage_metal", "wh2_main_hef_mage_high", "wh2_main_hef_mage_life", "wh2_main_hef_mage_light", },
+            champion = { "wh2_main_hef_noble", },
+            dignitary = { "wh2_dlc10_hef_handmaiden", },
+            runesmith = { "wh2_main_hef_loremaster_of_hoeth", },
+            colonel = { "wh2_main_hef_prince", },
+            minister = { "wh2_main_hef_prince", },
+        },
+        wh2_dlc13_emp_golden_order = {
+            general = { "wh2_dlc13_emp_cha_huntsmarshal", "wh3_dlc25_emp_master_engineer", "wh_dlc04_emp_arch_lector", "wh_main_emp_lord", },
+            wizard = { "wh2_pro07_emp_amethyst_wizard", "wh3_dlc25_emp_gold_wizard", "wh_dlc03_emp_amber_wizard", "wh_dlc05_emp_grey_wizard", "wh_dlc05_emp_jade_wizard", "wh_main_emp_bright_wizard", "wh_main_emp_celestial_wizard", "wh_main_emp_light_wizard", },
+            engineer = { "wh3_dlc25_emp_engineer", },
+            dignitary = { "wh_main_emp_warrior_priest", },
+            colonel = { "wh_main_emp_lord", },
+            spy = { "wh_main_emp_witch_hunter", },
+            champion = { "wh_main_emp_captain", },
+        },
+        wh2_dlc09_tmb_exiles_of_nehek = {
+            general = { "wh2_dlc09_tmb_tomb_king", },
+            wizard = { "wh2_dlc09_tmb_liche_priest_death", "wh2_dlc09_tmb_liche_priest_light", "wh2_dlc09_tmb_liche_priest_nehekhara", "wh2_dlc09_tmb_liche_priest_shadow", },
+            engineer = { "wh2_dlc09_tmb_necrotect", },
+            champion = { "wh2_dlc09_tmb_tomb_prince", },
+            colonel = { "wh2_dlc09_tmb_tomb_king", },
+            minister = { "wh2_dlc09_tmb_tomb_king", },
+        },
+        wh2_dlc17_lzd_oxyotl = {
+            general = { "wh2_dlc12_lzd_red_crested_skink_chief", "wh2_dlc13_lzd_kroxigor_ancient", "wh2_dlc13_lzd_slann_mage_priest_beasts", "wh2_dlc13_lzd_slann_mage_priest_death", "wh2_dlc13_lzd_slann_mage_priest_fire", "wh2_dlc13_lzd_slann_mage_priest_heavens", "wh2_dlc13_lzd_slann_mage_priest_high", "wh2_dlc13_lzd_slann_mage_priest_life", "wh2_dlc13_lzd_slann_mage_priest_metal", "wh2_dlc13_lzd_slann_mage_priest_shadows", "wh2_main_lzd_saurus_old_blood", "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_main_lzd_skink_priest_beasts", "wh2_main_lzd_skink_priest_heavens", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+            colonel = { "wh2_main_lzd_saurus_old_blood", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            spy = { "wh2_main_lzd_skink_chief", },
+            minister = { "wh_dlc03_bst_beastlord", },
+        },
+        wh3_dlc25_nur_tamurkhan = {
+            general = { "wh3_dlc20_chs_sorcerer_lord_death_mnur", "wh3_dlc20_chs_sorcerer_lord_nurgle_mnur", "wh3_dlc25_chs_lord_mnur", "wh3_main_nur_exalted_great_unclean_one_death", "wh3_main_nur_exalted_great_unclean_one_nurgle", "wh3_main_nur_herald_of_nurgle_death", "wh3_main_nur_herald_of_nurgle_nurgle", },
+            wizard = { "wh3_dlc25_chs_sorcerer_death_mnur", "wh3_dlc25_chs_sorcerer_nurgle_mnur", },
+            engineer = { },
+            dignitary = { "wh3_main_nur_cultist", },
+            colonel = { "wh3_main_nur_herald_of_nurgle_nurgle", },
+            spy = { "wh3_main_nur_plagueridden_death", "wh3_main_nur_plagueridden_nurgle", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mnur", },
+        },
+        wh2_dlc16_wef_drycha = {
+            general = { "wh2_dlc16_wef_malicious_ancient_treeman_beasts", "wh2_dlc16_wef_malicious_ancient_treeman_life", "wh2_dlc16_wef_malicious_ancient_treeman_shadows", "wh_dlc05_wef_ancient_treeman", },
+            champion = { "wh2_dlc16_wef_malicious_branchwraith_beasts", "wh2_dlc16_wef_malicious_branchwraith_life", "wh2_dlc16_wef_malicious_branchwraith_shadows", },
+            dignitary = { "wh2_twa02_wef_glade_captain", },
+            colonel = { "wh2_dlc16_wef_malicious_ancient_treeman_beasts", },
+            spy = { "wh_dlc05_wef_waystalker", },
+            minister = { "wh_dlc05_wef_ancient_treeman", },
+        },
+        wh2_dlc13_lzd_spirits_of_the_jungle = {
+            general = { "wh2_main_lzd_slann_mage_priest", },
+            wizard = { "wh2_main_lzd_skink_priest_beasts", "wh2_main_lzd_skink_priest_heavens", },
+            runesmith = { "wh2_dlc17_lzd_skink_oracle_troglodon", },
+            colonel = { },
+            spy = { "wh2_main_lzd_skink_chief", },
+            champion = { "wh2_main_lzd_saurus_scar_veteran", },
+        },
+        wh3_dlc25_nur_epidemius = {
+            general = { "wh3_dlc20_chs_sorcerer_lord_death_mnur", "wh3_dlc20_chs_sorcerer_lord_nurgle_mnur", "wh3_dlc25_chs_lord_mnur", "wh3_main_nur_exalted_great_unclean_one_death", "wh3_main_nur_exalted_great_unclean_one_nurgle", "wh3_main_nur_herald_of_nurgle_death", "wh3_main_nur_herald_of_nurgle_nurgle", },
+            wizard = { "wh3_dlc25_chs_sorcerer_death_mnur", "wh3_dlc25_chs_sorcerer_nurgle_mnur", },
+            champion = { "wh3_dlc20_chs_exalted_hero_mnur", },
+            dignitary = { "wh3_main_nur_cultist", },
+            spy = { "wh3_main_nur_plagueridden_death", "wh3_main_nur_plagueridden_nurgle", },
+            colonel = { "wh3_main_nur_herald_of_nurgle_nurgle", },
+        },
+        wh3_main_emp_cult_of_sigmar = {
+            general = { "wh2_dlc13_emp_cha_huntsmarshal", "wh3_dlc25_emp_master_engineer", "wh_dlc04_emp_arch_lector", "wh_main_emp_lord", },
+            wizard = { "wh2_pro07_emp_amethyst_wizard", "wh3_dlc25_emp_gold_wizard", "wh_dlc03_emp_amber_wizard", "wh_dlc05_emp_grey_wizard", "wh_dlc05_emp_jade_wizard", "wh_main_emp_bright_wizard", "wh_main_emp_celestial_wizard", "wh_main_emp_light_wizard", },
+            engineer = { "wh3_dlc25_emp_engineer", },
+            dignitary = { "wh_main_emp_warrior_priest", },
+            colonel = { "wh_main_emp_lord", },
+            spy = { "wh_main_emp_witch_hunter", },
+            champion = { "wh_main_emp_captain", },
+        },
+    },
+    agent_types = {"champion", "dignitary", "engineer", "runesmith", "spy", "wizard"}
         
 }
 
@@ -215,6 +1019,10 @@ function pttg_merc_pool:add_unit_list(units)
     for _, unit in pairs(units) do
         self:add_unit(unit)
     end
+end
+
+function pttg_merc_pool:add_agent(key, agent_type, faction_key)
+    table.insert(self.faction_to_agents[faction_key][agent_type], key)
 end
 
 function pttg_merc_pool:init_active_merc_pool()
@@ -296,6 +1104,75 @@ function pttg_merc_pool:get_pool(key)
         return false
     end
     return self.merc_pool[military_grouping]
+end
+
+function pttg_merc_pool:get_random_general(faction_key)
+    local subgroups = {}
+    local subkeys = {}
+
+    for _, subtype in pairs(self.faction_to_agents[faction_key]['general']) do
+        local parts = string.pttg_split(subtype, '_')
+
+        local joined = ""
+        for i = 4, math.max(#parts - 2, 4) do
+            joined = joined..'_'..(parts[i] or "")
+        end
+
+        if subgroups[joined] then
+            table.insert(subgroups[joined], subtype)
+        else
+            subgroups[joined] = { subtype }
+            table.insert(subkeys, joined)
+        end
+    end
+
+    local random_characters = subgroups[subkeys[math.random(#subkeys)]]
+    return random_characters[math.random(#random_characters)]
+end
+
+function pttg_merc_pool:get_random_agent(faction_key, agent_type)
+    local subgroups = {}
+    local subkeys = {}
+    
+    local agents = {}
+
+    if type(agent_type) == "string" then
+        for _, agent in pairs(self.faction_to_agents[faction_key][agent_type] or {}) do
+            table.insert(agents, {agent=agent, type=agent_type})
+        end
+    elseif type(agent_type) == "table" then
+        for _, subtype in pairs(agent_type) do
+            for _, agent in pairs(self.faction_to_agents[faction_key][subtype] or {}) do
+                table.insert(agents, {agent=agent, type=subtype})
+            end
+        end
+    else
+        for _, subtype in pairs(self.agent_types) do
+            for _, agent in pairs(self.faction_to_agents[faction_key][subtype] or {}) do
+                table.insert(agents, {agent=agent, type=subtype})
+            end
+        end
+    end
+
+    for _, agent in pairs(agents) do
+        local parts = string.pttg_split(agent.type, '_')
+
+        local joined = ""
+        for i = 4, math.max(#parts - 2, 4) do
+            joined = joined..'_'..(parts[i] or "")
+        end
+
+        if subgroups[joined] then
+            table.insert(subgroups[joined], agent)
+        else
+            subgroups[joined] = { agent }
+            table.insert(subkeys, joined)
+        end
+    end
+    
+    local random_agents = subgroups[subkeys[math.random(#subkeys)]]
+    local random_agent = random_agents[math.random(#random_agents)]
+    return random_agent
 end
 
 function pttg_merc_pool:trigger_recruitment(amount, recruit_chances, unique_only)

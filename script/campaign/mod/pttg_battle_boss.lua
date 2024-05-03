@@ -19,8 +19,8 @@ core:add_listener(
         local invasion_faction = invasion_template_army.faction
 
 
-        local invasion_power = (cursor.z - 1) * 2 + 5
-        local invasion_size = ((cursor.z - 1) * 5) + cursor.y + 4 + pttg:get_difficulty_mod('encounter_size')
+        local invasion_power = (cursor.z - 1) * 2 + 5 + pttg:get_difficulty_mod('ai_army_power_mod') -- easy:4|6|8 medium:5|7|9 hard:6|8|10
+        local invasion_size = 10 + pttg:get_difficulty_mod('encounter_size') + ((cursor.z - 1) * 2) -- easy:12|14|16 medium:14|16|18 hard:16|18|20
         local general_level = (cursor.z - 1) * 20 + cursor.y + 10
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
@@ -63,7 +63,7 @@ core:add_listener(
 
         cm:heal_military_force(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
 
-        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("boss_recruit_chances") })
+        core:trigger_custom_event('pttg_recruit_reward', { recruit_count = 3, recruit_chances = pttg:get_state("boss_recruit_chances"), unique_only = true })
     end,
     true
 )

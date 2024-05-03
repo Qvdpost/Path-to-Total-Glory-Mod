@@ -20,8 +20,8 @@ core:add_listener(
         local invasion_faction = invasion_template_army.faction
 
 
-        local invasion_power = (cursor.z - 1) * 2 + 3
-        local invasion_size = ((cursor.z - 1) * 5) + math.max(10, cursor.y + 2 + pttg:get_difficulty_mod('encounter_size'))
+        local invasion_power = (cursor.z - 1) * 2 + 3 + pttg:get_difficulty_mod('ai_army_power_mod') -- easy:2|4|6 medium:3|5|7 hard:4|6|8
+        local invasion_size = ((cursor.z - 1) * 7) + cursor.y + pttg:get_difficulty_mod('encounter_size') -- easy:2+y|9+y|14+y medium:4+y|11+y|16+y hard:6+y|11+y|16+y
         local general_level = (cursor.z - 1) * 20 + cursor.y + 5
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
@@ -63,7 +63,7 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_PostRoomBattle")
 
-        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances") })
+        core:trigger_custom_event('pttg_recruit_reward', { recruit_chances = pttg:get_state("elite_recruit_chances"), unique_only = true })
     end,
     true
 )

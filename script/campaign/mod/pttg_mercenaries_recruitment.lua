@@ -9,14 +9,16 @@ core:add_listener(
     function(context)
         pttg_upkeep:resolve("pttg_RecruitReward")
 
+        local cursor = pttg:get_cursor()
+
         local recruit_chances
         if context.recruit_chances then
             recruit_chances = context.recruit_chances()
         else
-            recruit_chances = pttg:get_state('recruit_chances')
+            recruit_chances = pttg:get_state('recruit_chances')[cursor.z]
         end
         
-        pttg_merc_pool:trigger_recruitment(pttg:get_state('recruit_count'), recruit_chances, true)
+        pttg_merc_pool:trigger_recruitment(context.recruit_count or pttg:get_state('recruit_count'), recruit_chances, context.unique_only or false)
         
         core:trigger_custom_event('pttg_Idle', {})
     end,

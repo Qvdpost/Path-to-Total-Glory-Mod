@@ -29,8 +29,12 @@ local pttg = {
         },
         active_shop_items = {},
         recruitable_mercs = {},
-        recruit_chances = { 90, 99, 100 },
-        elite_recruit_chances = { 50, 90, 100 },
+        recruit_chances = {
+            { 120, 121, 121 }, -- act one, only core units
+            { 80, 120, 120 }, -- only core & special
+            { 65, 95, 100 },
+        },
+        elite_recruit_chances = { 50, 95, 100 },
         boss_recruit_chances = { -5, -5, 100 },
         recruit_rarity_offset = -5,
         recruit_count = 5,
@@ -42,7 +46,7 @@ local pttg = {
         glory_reward_modifier = 1,
         glory_recruit_modifier = 1,
         excluded_effect_pool = {},
-        glory_recruit_default = 3
+        glory_recruit_default = {2, 3, 4}
     },
     
     persistent_keys = {
@@ -73,7 +77,8 @@ local pttg = {
         encounter_size = {2, 4, 6},
         random_start_recruit_glory = {16, 14, 12},
         random_start_recruit_merc_count = {25, 20, 20},
-        random_start_chances = {{ 70, 200, 100 }, { 90, 200, 100 }, { 90, 200, 100 }}
+        random_start_chances = {{ 70, 200, 100 }, { 90, 200, 100 }, { 90, 200, 100 }},
+        ai_army_power_mod = { -1, 0, 1}
     }
 };
 

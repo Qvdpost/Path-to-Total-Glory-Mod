@@ -133,10 +133,14 @@ function pttg_side_effects:zero_merc_cost()
 
     local recruitment_cost_bundle = cm:create_new_custom_effect_bundle(recruitment_cost_bundle_key);
     
+    ---@diagnostic disable-next-line: undefined-field
     recruitment_cost_bundle:add_effect("wh3_main_effect_mercenary_cost_mod", "faction_to_character_own_factionwide_armytext", -10000);
+    ---@diagnostic disable-next-line: undefined-field
     recruitment_cost_bundle:set_duration(0);
 
+    ---@diagnostic disable-next-line: undefined-field
     recruitment_cost_bundle:add_effect("wh_main_effect_force_all_campaign_recruitment_cost_all", "faction_to_character_own_factionwide_armytext", -10000);
+    ---@diagnostic disable-next-line: undefined-field
     recruitment_cost_bundle:set_duration(0);
 
     cm:apply_custom_effect_bundle_to_faction(recruitment_cost_bundle, faction);

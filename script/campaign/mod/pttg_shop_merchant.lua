@@ -133,8 +133,10 @@ function pttg_glory_shop:populate_shop()
         shop_sizes.units)
     )
 
+    local cursor = pttg:get_cursor()
+
     self:populate_items(shop_sizes.merchandise, pttg:get_state('shop_chances'), 'merchandise')
-    self:populate_items(shop_sizes.units, pttg:get_state('recruit_chances'), 'units')
+    self:populate_items(shop_sizes.units, pttg:get_state('recruit_chances')[cursor.z], 'units')
 end
 
 function pttg_glory_shop:disable_shop_button()

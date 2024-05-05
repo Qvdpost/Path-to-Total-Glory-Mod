@@ -244,7 +244,7 @@ end
 
 function pttg_merc_pool:add_agent_list(agents)
     for _, agent in pairs(agents) do
-        self:add_unit(agent)
+        self:add_agent(agent)
     end
 end
 

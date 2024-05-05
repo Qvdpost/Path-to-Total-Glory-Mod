@@ -89,6 +89,30 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		template.subculture, template.alignment))
 	pttg:log(string.format("[generate_random_army] %s, %s", #template.mandatory_units, #template.units))
 
+	for _, agent in pairs(template.agents) do 
+		-- TODO: Add agents to mandatory units
+		if agent == 'random' then
+			local agent_key = pttg_merc_pool:get_random_agent(template.faction).agent
+			local unit_key = pttg_merc_pool.agent_to_unit[agent_key]
+			local unit_info = pttg_merc_pool.merc_units[unit_key]
+			pttg:log("Adding random agent of type: "..agent_key.." of unit type: "..tostring(unit_key))
+			self:add_mandatory_unit(key, unit_info, 1)
+		elseif type(agent) == 'table' then
+			local agent_key = pttg_merc_pool:get_random_agent(template.faction, agent).agent
+			local unit_key = pttg_merc_pool.agent_to_unit[agent_key]
+			local unit_info = pttg_merc_pool.merc_units[unit_key]
+			pttg:log("Adding random agent of type: "..agent_key.." of unit type: "..tostring(unit_key))
+			self:add_mandatory_unit(key, unit_info, 1)
+		elseif pttg_merc_pool.agent_to_unit[agent] then
+			local unit_key = pttg_merc_pool.agent_to_unit[agent]
+			local unit_info = pttg_merc_pool.merc_units[unit_key]
+			pttg:log("Adding random agent of type: "..agent.." of unit type: "..tostring(unit_key))
+			self:add_mandatory_unit(key, unit_info, 1)
+		end
+		-- TODO: should we reduce the force size?
+		num_units = num_units - 1
+	end
+
 	if #template.mandatory_units > 0 then
 		for _, unit in pairs(template.mandatory_units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]

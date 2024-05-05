@@ -91,11 +91,19 @@ function pttg_side_effects:grant_characters_levels(amount)
    
 end
 
-function pttg_side_effects:add_agent_to_force(agent_info)
-    local force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
-    local faction = cm:get_local_faction()
+function pttg_side_effects:add_agent_to_force(agent_info, force)
+    if not force then
+        force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+    end
+    local faction = force:faction()
 
-    local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), faction:home_region():name(), false, true, 10)
+    local home = faction:home_region()
+
+    if not home.name then
+        home = pttg_tele:get_random_region()
+    end
+
+    local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), home:name(), false, true, 10)
     local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.agent, agent_x, agent_y)
 
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
@@ -103,7 +111,7 @@ function pttg_side_effects:add_agent_to_force(agent_info)
 end
 
 function pttg_RandomStart_callback(context)
-    local choice = 'SECOND' -- context:choice_key()
+    local choice = context:choice_key()
 
     if choice == 'SECOND' or choice == 'THIRD' then
         local military_force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))

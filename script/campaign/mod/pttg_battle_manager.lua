@@ -1,4 +1,7 @@
 local pttg = core:get_static_object("pttg");
+local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
+local pttg_side_effects = core:get_static_object("pttg_side_effects")
+
 
 
 function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
@@ -14,6 +17,7 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     opt_player_defeat_incident,
     opt_general_subtype,
     opt_general_level,
+    opt_agents,
     opt_effect_bundle,
     opt_player_is_generated_force
 )
@@ -127,16 +131,6 @@ function Forced_Battle_Manager:pttg_trigger_forced_elite_battle_with_generated_a
     local player_force_general_cqi = cm:get_character_by_mf_cqi(target_force_cqi):command_queue_index()
     local x, y = cm:find_valid_spawn_location_for_character_from_character(generated_force_faction,
         "character_cqi:" .. player_force_general_cqi, false, 6)
-
-    local character = cm:get_military_force_by_cqi(target_force_cqi):general_character()
-    local lookup = cm:char_lookup_str(character)
-    local current_character_rank = character:rank()
-    local character_rank = opt_general_level
-
-    ---@diagnostic disable-next-line: undefined-field
-    local xp = cm.character_xp_per_level[math.min(current_character_rank + character_rank, 50)] - cm.character_xp_per_level[current_character_rank]
-
-    cm:add_agent_experience(lookup, xp)
 
     pttg:log(string.format("[trigger_forced_battle] Forced battle spawned at %i,%i.", x, y))
 

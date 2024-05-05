@@ -78,7 +78,7 @@ end
 
 function pttg_effect_pool:init_effects()
     local effects_all = {
-        ["pttg_EventGlory"] = { weight = 10, acts = { [1] = true, [2] = true }, alignment = { upper = 10, lower = nil }, faction_set = 'all', callback = pttg_EventGlory_callback },
+        
     }
     self:add_effects(effects_all)
 

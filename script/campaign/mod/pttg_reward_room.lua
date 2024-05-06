@@ -15,7 +15,13 @@ core:add_listener(
         pttg:log(string.format("Choice: %s", context:choice_key()))
 
         if context:choice_key() == 'FIRST' then -- Recruit Reward
-            core:trigger_custom_event('pttg_recruit_reward', {})
+            local cursor = pttg:get_cursor()
+            core:trigger_custom_event('pttg_recruit_reward', { 
+                recruit_count = pttg:get_state('recruit_count'), 
+                recruit_chances = pttg:get_state("recruit_chances")[cursor.z], 
+                unique_only = false,
+                recruit_glory=pttg:get_state('glory_recruit_default')[cursor.z] 
+            })
             return true
         elseif context:choice_key() == 'SECOND' then -- WoM reward
             pttg:log("[pttg_RewardChosen] Increasing WoM.")

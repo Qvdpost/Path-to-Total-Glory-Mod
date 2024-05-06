@@ -119,17 +119,18 @@ local pttg_battle_templates = {
     distributions = {
         ["default"] = { -- NOTE: Should sum to 100
             melee_infantry     = 35,
-            missile_infantry   = 10,
+            missile_infantry   = 15,
             monstrous_infantry = 10,
             melee_cavalry      = 7,
             missile_cavalry    = 5,
-            war_beast          = 7,
+            war_beast          = 5,
             chariot            = 5,
-            monstrous_cavalry  = 7,
+            monstrous_cavalry  = 5,
             warmachine         = 7,
-            monster            = 7,
+            monster            = 6,
         }
-    }
+    },
+    excluded_army_templates = {}
 }
 
 function pttg_battle_templates:add_template(category, key, info)
@@ -272,8 +273,8 @@ local function init()
         ["pttg_elite_lizardmen"] = { general_subtype="wh2_dlc12_lzd_tehenhauin", faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", mandatory_units = {}, units = {}, alignment = 'order', act = 1 },
         ["pttg_elite_greenskins"] = { general_subtype="wh_dlc06_grn_wurrzag_da_great_prophet", faction = "pttg_grn_savage_orcs", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_savage_orcs", mandatory_units = {}, units = {}, alignment = 'neutral', act = 1 },
         ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = { { key = "wh2_dlc16_wef_mon_malicious_treeman_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treeman_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_wolves_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_malicious_treekin_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_hawks_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_feral_manticore", weight = 5 }, { key = "wh2_dlc16_wef_mon_giant_spiders_0", weight = 10 }, { key = "wh_dlc05_wef_mon_great_eagle_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treekin_0", weight = 20 }, { key = "wh2_dlc16_wef_mon_cave_bats", weight = 20 }, { key = "wh2_dlc16_wef_inf_malicious_dryads_0", weight = 40 }, { key = "wh_dlc05_wef_inf_dryads_0", weight = 40 }, }, alignment = 'order', act = { 1, 2 } },
-        ["pttg_elite_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {{ "wh_main_vmp_mon_terrorgheist" }}, units = { { key = "wh_main_vmp_inf_zombie", weight = 10 }, { key = "wh_main_vmp_mon_fell_bats", weight = 10 }, { key = "wh_main_vmp_mon_dire_wolves", weight = 10 }, { key = "wh_dlc04_vmp_veh_corpse_cart_0", weight = 5 }, { key = "wh_main_vmp_inf_crypt_ghouls", weight = 30 }, { key = "wh_main_vmp_mon_crypt_horrors", weight = 20 } }, alignment = 'neutral', act = 1 },
-        ["pttg_elite_beastmen"] = { general_subtype="wh_dlc03_bst_malagor", faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", agents={"random"}, mandatory_units = {{key="wh2_dlc17_bst_cha_doombull_0"}}, units = {}, alignment = 'chaos', act = 1 }, -- TODO: use agents and map to land units to add characters to armies.
+        ["pttg_elite_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {{ key="wh_main_vmp_mon_terrorgheist" }}, units = { { key = "wh_main_vmp_inf_zombie", weight = 10 }, { key = "wh_main_vmp_mon_fell_bats", weight = 10 }, { key = "wh_main_vmp_mon_dire_wolves", weight = 10 }, { key = "wh_dlc04_vmp_veh_corpse_cart_0", weight = 5 }, { key = "wh_main_vmp_inf_crypt_ghouls", weight = 30 }, { key = "wh_main_vmp_mon_crypt_horrors", weight = 20 } }, alignment = 'neutral', act = 1 },
+        ["pttg_elite_beastmen"] = { general_subtype="wh_dlc03_bst_malagor", faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", agents={"random"}, mandatory_units = {}, units = {}, alignment = 'chaos', act = 1 }, -- TODO: use agents and map to land units to add characters to armies.
     }
 
     -- TODO fix the commented templates with cool mili groups or units

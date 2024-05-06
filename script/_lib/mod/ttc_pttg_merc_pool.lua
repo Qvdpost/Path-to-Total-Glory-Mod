@@ -156,7 +156,7 @@ local pttg_merc_pool = {
     },
     faction_to_agents = {},
     agent_types = {"champion", "dignitary", "engineer", "runesmith", "spy", "wizard"},
-    agent_to_unit = {}
+    agents = {}
         
 }
 
@@ -237,8 +237,7 @@ function pttg_merc_pool:add_agent(agent_info)
     end
     
     table.insert(self.faction_to_agents[agent_info.faction][agent_info.type], agent_info.subtype)
-    self.agent_to_unit[agent_info.subtype] = agent_info.unit
-    self:add_unit({ agent_info.unit, "core", 1, { military_groupings = {"agents"}, category = "com", tier = 4, cost = 4 }})
+    self.agents[agent_info.subtype] = { key=agent_info.subtype, type=agent_info.type }
     
 end
 
@@ -362,18 +361,18 @@ function pttg_merc_pool:get_random_agent(faction_key, agent_type)
 
     if type(agent_type) == "string" then
         for _, agent in pairs(self.faction_to_agents[faction_key][agent_type] or {}) do
-            table.insert(agents, {agent=agent, type=agent_type})
+            table.insert(agents, {key=agent, type=agent_type})
         end
     elseif type(agent_type) == "table" then
         for _, subtype in pairs(agent_type) do
             for _, agent in pairs(self.faction_to_agents[faction_key][subtype] or {}) do
-                table.insert(agents, {agent=agent, type=subtype})
+                table.insert(agents, {key=agent, type=subtype})
             end
         end
     else
         for _, subtype in pairs(self.agent_types) do
             for _, agent in pairs(self.faction_to_agents[faction_key][subtype] or {}) do
-                table.insert(agents, {agent=agent, type=subtype})
+                table.insert(agents, {key=agent, type=subtype})
             end
         end
     end
@@ -409,12 +408,12 @@ function pttg_merc_pool:trigger_recruitment(amount, recruit_chances, unique_only
         local offset = pttg:get_state('recruit_rarity_offset')
         local rando_tier = cm:random_number(100) + (offset / 2)
         pttg:log(string.format("[pttg_RecruitReward] Adding tier for roll %s(%s)", rando_tier, offset))
-        if rando_tier < recruit_chances[1] then
+        if rando_tier < recruit_chances[1] or recruit_chances[1] >= recruit_chances[2] then
             rando_tiers[1] = rando_tiers[1] + 1
             pttg:set_state('recruit_rarity_offset', math.min(40, offset + 1))
-        elseif rando_tier < recruit_chances[2] then
+        elseif rando_tier < recruit_chances[2] or recruit_chances[2] >= recruit_chances[3] then
             rando_tiers[2] = rando_tiers[2] + 1
-            if recruit_chances[2] >= 120 then -- offset is max 40 and halved when added to the random tier. 
+            if recruit_chances[2] >= recruit_chances[3] then 
                 -- reset rarity offset if this is the max attainable rarity
                 pttg:set_state('recruit_rarity_offset', -5)
             end
@@ -475,7 +474,7 @@ local function init_merc_list()
         {"wh3_main_cth_cav_jade_longma_riders_0", "rare", 2, { military_groupings = {"wh3_main_cth"}, category = "monstrous_cavalry", tier = nil, cost = 3 }},
         {"wh3_main_cth_art_fire_rain_rocket_battery_0", "rare", 2, { military_groupings = {"wh3_main_cth"}, category = "warmachine", tier = nil, cost = 4 }},
         {"wh3_main_cth_mon_terracotta_sentinel_0", "rare", 3, { military_groupings = {"wh3_main_cth"}, category = "monster", tier = nil, cost = 4 }},
-        {"wh3_main_cth_veh_war_compass_0", "rare", 2, { military_groupings = {"wh3_main_cth"}, category = "chariot", tier = nil, cost = 3 }},
+        {"wh3_main_cth_veh_war_compass_0", "rare", 1, { military_groupings = {"wh3_main_cth"}, category = "chariot", tier = nil, cost = 3 }},
         {"wh3_main_kho_inf_bloodletters_0", "core", 2, { military_groupings = {"wh3_dlc20_group_chs_valkia","wh3_main_dae","wh3_main_group_belakor","wh3_main_kho","wh3_main_pro_kho"}, category = "melee_infantry", tier = nil, cost = 2 }},
         {"wh3_main_kho_inf_chaos_warhounds_0", "core", 3, { military_groupings = {"wh3_main_dae","wh3_main_kho","wh3_main_pro_kho"}, category = "war_beast", tier = nil, cost = 1 }},
         {"wh3_main_kho_inf_chaos_warriors_0", "core", 1, { military_groupings = {"wh2_main_rogue_hung_warband","wh3_dlc20_group_chs_valkia","wh3_main_dae","wh3_main_group_belakor","wh3_main_kho","wh3_main_pro_kho","wh_main_group_chaos"}, category = "melee_infantry", tier = nil, cost = 2 }},
@@ -1122,54 +1121,54 @@ local function init_merc_list()
         {"wh3_dlc24_tze_inf_tzaangors", "special", 1, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "melee_infantry", tier = nil, cost = 3 }},
         {"wh3_dlc24_tze_mon_cockatrice", "rare", 2, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "monster", tier = nil, cost = 4 }},
         {"wh3_dlc24_tze_mon_mutalith_vortex_beast", "rare", 3, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "monster", tier = nil, cost = 4 }},
-        {"wh3_dlc24_tze_mon_flamers_changebringers", "rare", 3, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 4 }},
+        {"wh3_dlc24_tze_mon_flamers_changebringers", "rare", 2, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 4 }},
         {"wh3_dlc24_ksl_mon_frost_wyrm", "rare", 2, { military_groupings = {"wh3_main_ksl"}, category = "monster", tier = nil, cost = 4 }},
         {"wh3_dlc24_cth_mon_great_moon_bird", "special", 3, { military_groupings = {"wh3_main_cth"}, category = "monster", tier = nil, cost = 3 }},
         {"wh3_dlc24_ksl_inf_kislevite_warriors", "core", 1, { military_groupings = {"wh3_main_ksl"}, category = "melee_infantry", tier = nil, cost = 1 }},
-        {"wh3_dlc24_tze_inf_centigors_great_weapons", "special", 1, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "melee_cavalry", tier = nil, cost = 3 }},
+        {"wh3_dlc24_tze_inf_centigors_great_weapons", "rare", 1, { military_groupings = {"wh3_dlc20_group_chs_vilitch","wh3_main_dae","wh3_main_group_belakor","wh3_main_tze","wh_main_group_chaos"}, category = "melee_cavalry", tier = nil, cost = 3 }},
+        {"wh3_dlc24_bst_inf_centigors_great_weapons_mtze", "rare", 1, { military_groupings = {"wh_dlc03_group_beastmen"}, category = "melee_cavalry", tier = nil, cost = 3 }},
         {"wh3_dlc24_cth_mon_celestial_lion", "rare", 2, { military_groupings = {"wh3_main_cth"}, category = "monster", tier = nil, cost = 4 }},
-        {"wh3_dlc25_bst_inf_pestigors", "core", 2, { military_groupings = {"wh_dlc03_group_beastmen"}, category = "melee_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_dwf_art_goblin_hewer", "rare", 2, { military_groupings = {"wh_main_group_dwarfs"}, category = "warmachine", tier = nil, cost = 2 }},
-        {"wh3_dlc25_dwf_inf_doomseekers", "special", 3, { military_groupings = {"wh_main_group_dwarfs"}, category = "melee_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_dwf_inf_slayer_pirates", "special", 2, { military_groupings = {"wh_main_group_dwarfs"}, category = "missile_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_dwf_inf_thunderers_grudge_rakers", "special", 3, { military_groupings = {"wh_main_group_dwarfs"}, category = "missile_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_dwf_veh_thunderbarge", "rare", 3, { military_groupings = {"wh_main_group_dwarfs"}, category = "warmachine", tier = nil, cost = 2 }},
-        {"wh3_dlc25_emp_cav_knights_of_the_black_rose", "special", 2, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "melee_cavalry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_emp_inf_hochland_long_rifles", "special", 2, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "missile_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_emp_inf_nuln_ironsides", "special", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "missile_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_emp_veh_marienburg_land_ship", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland"}, category = "chariot", tier = nil, cost = 2 }},
-        {"wh3_dlc25_emp_veh_steam_tank_volley_gun", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland"}, category = "chariot", tier = nil, cost = 2 }},
-        {"wh3_dlc25_nur_cav_rot_knights", "special", 3, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "melee_cavalry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_art_hellcannon", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_cav_chaos_chariot_mnur", "", 4, { military_groupings = {"other"}, category = "chariot", tier = nil, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_cav_rot_knights", "special", 3, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_inf_aspiring_champions_0", "rare", 1, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_inf_centigors_1", "special", 1, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = nil }},
+        {"wh3_dlc25_bst_inf_pestigors", "special", 1, { military_groupings = {"wh_dlc03_group_beastmen"}, category = "melee_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_dwf_art_goblin_hewer", "rare", 1, { military_groupings = {"wh_main_group_dwarfs"}, category = "warmachine", tier = nil, cost = 3 }},
+        {"wh3_dlc25_dwf_inf_doomseekers", "special", 2, { military_groupings = {"wh_main_group_dwarfs"}, category = "melee_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_dwf_inf_slayer_pirates", "rare", 1, { military_groupings = {"wh_main_group_dwarfs"}, category = "missile_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_dwf_inf_thunderers_grudge_rakers", "special", 1, { military_groupings = {"wh_main_group_dwarfs"}, category = "missile_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_dwf_veh_thunderbarge", "rare", 3, { military_groupings = {"wh_main_group_dwarfs"}, category = "warmachine", tier = nil, cost = 4 }},
+        {"wh3_dlc25_emp_cav_knights_of_the_black_rose", "special", 2, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "melee_cavalry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_emp_inf_hochland_long_rifles", "special", 1, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "missile_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_emp_inf_nuln_ironsides", "special", 1, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "missile_infantry", tier = nil, cost = 2 }},
+        {"wh3_dlc25_emp_veh_marienburg_land_ship", "rare", 2, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland"}, category = "chariot", tier = nil, cost = 4 }},
+        {"wh3_dlc25_emp_veh_steam_tank_volley_gun", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland"}, category = "chariot", tier = nil, cost = 4 }},
+        {"wh3_dlc25_nur_cav_rot_knights", "special", 3, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "melee_cavalry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_nur_chieftain_art_hellcannon", "rare", 2, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_cav_chaos_chariot_mnur", "core", 3, { military_groupings = {"other"}, category = "chariot", tier = nil, cost = 2 }},
+        {"wh3_dlc25_nur_chieftain_cav_rot_knights", "special", 2, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_nur_chieftain_inf_aspiring_champions_0", "special", 1, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_inf_centigors_1", "special", 1, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = 3 }},
         {"wh3_dlc25_nur_chieftain_inf_chaos_dwarf_blunderbusses", "core", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 2 }},
         {"wh3_dlc25_nur_chieftain_inf_cygor_0", "rare", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = nil }},
-        {"wh3_dlc25_nur_chieftain_inf_infernal_guard_fireglaives", "special", 1, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_dragon_ogre_shaggoth", "rare", 2, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_fimir_0", "special", 1, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monstrous_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_fimir_1", "special", 1, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monstrous_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_frost_wyrm_0", "rare", 3, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monster", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_ghorgon", "rare", 2, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_skinwolves_0", "special", 2, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_toad_dragon", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_war_mammoth_0", "rare", 1, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_mon_war_mammoth_1", "rare", 2, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_chieftain_veh_dreadquake_mortar", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_inf_pestigors", "core", 1, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "melee_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_inf_plague_ogres_great_weapons", "special", 3, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monstrous_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_nur_inf_plague_ogres", "special", 2, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_nur_mon_bile_trolls", "special", 2, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 2 }},
-        {"wh3_dlc25_nur_mon_toad_dragon", "rare", 3, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monster", tier = nil, cost = 2 }},
-        {"wh3_dlc25_dwf_art_goblin_hewer_malakai", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 2 }},
-        {"wh3_dlc25_dwf_veh_thunderbarge_malakai", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 2 }},
-        {"wh3_dlc25_emp_art_helstorm_rocket_battery_morr", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "warmachine", tier = 4, cost = 2 }},
-        {"wh3_dlc25_emp_cav_knights_of_the_black_rose", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order","wh_main_group_empire_reikland","wh_main_group_teb"}, category = "melee_cavalry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_emp_cav_outriders_morr", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "melee_cavalry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_emp_inf_nuln_ironsides_morr", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "missile_infantry", tier = 4, cost = 2 }},
-        {"wh3_dlc25_emp_veh_marienburg_land_ship_morr", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "chariot", tier = 4, cost = 2 }},
+        {"wh3_dlc25_nur_chieftain_inf_infernal_guard_fireglaives", "special", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_nur_chieftain_mon_dragon_ogre_shaggoth", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_mon_fimir_0", "rare", 1, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monstrous_infantry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_nur_chieftain_mon_fimir_1", "rare", 1, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monstrous_infantry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_nur_chieftain_mon_frost_wyrm_0", "rare", 2, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monster", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_mon_ghorgon", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_mon_skinwolves_0", "special", 2, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_nur_chieftain_mon_toad_dragon", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_mon_war_mammoth_0", "rare", 2, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_mon_war_mammoth_1", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_chieftain_veh_dreadquake_mortar", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 4 }},
+        {"wh3_dlc25_nur_inf_pestigors", "special", 1, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "melee_infantry", tier = nil, cost = 2 }},
+        {"wh3_dlc25_nur_inf_plague_ogres_great_weapons", "rare", 2, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_nur_inf_plague_ogres", "rare", 2, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_nur_mon_bile_trolls", "rare", 2, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monstrous_infantry", tier = nil, cost = 3 }},
+        {"wh3_dlc25_nur_mon_toad_dragon", "rare", 3, { military_groupings = {"wh3_dlc20_group_chs_festus","wh3_dlc25_nur_tamurkhan","wh3_main_dae","wh3_main_group_belakor","wh3_main_nur","wh_main_group_chaos"}, category = "monster", tier = nil, cost = 4 }},
+        {"wh3_dlc25_dwf_art_goblin_hewer_malakai", "rare", 1, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 3 }},
+        {"wh3_dlc25_dwf_veh_thunderbarge_malakai", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 4 }},
+        {"wh3_dlc25_emp_art_helstorm_rocket_battery_morr", "rare", 2, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "warmachine", tier = 4, cost = 4 }},
+        {"wh3_dlc25_emp_cav_outriders_morr", "special", 2, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "melee_cavalry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_emp_inf_nuln_ironsides_morr", "special", 2, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "missile_infantry", tier = 4, cost = 3 }},
+        {"wh3_dlc25_emp_veh_marienburg_land_ship_morr", "rare", 2, { military_groupings = {"wh3_dlc25_group_elspeth"}, category = "chariot", tier = 4, cost = 4 }},
         {"wh2_dlc09_tmb_cav_necropolis_knights_ror", "rare", 3, { military_groupings = {"wh2_dlc09_tomb_kings","wh2_dlc09_tomb_kings_arkhan"}, category = "monstrous_cavalry", tier = 4, cost = 4 }},
         {"wh2_dlc09_tmb_cav_nehekhara_horsemen_ror", "rare", 3, { military_groupings = {"wh2_dlc09_tomb_kings","wh2_dlc09_tomb_kings_arkhan"}, category = "melee_cavalry", tier = 4, cost = 4 }},
         {"wh2_dlc09_tmb_inf_nehekhara_warriors_ror", "rare", 3, { military_groupings = {"wh2_dlc09_tomb_kings","wh2_dlc09_tomb_kings_arkhan"}, category = "melee_infantry", tier = 4, cost = 4 }},
@@ -1244,15 +1243,10 @@ local function init_merc_list()
         {"wh2_dlc15_hef_inf_archers_ror_0", "rare", 3, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_arcane_phoenix_ror_0", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_black_dragon_imrik", "rare", 3, { military_groupings = {"wh2_main_hef_imrik"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh2_dlc15_hef_mon_black_dragon_imrik_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_forest_dragon_imrik", "rare", 3, { military_groupings = {"wh2_main_hef_imrik"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh2_dlc15_hef_mon_forest_dragon_imrik_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_moon_dragon_imrik", "rare", 3, { military_groupings = {"wh2_main_hef_imrik"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh2_dlc15_hef_mon_moon_dragon_imrik_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_star_dragon_imrik", "rare", 3, { military_groupings = {"wh2_main_hef_imrik"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh2_dlc15_hef_mon_star_dragon_imrik_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_sun_dragon_imrik", "rare", 3, { military_groupings = {"wh2_main_hef_imrik"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh2_dlc15_hef_mon_sun_dragon_imrik_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc15_hef_mon_war_lions_of_chrace_ror_0", "rare", 3, { military_groupings = {"other"}, category = "war_beast", tier = 4, cost = 4 }},
         {"wh2_dlc16_skv_mon_hell_pit_abomination_ror_0", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh2_dlc16_skv_mon_rat_ogre_mutant_ror_0", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
@@ -1291,7 +1285,6 @@ local function init_merc_list()
         {"wh3_dlc25_dwf_inf_slayer_pirates_ror", "rare", 3, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 4 }},
         {"wh3_dlc25_dwf_inf_thunderers_ror", "rare", 3, { military_groupings = {"wh_main_group_dwarfs"}, category = "missile_infantry", tier = 4, cost = 4 }},
         {"wh3_dlc25_dwf_veh_thunderbarge_grungni", "rare", 3, { military_groupings = {"wh_main_group_dwarfs"}, category = "warmachine", tier = 4, cost = 4 }},
-        {"wh3_dlc25_dwf_veh_thunderbarge_grungni_mp", "rare", 3, { military_groupings = {"other"}, category = "warmachine", tier = 4, cost = 4 }},
         {"wh3_dlc25_emp_inf_hochland_long_rifles_ror", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order"}, category = "missile_infantry", tier = 4, cost = 4 }},
         {"wh3_dlc25_emp_inf_spearmen_shields_ror", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order"}, category = "melee_infantry", tier = 4, cost = 4 }},
         {"wh3_dlc25_emp_veh_marienburg_land_ship_ror", "rare", 3, { military_groupings = {"wh3_dlc25_group_elspeth","wh_main_group_empire","wh_main_group_empire_golden_order"}, category = "chariot", tier = 4, cost = 4 }},
@@ -1366,16 +1359,9 @@ local function init_merc_list()
         {"wh_dlc06_grn_inf_da_warlords_boyz_0", "rare", 3, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4 }},
         {"wh_dlc06_grn_inf_krimson_killerz_0", "rare", 3, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4 }},
         {"wh_dlc06_grn_mon_venom_queen_0", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh_dlc08_bst_mon_cygor_boss", "rare", 3, { military_groupings = {"other"}, category = "lord", tier = 4, cost = 4 }},
-        {"wh_dlc08_chs_mon_dragon_ogre_shaggoth_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh_dlc08_grn_mon_giant_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh_dlc08_nor_art_hellcannon_battery", "rare", 3, { military_groupings = {"wh3_dlc23_group_chaos_dwarfs"}, category = "warmachine", tier = 4, cost = 4 }},
-        {"wh_dlc08_nor_mon_frost_wyrm_boss", "rare", 3, { military_groupings = {"wh_main_group_norsca"}, category = "monster", tier = 4, cost = 4 }},
         {"wh_dlc08_nor_mon_frost_wyrm_ror_0", "rare", 3, { military_groupings = {"wh_main_group_norsca"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh_dlc08_nor_mon_war_mammoth_boss", "rare", 3, { military_groupings = {"wh_main_group_norsca","wh_main_group_norsca_steppe"}, category = "monster", tier = 4, cost = 4 }},
         {"wh_dlc08_nor_mon_war_mammoth_ror_1", "rare", 3, { military_groupings = {"wh_main_group_norsca","wh_main_group_norsca_steppe"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh_dlc08_vmp_mon_terrorgheist_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh_dlc08_wef_forest_dragon_boss", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4 }},
         {"wh_pro04_brt_cav_knights_errant_ror_0", "rare", 3, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = 4 }},
         {"wh_pro04_brt_cav_knights_of_the_realm_ror_0", "rare", 3, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = 4 }},
         {"wh_pro04_brt_cav_mounted_yeomen_ror_0", "rare", 3, { military_groupings = {"other"}, category = "missile_cavalry", tier = 4, cost = 4 }},
@@ -1419,14 +1405,6 @@ local function init_merc_list()
         {"wh2_dlc13_emp_inf_spearmen_ror_0", "rare", 3, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4 }},
         {"wh2_dlc13_emp_inf_swordsmen_ror_0", "rare", 3, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4 }},
         {"wh2_dlc13_emp_veh_steam_tank_ror_0", "rare", 3, { military_groupings = {"other"}, category = "chariot", tier = 4, cost = 4 }},
-        {"wh2_dlc14_skv_inf_eshin_triads_ror_summoned_0", "rare", 3, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_cav_gryphon_legion_ror_0", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "melee_cavalry", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_inf_ice_guard_ror_0", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "missile_infantry", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_inf_ice_guard_ror_1", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "missile_infantry", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_mon_elemental_bear_ror_0", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_mon_snow_leopard_ror_0", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "monster", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_veh_heavy_war_sled_ror_0", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "chariot", tier = 4, cost = 4 }},
-        {"wh3_main_pro_ksl_veh_light_war_sled_ror_0", "rare", 3, { military_groupings = {"wh3_main_pro_ksl"}, category = "chariot", tier = 4, cost = 4 }},
     }
     
     local agents = {

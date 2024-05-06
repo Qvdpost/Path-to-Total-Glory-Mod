@@ -31,7 +31,7 @@ core:add_listener(
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))
 
-        Forced_Battle_Manager:pttg_trigger_forced_elite_battle_with_generated_army(
+        Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
             pttg:get_state('army_cqi'),             --	target_force_cqi
             invasion_faction,                       --	generated_force_faction
             invasion_template,                      --	generated_force_template
@@ -44,6 +44,7 @@ core:add_listener(
             "pttg_battle_defeat",                   --	opt_player_defeat_incident
             invasion_template_army.general_subtype, --	opt_general_subtype
             general_level,                          --	opt_general_level
+            invasion_template_army.agents,
             nil                                     --	opt_effect_bundle TODO: add effect bundles
         )
     end,
@@ -57,7 +58,6 @@ core:add_listener(
     function(context)
         pttg_glory:reward_glory(35, 25)
 
-
         cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
             function()
                 pttg_mod_wom:increase(10)
@@ -67,8 +67,15 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_PostRoomBattle")
 
-        core:trigger_custom_event('pttg_recruit_reward',
-            { recruit_chances = pttg:get_state("elite_recruit_chances"), unique_only = true })
+        local cursor = pttg:get_cursor()
+
+        core:trigger_custom_event('pttg_recruit_reward', { 
+            recruit_count = pttg:get_state('recruit_count'), 
+            recruit_chances = pttg:get_state("elite_recruit_chances")[cursor.z], 
+            unique_only = true,
+            recruit_glory=pttg:get_state('glory_recruit_elite')[cursor.z] 
+        })
+
     end,
     true
 )

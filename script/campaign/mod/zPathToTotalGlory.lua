@@ -29,8 +29,6 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_teleport_region", pttg_tele.teleport_to_random_region, pttg_tele, { 100 })
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera_on_resolve",  pttg_UI.center_camera, pttg_UI, {}, 3)
 
-    pttg_upkeep:add_callback("pttg_RecruitReward", "pttg_add_initial_recruit_glory", pttg_glory.add_initial_recruit_glory, pttg_glory)
-
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
     
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)

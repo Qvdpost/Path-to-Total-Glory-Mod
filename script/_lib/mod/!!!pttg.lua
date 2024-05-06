@@ -30,12 +30,16 @@ local pttg = {
         active_shop_items = {},
         recruitable_mercs = {},
         recruit_chances = {
-            { 120, 121, 121 }, -- act one, only core units
+            { 100, 100, 100 }, -- act one, only core units
             { 80, 120, 120 }, -- only core & special
             { 65, 95, 100 },
         },
-        elite_recruit_chances = { 50, 95, 100 },
-        boss_recruit_chances = { -5, -5, 100 },
+        elite_recruit_chances = {
+            { 50, 100, 100 },
+            { 50, 95, 100 },
+            { 40, 85, 100 },
+        },
+        boss_recruit_chances = { -10, -5, 100 },
         recruit_rarity_offset = -5,
         recruit_count = 5,
         excluded_items = {},
@@ -46,7 +50,9 @@ local pttg = {
         glory_reward_modifier = 1,
         glory_recruit_modifier = 1,
         excluded_effect_pool = {},
-        glory_recruit_default = {2, 3, 4}
+        glory_recruit_default = {2, 3, 4},
+        glory_recruit_elite = {3, 4, 4},
+        glory_recruit_boss = 4
     },
     
     persistent_keys = {

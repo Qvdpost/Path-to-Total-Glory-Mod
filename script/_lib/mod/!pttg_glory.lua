@@ -14,9 +14,8 @@ function pttg_glory:reward_glory(amount, min)
         amount)
 end
 
-function pttg_glory:add_initial_recruit_glory()
-    local act = pttg:get_cursor().z
-    local amount = pttg:get_state("glory_recruit_default")[act] * pttg:get_state("glory_recruit_modifier")
+function pttg_glory:add_initial_recruit_glory(amount)
+    local amount = amount * pttg:get_state("glory_recruit_modifier")
 
     cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_unit_reward_glory",
         "pttg_glory_unit_recruitment", amount)

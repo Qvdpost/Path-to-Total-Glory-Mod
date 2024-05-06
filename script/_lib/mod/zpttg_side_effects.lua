@@ -71,8 +71,11 @@ function pttg_side_effects:grant_general_levels(amount)
     cm:add_agent_experience(lookup, xp)
 end
 
-function pttg_side_effects:grant_characters_levels(amount)
-    local army_chars = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):character_list()
+function pttg_side_effects:grant_characters_levels(amount, force)
+    if not force then
+        force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+    end
+    local army_chars = force:character_list()
     for i = 0, army_chars:num_items()-1 do
         local character = army_chars:item_at(i)
         local lookup = cm:char_lookup_str(character)
@@ -104,7 +107,7 @@ function pttg_side_effects:add_agent_to_force(agent_info, force)
     end
 
     local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), home:name(), false, true, 10)
-    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.agent, agent_x, agent_y)
+    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.key, agent_x, agent_y)
 
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
     cm:embed_agent_in_force(agent, force)

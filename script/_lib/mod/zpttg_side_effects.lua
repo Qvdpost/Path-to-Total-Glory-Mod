@@ -130,7 +130,6 @@ function pttg_RandomStart_callback(context)
             home:name(), false, true, 10)
 
             cm:disable_event_feed_events(true, "wh_event_category_character", "", "");
-            cm:set_character_immortality(cm:char_lookup_str(general), false);
             cm:kill_character(cm:char_lookup_str(general), true);
             cm:callback(function() cm:disable_event_feed_events(false, "wh_event_category_character", "", "") end, 1) 
         
@@ -146,13 +145,10 @@ function pttg_RandomStart_callback(context)
                 "",
                 "",
                 "",
-                true,			
+                false,			
 			    -- Generals created this way does not come with a trait and aren't immortal
                 function(cqi)
 					pttg:log("[pttg_side_effects] Post processing new lord");
-					local char_str = cm:char_lookup_str(cqi);
-					-- Adding a new trait to the above general
-					cm:set_character_unique(char_str, true);
                     pttg:set_state('army_cqi', cm:get_character_by_cqi(cqi):military_force():command_queue_index())
 				end
             );
@@ -166,7 +162,7 @@ function pttg_RandomStart_callback(context)
         pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))
 
         -- Guarantee one rare.
-        pttg_merc_pool:trigger_recruitment(1, { -10, -10, 100 })
+        pttg_merc_pool:trigger_recruitment(1, { -10, -5, 100 })
         
         pttg_glory:add_recruit_glory(pttg:get_difficulty_mod('random_start_recruit_glory'))
     end

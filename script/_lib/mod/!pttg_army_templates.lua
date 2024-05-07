@@ -53,6 +53,8 @@ function PttG_ArmyTemplate:new(key, info)
     self.general_subtype = info.general_subtype
     self.agents = info.agents or {}
 
+    self.distribution = info.distribution
+
     setmetatable(self, { __index = PttG_ArmyTemplate })
     return self
 end

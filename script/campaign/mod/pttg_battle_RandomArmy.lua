@@ -112,10 +112,10 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		end
 	end
 
-	return self:generate_force(key, num_units, generate_as_table);
+	return self:generate_force(key, num_units, generate_as_table, template.distribution);
 end
 
-function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_as_table)
+function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_as_table, distribution)
 	local force = {};
 	local force_data = self:get_force_by_key(force_key);
 
@@ -150,7 +150,7 @@ function WH_Random_Army_Generator:generate_force(force_key, unit_count, return_a
 
 
 
-	local troop_distribution = pttg_battle_templates:get_distribution('default')
+	local troop_distribution = distribution or pttg_battle_templates:get_distribution('default')
 
 	local categorized_units = {}
 	for category, _ in pairs(troop_distribution) do

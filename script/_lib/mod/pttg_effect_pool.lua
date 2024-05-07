@@ -40,10 +40,35 @@ function PttG_Effect.repr(self)
     return string.format("Effect(%s): %s, %s.", self.key, self.faction_set, self.target)
 end
 
+PttG_CampaignEffect = {
+
+}
+
+function PttG_CampaignEffect:new(key, info)
+    local self = {}
+    if not key or not (type(info.callback) == 'function') then
+        script_error("Cannot add a campaign effect without a name_key or a callback.")
+        return false
+    end
+    
+    self.key = key
+    self.callback = info.callback
+    self.args = info.args or {}
+
+    setmetatable(self, { __index = PttG_CampaignEffect })
+    return self
+end
+
+function PttG_CampaignEffect.repr(self)
+    return string.format("CampaignEffect(%s)", self.key)
+end
+
 local pttg_effect_pool = {
     effect_pool = {},
     active_effect_pool = {},
-    excluded_effect_pool = {}
+    excluded_effect_pool = {},
+    campaign_effect_pool = {},
+    active_campaign_effects = {},
 }
 
 function pttg_effect_pool:add_effect(effect, bundle)
@@ -60,6 +85,38 @@ function pttg_effect_pool:add_effects(effects)
     end
 end
 
+function pttg_effect_pool:add_campaign_effect(key, info)
+    if self.campaign_effect_pool[key] then
+        script_error("Campaign effect already exists. Skipping "..key)
+        return false
+    end
+
+    local campaign_effect = PttG_CampaignEffect:new(key, info)
+    if not campaign_effect then
+        script_error("Could not create campaign effect. Skipping: "..key)
+        return false
+    end
+    pttg:log(string.format(
+        '[pttg_effect_pool] Adding campaign effect: %s',
+        campaign_effect.key)
+    )
+    self.campaign_effect_pool[campaign_effect.key] = campaign_effect
+end
+
+function pttg_effect_pool:activate_campaign_effect(key)
+    self.active_campaign_effects[key] = true
+    cm:set_saved_value('pttg_active_campaign_effects', self.active_campaign_effects)
+end
+
+function pttg_effect_pool:deactivate_campaign_effect(key)
+    self.active_campaign_effects[key] = nil
+    cm:set_saved_value('pttg_active_campaign_effects', self.active_campaign_effects)
+end
+
+function pttg_effect_pool:load_campaign_effects()
+    self.active_campaign_effects = cm:get_saved_value("pttg_active_campaign_effects") or {}
+end
+
 function pttg_effect_pool:exclude_effect(effect)
     self.excluded_effect_pool[effect] = true
 end
@@ -73,6 +130,14 @@ function pttg_effect_pool:apply_effect(key)
         cm:apply_custom_effect_bundle_to_character( effect.bundle, cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character())
     elseif effect.target == 'force' then 
         cm:apply_custom_effect_bundle_to_force(effect.bundle, cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
+    end
+end
+
+function pttg_effect_pool:apply_campaign_effects()
+    for key, _ in pairs(self.active_campaign_effects) do
+        pttg:log("Applying campaign effect: "..key)
+        local campaign_effect = self.campaign_effect_pool[key]
+        campaign_effect.callback(unpack(campaign_effect.args))
     end
 end
 

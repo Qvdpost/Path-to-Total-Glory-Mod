@@ -115,11 +115,18 @@ local pttg_battle_templates = {
             chaos = {}
         }
     },
+    other = {
+        {
+            order = {},
+            neutral = {},
+            chaos = {}
+        },
+    },
     factions = {
     },
     templates = {},
     distributions = {
-        ["default"] = { -- NOTE: Should sum to 100
+        default = { -- NOTE: Should sum to 100
             melee_infantry     = 35,
             missile_infantry   = 15,
             monstrous_infantry = 10,
@@ -138,13 +145,14 @@ local pttg_battle_templates = {
 function pttg_battle_templates:add_template(category, key, info)
     if self.templates[key] then
         pttg:log(string.format("Template %s already exists. Skipping", key))
+        return false
     end
 
     local template = PttG_ArmyTemplate:new(key, info)
 
     if not template then
         script_error(string.format("Template %s could not be created. Skipping", key))
-        return
+        return false
     end
 
 
@@ -188,6 +196,12 @@ function pttg_battle_templates:add_template(category, key, info)
             return false
         end
         table.insert(self.bosses[template.act][template.alignment], template)
+    elseif category == 'other' then
+        if not template.act or not type(template.act == 'number') then
+            script_error("[pttg_army_templates] Boss templates require an 'act' number parameter.")
+            return false
+        end
+        table.insert(self.other[template.act][template.alignment], template)
     else
         script_error(string.format("[pttg_army_templates] Category %s is not supported.", tostring(category)))
         return false
@@ -254,7 +268,7 @@ end
 
 function pttg_battle_templates:add_distribution(key, distribution)
     if self.distributions[key] then
-        pttg:log("Key [" .. key .. "] already exists. Skipping.")
+        pttg:log("Army distribution key [" .. key .. "] already exists. Skipping.")
         return false
     end
 
@@ -267,7 +281,7 @@ local function init()
     local bosses = {
         ["pttg_boss_kholek_suneater"] = { general_subtype="wh_dlc01_chs_kholek_suneater", agents={"random", "random"}, faction = "wh3_dlc20_chs_kholek", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {{key ="wh_dlc01_chs_mon_dragon_ogre"}, {key="wh_dlc01_chs_mon_dragon_ogre"}}, units = {}, alignment = 'chaos', act = 1 },
         ["pttg_boss_vlad_and_isabella"] = { general_subtype="wh_dlc04_vmp_vlad_con_carstein", agents={"wh_pro02_vmp_isabella_von_carstein_hero"}, faction = "pttg_vmp_vampire_counts", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {{key="wh_dlc02_vmp_cav_blood_knights_0"}, {key="wh_dlc02_vmp_cav_blood_knights_0"}}, units = {}, alignment = 'neutral', act = 1 },
-        ["wh3_main_cth_zhao_ming"] = { general_subtype="wh_dlc01_chs_kholek_suneater", agents={}, faction = "pttg_cth_cathay", culture = "wh3_main_cth_cathay", subculture = "wh3_main_sc_cth_cathay", mandatory_units = {{key="wh3_dlc24_cth_mon_celestial_lion"}}, units = {}, alignment = 'order', act = 1 },
+        ["wh3_main_cth_zhao_ming"] = { general_subtype="wh3_main_cth_zhao_ming", agents={}, faction = "pttg_cth_cathay", culture = "wh3_main_cth_cathay", subculture = "wh3_main_sc_cth_cathay", mandatory_units = {{key="wh3_dlc24_cth_mon_celestial_lion"}}, units = {}, alignment = 'order', act = 1 },
     }
 
     -- TODO Fix elite encounters.

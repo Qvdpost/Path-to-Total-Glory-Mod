@@ -3050,6 +3050,20 @@ local function init_merc_list()
     pttg_merc_pool:fix_factions()
 end
 
+function pttg_merc_pool:update_merc(merc)
+    merc_info = self.merc_units[merc.key]
+    for key, val in pairs(merc.info) do
+        if val ~= nil then
+            if type(val) == 'table' then
+                for _, item in pairs(val) do
+                    table.insert(merc_info[key], item)
+                end
+            else
+                merc_info[key] = val
+            end
+        end
+    end
+end
 
 function pttg_merc_pool:fix_factions()
     local mercenaries = {

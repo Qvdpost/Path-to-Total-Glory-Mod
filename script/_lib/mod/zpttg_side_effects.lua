@@ -2,6 +2,7 @@ local pttg = core:get_static_object("pttg");
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_tele = core:get_static_object("pttg_tele")
+local pttg_effect_pool = core:get_static_object("pttg_effect_pool")
 
 
 local pttg_side_effects = {
@@ -91,7 +92,6 @@ function pttg_side_effects:grant_characters_levels(amount, force)
             cm:add_agent_experience(lookup, xp)
         end
     end
-   
 end
 
 function pttg_side_effects:add_agent_to_force(agent_info, force)
@@ -112,6 +112,20 @@ function pttg_side_effects:add_agent_to_force(agent_info, force)
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
     cm:embed_agent_in_force(agent, force)
 end
+
+function pttg_side_effects.zany_mode()
+    for _, merc in pairs(pttg_merc_pool.merc_units) do
+        info_override =  { key = merc.key, info = { military_groupings = {pttg_merc_pool.faction_to_military_grouping[cm:get_local_faction_name()]} }}
+        pttg_merc_pool:update_merc(info_override)
+    end
+
+    pttg_merc_pool.merc_pool = {}
+    pttg_merc_pool:reset_merc_pool()
+    pttg_merc_pool:init_merc_pool()
+
+    pttg_effect_pool:activate_campaign_effect('pttg_zany_mode')
+end
+pttg_effect_pool:add_campaign_effect('pttg_zany_mode', {callback=pttg_side_effects.zany_mode})
 
 function pttg_RandomStart_callback(context)
     local choice = context:choice_key()
@@ -150,14 +164,14 @@ function pttg_RandomStart_callback(context)
                 function(cqi)
 					pttg:log("[pttg_side_effects] Post processing new lord");
                     pttg:set_state('army_cqi', cm:get_character_by_cqi(cqi):military_force():command_queue_index())
+
+                    local random_agent = pttg_merc_pool:get_random_agent(cm:get_local_faction_name())
+                    pttg_side_effects:add_agent_to_force(random_agent)
 				end
-            );
+            ); 
         else
             cm:remove_all_units_from_general(general)
         end
-
-        local random_agent = pttg_merc_pool:get_random_agent(cm:get_local_faction_name())
-        pttg_side_effects:add_agent_to_force(random_agent)
         
         pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))
 

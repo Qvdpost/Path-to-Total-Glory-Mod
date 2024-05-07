@@ -3,6 +3,7 @@ local pttg = core:get_static_object("pttg");
 local pttg_upkeep = {
     callbacks = {},
     valid_phases ={
+        ['pttg_init'] = true,
         ['pttg_ChooseStart'] = true,
         ['pttg_Idle'] = true,
         ['pttg_Rewards'] = true,

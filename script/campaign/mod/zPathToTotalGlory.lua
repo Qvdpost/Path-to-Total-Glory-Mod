@@ -8,6 +8,7 @@ local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
 local pttg_side_effects = core:get_static_object("pttg_side_effects")
+local pttg_effect_pool = core:get_static_object("pttg_effect_pool")
 
 
 local function init()
@@ -15,6 +16,11 @@ local function init()
     pttg_merc_pool:init_active_merc_pool()
 
     cm:disable_end_turn(true)
+
+    pttg_effect_pool:load_campaign_effects()
+    pttg_effect_pool:apply_campaign_effects()
+
+    pttg_upkeep:resolve("pttg_init")
 
     -- Add upkeep callbacks
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_recruit_glory", pttg_glory.reset_recruit_glory, pttg_glory)
@@ -40,7 +46,6 @@ local function init()
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_center_camera_post_battle",  pttg_UI.center_camera, pttg_UI)
-
 
 
     if not pttg:get_state('army_cqi') then
@@ -153,6 +158,8 @@ core:add_listener(
         pttg_upkeep:resolve("pttg_Rewards")
 
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
+        
+        pttg:set_state('cur_phase', "pending_reward")
     end,
     true
 )

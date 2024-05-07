@@ -5,6 +5,7 @@ local pttg_shop = core:get_static_object("pttg_glory_shop");
 function pttg_UI:init()
     pttg:log("[pttg_ui] Initialising UI and listeners")
     self:ui_created()
+    self:disable_event_feed()
 end
 
 function pttg_UI:get_or_create_map()
@@ -300,8 +301,27 @@ function pttg_UI:center_camera()
     )
 end
 
-function pttg_UI:flush_event_feed()
+function pttg_UI:disable_event_feed()
+    local events = {
+        "character_dies_battle",
+        "diplomacy_faction_destroyed",
+        "agent_recruited",
+        "diplomacy_trespassing",
+        "conquest_battle",
+        "character_ancillary_gained",
+        "character_ancillary_lost",
+        "character_ancillary_lost_stolen",
+        "faction_ancillary_gained",
+        "faction_ancillary_gained_stolen",
+        "military_unit_recruited",
+        "diplomacy_faction_encountered",
+        "diplomacy_faction_emerges",
+        "character_rank_gained"
+    }
     
+    for _, event in pairs(events) do
+        cm:disable_event_feed_events(true, "", "", event)
+    end
 end
 
 core:add_listener(
@@ -395,3 +415,5 @@ core:add_listener(
 )
 
 core:add_static_object("pttg_UI", pttg_UI);
+
+

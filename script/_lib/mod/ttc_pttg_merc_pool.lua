@@ -3051,6 +3051,7 @@ local function init_merc_list()
 end
 
 function pttg_merc_pool:update_merc(merc)
+    pttg:log("Updating merc ", merc.key)
     merc_info = self.merc_units[merc.key]
     for key, val in pairs(merc.info) do
         if val ~= nil then

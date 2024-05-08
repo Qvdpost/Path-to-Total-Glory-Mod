@@ -103,8 +103,12 @@ function pttg_effect_pool:add_campaign_effect(key, info)
     self.campaign_effect_pool[campaign_effect.key] = campaign_effect
 end
 
-function pttg_effect_pool:activate_campaign_effect(key)
-    self.active_campaign_effects[key] = true
+function pttg_effect_pool:update_campaign_effect_args(key, args)
+    pttg_effect_pool.campaign_effect_pool[key].args = args
+end
+
+function pttg_effect_pool:activate_campaign_effect(key, args)
+    self.active_campaign_effects[key] = args or pttg_effect_pool.campaign_effect_pool[key].args
     cm:set_saved_value('pttg_active_campaign_effects', self.active_campaign_effects)
 end
 
@@ -134,10 +138,10 @@ function pttg_effect_pool:apply_effect(key)
 end
 
 function pttg_effect_pool:apply_campaign_effects()
-    for key, _ in pairs(self.active_campaign_effects) do
+    for key, args in pairs(self.active_campaign_effects) do
         pttg:log("Applying campaign effect: "..key)
         local campaign_effect = self.campaign_effect_pool[key]
-        campaign_effect.callback(unpack(campaign_effect.args))
+        campaign_effect.callback(unpack(args))
     end
 end
 

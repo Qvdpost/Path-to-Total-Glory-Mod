@@ -347,6 +347,11 @@ core:add_listener(
     function(context)
         pttg:log("[pttg_ui] Next phase triggered")
 
+        local uim = cm:get_campaign_ui_manager();
+        if uim:get_open_blocking_panel() then
+            return
+        end
+
         pttg_UI:disable_next_phase_button()
         pttg_shop:disable_shop_button()
 
@@ -396,7 +401,10 @@ core:add_listener(
     function()
         pttg:log("[pttg_ui] panel opened.")
 
-        pttg_UI:disable_next_phase_button()
+        local uim = cm:get_campaign_ui_manager();
+        if uim:get_open_blocking_panel() then
+            pttg_UI:disable_next_phase_button()
+        end
     end,
     true
 )
@@ -407,6 +415,11 @@ core:add_listener(
     true,
     function()
         pttg:log("[pttg_ui] panel opened.")
+
+        local uim = cm:get_campaign_ui_manager();
+        if uim:get_open_blocking_panel() then
+            return
+        end
 
         pttg_UI:enable_next_phase_button()
     end,

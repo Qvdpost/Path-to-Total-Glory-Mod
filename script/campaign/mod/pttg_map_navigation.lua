@@ -129,9 +129,9 @@ core:add_listener(
         local node = pttg:get_cursor()
 
         if context:choice_key() == 'FIRST' then
-            pttg:set_cursor(pttg:get_state('maps')[node.z][node.y + 1][node.x + 1])
-        elseif context:choice_key() == 'SECOND' then
             pttg:set_cursor(pttg:get_state('maps')[node.z][node.y + 1][node.x])
+        elseif context:choice_key() == 'SECOND' then
+            pttg:set_cursor(pttg:get_state('maps')[node.z][node.y + 1][node.x + 1])
         end
 
         pttg:log("[PathToTotalGlory] Cursor set: " .. pttg:get_cursor():repr())

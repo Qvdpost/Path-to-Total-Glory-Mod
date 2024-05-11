@@ -26,7 +26,7 @@ local function get_or_create_recruit_glory()
     end
     if not recruit_glory_uic then
         recruit_glory_uic = UIComponent(mercenary_cost:CopyComponent("recruit_glory"))
-        recruit_glory_uic:SetImagePath("ui/skins/default/icon_oathgold.png", 0)
+        recruit_glory_uic:SetImagePath("ui/skins/default/allegiance_points.png", 0)
         recruit_glory_uic:SetStateText(tostring(pttg_glory:get_recruit_glory_value()), "")
         recruit_glory_uic:SetTooltipText("Total Available Recruitment Glory Points", true)
         recruit_glory_uic:SetVisible(true)
@@ -87,7 +87,7 @@ local function finalise_uics()
                     local cost_glory_cost_uic = find_uicomponent(glory_cost_uic, "Cost")
                     if cost_glory_cost_uic then
                         cost_glory_cost_uic:SetStateText(tostring(glory_cost), "")
-                        cost_glory_cost_uic:SetImagePath("ui/skins/default/icon_oathgold.png", 0)
+                        cost_glory_cost_uic:SetImagePath("ui/skins/default/allegiance_points.png", 0)
                     end
                     recruitment_cost_uic:SetVisible(false)
                 end

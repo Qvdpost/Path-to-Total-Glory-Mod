@@ -152,16 +152,17 @@ pttg_effect_pool:add_campaign_effect('pttg_zany_mode', {callback=pttg_side_effec
 function pttg_side_effects:randomize_start(random_general)
     local military_force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     local general = military_force:general_character()
+    local faction = cm:get_local_faction()
+
+    local home = faction:home_region()
+    if not home.name then
+        home = pttg_tele:get_random_region()
+    end
+
+    x, y = cm:find_valid_spawn_location_for_character_from_settlement(cm:get_local_faction_name(),
+    home:name(), false, true, 10)
+
     if random_general then
-        local faction = cm:get_local_faction()
-        local home = faction:home_region()
-        if not home.name then
-            home = pttg_tele:get_random_region()
-        end
-
-        x, y = cm:find_valid_spawn_location_for_character_from_settlement(cm:get_local_faction_name(),
-        home:name(), false, true, 10)
-
         cm:disable_event_feed_events(true, "wh_event_category_character", "", "");
         cm:kill_character(cm:char_lookup_str(general), true);
         cm:callback(function() cm:disable_event_feed_events(false, "wh_event_category_character", "", "") end, 1) 
@@ -189,6 +190,7 @@ function pttg_side_effects:randomize_start(random_general)
             end
         ); 
     else
+        cm:teleport_to(cm:char_lookup_str(general), x, y)
         cm:remove_all_units_from_general(general)
     end
     

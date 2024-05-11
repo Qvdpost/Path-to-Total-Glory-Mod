@@ -211,7 +211,7 @@ function pttg_battle_templates:add_template(category, key, info)
 end
 
 function pttg_battle_templates:get_random_battle_template(act)
-    local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 4)
+    local random_encounter_alignment = cm:random_number(99) - math.clamp(pttg:get_state('alignment') / 4, -33, 33)
 
     local alignment_templates = nil
     if random_encounter_alignment <= 33 then     -- order encounter
@@ -228,7 +228,7 @@ function pttg_battle_templates:get_random_battle_template(act)
 end
 
 function pttg_battle_templates:get_random_elite_battle_template(act)
-    local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 2)
+    local random_encounter_alignment = cm:random_number(99) - math.clamp(pttg:get_state('alignment') / 2, -33, 33)
 
     local alignment_templates = nil
     if random_encounter_alignment <= 33 then -- order encounter
@@ -246,7 +246,7 @@ function pttg_battle_templates:get_random_elite_battle_template(act)
 end
 
 function pttg_battle_templates:get_random_boss_battle_template(act)
-    local random_encounter_alignment = cm:random_number(99) - math.min(33, pttg:get_state('alignment') / 2)
+    local random_encounter_alignment = cm:random_number(99) - math.clamp(pttg:get_state('alignment') / 2, -33, 33)
 
     local alignment_templates = nil
     if random_encounter_alignment <= 33 then -- order encounter
@@ -279,18 +279,69 @@ end
 local function init()
 
     local bosses = {
-        ["pttg_boss_kholek_suneater"] = { general_subtype="wh_dlc01_chs_kholek_suneater", agents={"random", "random"}, faction = "wh3_dlc20_chs_kholek", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {{key ="wh_dlc01_chs_mon_dragon_ogre"}, {key="wh_dlc01_chs_mon_dragon_ogre"}}, units = {}, alignment = 'chaos', act = 1 },
+        -------------------- ACT 1 --------------------
+        -------------------- Order --------------------
+        ["pttg_boss_zhao_ming"] = { general_subtype="wh3_main_cth_zhao_ming", agents={}, faction = "pttg_cth_cathay", culture = "wh3_main_cth_cathay", subculture = "wh3_main_sc_cth_cathay", mandatory_units = {{key="wh3_dlc24_cth_mon_celestial_lion"}}, units = {}, alignment = 'order', act = 1 },
+
+        -------------------- Neutral ------------------
         ["pttg_boss_vlad_and_isabella"] = { general_subtype="wh_dlc04_vmp_vlad_con_carstein", agents={"wh_pro02_vmp_isabella_von_carstein_hero"}, faction = "pttg_vmp_vampire_counts", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {{key="wh_dlc02_vmp_cav_blood_knights_0"}, {key="wh_dlc02_vmp_cav_blood_knights_0"}}, units = {}, alignment = 'neutral', act = 1 },
-        ["wh3_main_cth_zhao_ming"] = { general_subtype="wh3_main_cth_zhao_ming", agents={}, faction = "pttg_cth_cathay", culture = "wh3_main_cth_cathay", subculture = "wh3_main_sc_cth_cathay", mandatory_units = {{key="wh3_dlc24_cth_mon_celestial_lion"}}, units = {}, alignment = 'order', act = 1 },
+
+        -------------------- Chaos ---------------------
+        ["pttg_boss_kholek_suneater"] = { general_subtype="wh_dlc01_chs_kholek_suneater", agents={"random"}, faction = "pttg_chs_chaos", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {{key ="wh_dlc01_chs_mon_dragon_ogre"}, {key="wh_dlc01_chs_mon_dragon_ogre"}}, units = {}, alignment = 'chaos', act = 1 },
+
+        -------------------- ACT 2 --------------------
+        -------------------- Order --------------------
+        ["pttg_boss_boris"] = { general_subtype="wh3_main_ksl_boris", agents={"wh3_main_ksl_frost_maiden_ice"}, faction = "pttg_ksl_kislev", culture = "wh3_main_ksl_kislev", subculture = "wh3_main_sc_ksl_kislev", mandatory_units = {{key="wh3_main_ksl_veh_little_grom_0"}, {key="wh3_main_ksl_cav_war_bear_riders_1"}, {key="wh3_main_ksl_cav_war_bear_riders_1"}}, units = {}, alignment = 'order', act = 2 },
+        -------------------- Neutral ------------------
+        ["pttg_boss_crone_hellebron"] = { general_subtype="wh2_dlc10_def_crone_hellebron", agents={""}, faction = "pttg_def_dark_elves", culture = "wh2_main_def_dark_elves", subculture = "wh2_main_sc_def_dark_elves", mandatory_units = {{key="wh2_dlc10_def_inf_sisters_of_slaughter"}, {key="wh2_dlc14_def_veh_bloodwrack_shrine_0"}}, units = {}, alignment = 'neutral', act = 2 },
+        -------------------- Chaos ---------------------
+        
+        ["pttg_boss_astragoth"] = { general_subtype="wh3_dlc23_chd_astragoth", agents={"random", "random"}, faction = "pttg_chd_chaos_dwarfs", culture = "wh3_dlc23_chd_chaos_dwarfs", subculture = "wh3_dlc23_sc_chd_chaos_dwarfs", mandatory_units = {{key ="wh3_dlc23_chd_cav_bull_centaurs_greatweapons"}, {key="wh3_dlc23_chd_mon_kdaai_destroyer"}}, units = {}, alignment = 'chaos', act = 2 },
+
+        -------------------- ACT 3 --------------------
+        -------------------- Order --------------------
+        ["pttg_boss_tyrion"] = { general_subtype="wh2_main_hef_tyrion", agents={"wh2_main_hef_teclis"}, faction = "pttg_hef_high_elves", culture = "wh2_main_hef_high_elves", subculture = "wh2_main_sc_hef_high_elves", mandatory_units = {{key="wh2_main_hef_mon_phoenix_flamespyre"}, {key="wh2_main_hef_inf_phoenix_guard"}, {key="wh2_main_hef_inf_phoenix_guard"}}, units = {}, alignment = 'order', act = 3 },
+        -------------------- Neutral ------------------
+        ["pttg_boss_settra"] = { general_subtype="wh2_dlc09_tmb_settra", agents={"random", "random"}, faction = "pttg_tmb_tomb_kings", culture = "wh2_dlc09_tmb_tomb_king", subculture = "wh2_dlc09_sc_tmb_tomb_kings", mandatory_units = {{key="wh2_dlc09_tmb_veh_khemrian_warsphinx_0"}, {key="wh2_dlc09_tmb_mon_necrosphinx_0"}, {key="wh2_dlc09_tmb_art_casket_of_souls_0"}}, units = {}, alignment = 'neutral', act = 3 },
+        -------------------- Chaos ---------------------
+        ["pttg_boss_archaon"] = { general_subtype="wh_main_chs_archaon", agents={"random", "random"}, faction = "pttg_chs_chaos", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {{key ="wh_main_chs_art_hellcannon"}, {key="wh_dlc01_chs_inf_chosen_2"}}, units = {}, alignment = 'chaos', act = 3 },
     }
 
     -- TODO Fix elite encounters.
     local elites = {
-        ["pttg_elite_lizardmen"] = { general_subtype="wh2_dlc12_lzd_tehenhauin", faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", mandatory_units = {}, units = {}, alignment = 'order', act = 1 },
+        -------------------- ACT 1 --------------------
+        -------------------- Order --------------------
+        ["pttg_elite_empire"] = { general_subtype = "wh2_dlc13_emp_cha_markus_wulfhart", agents = {"wh2_dlc13_emp_hunter_doctor_hertwig_van_hal", "wh2_dlc13_emp_hunter_jorek_grimm", "wh2_dlc13_emp_hunter_kalara_of_wydrioth","wh2_dlc13_emp_hunter_rodrik_l_anguille"}, faction = "pttg_emp_empire", culture = "wh_main_emp_empire", subculture = "wh_main_sc_emp_empire", mandatory_units = {{key="wh2_dlc13_emp_veh_war_wagon_0"}, {key="wh2_dlc13_emp_inf_huntsmen_0"}, {key="wh2_dlc13_emp_inf_huntsmen_0"}}, units = {}, alignment = 'order', act = 1 },
+
+
+        -------------------- Neutral ------------------
         ["pttg_elite_greenskins"] = { general_subtype="wh_dlc06_grn_wurrzag_da_great_prophet", faction = "pttg_grn_savage_orcs", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_savage_orcs", mandatory_units = {}, units = {}, alignment = 'neutral', act = 1 },
-        ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = { { key = "wh2_dlc16_wef_mon_malicious_treeman_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treeman_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_wolves_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_malicious_treekin_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_hawks_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_feral_manticore", weight = 5 }, { key = "wh2_dlc16_wef_mon_giant_spiders_0", weight = 10 }, { key = "wh_dlc05_wef_mon_great_eagle_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treekin_0", weight = 20 }, { key = "wh2_dlc16_wef_mon_cave_bats", weight = 20 }, { key = "wh2_dlc16_wef_inf_malicious_dryads_0", weight = 40 }, { key = "wh_dlc05_wef_inf_dryads_0", weight = 40 }, }, alignment = 'order', act = { 1, 2 } },
         ["pttg_elite_ghoul_horde"] = { faction = "pttg_vmp_strygos_empire", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {{ key="wh_main_vmp_mon_terrorgheist" }}, units = { { key = "wh_main_vmp_inf_zombie", weight = 10 }, { key = "wh_main_vmp_mon_fell_bats", weight = 10 }, { key = "wh_main_vmp_mon_dire_wolves", weight = 10 }, { key = "wh_dlc04_vmp_veh_corpse_cart_0", weight = 5 }, { key = "wh_main_vmp_inf_crypt_ghouls", weight = 30 }, { key = "wh_main_vmp_mon_crypt_horrors", weight = 20 } }, alignment = 'neutral', act = 1 },
-        ["pttg_elite_beastmen"] = { general_subtype="wh_dlc03_bst_malagor", faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", agents={"random"}, mandatory_units = {}, units = {}, alignment = 'chaos', act = 1 }, -- TODO: use agents and map to land units to add characters to armies.
+        
+        -------------------- Chaos ---------------------
+        ["pttg_elite_beastmen"] = { general_subtype="wh_dlc03_bst_malagor", faction = "pttg_bst_beastmen", culture = "wh_dlc03_bst_beastmen", subculture = "wh_dlc03_sc_bst_beastmen", agents={"random"}, mandatory_units = {}, units = {}, alignment = 'chaos', act = 1 },
+        
+        -------------------- ACT 2 --------------------
+        -------------------- Order --------------------
+        ["pttg_elite_lizardmen"] = { general_subtype="wh2_dlc12_lzd_tehenhauin", faction = "pttg_lzd_lizardmen", culture = "wh2_main_lzd_lizardmen", subculture = "wh2_main_sc_lzd_lizardmen", mandatory_units = {}, units = {}, alignment = 'order', act = 2 },
+        -------------------- Neutral ------------------
+        ["pttg_elite_skrag_the_slaughterer"] = { general_subtype="wh3_main_ogr_skrag_the_slaughterer", agents={"random"}, faction = "pttg_ogr_ogre_kingdoms", culture = "wh3_main_ogr_ogre_kingdoms", subculture = "wh3_main_sc_ogr_ogre_kingdoms", mandatory_units = {{key="wh3_main_ogr_mon_gorgers_0"},{key="wh3_main_ogr_mon_gorgers_0"},{key="wh3_main_ogr_mon_giant_0"},}, units = {}, alignment = "neutral", act = 2 },
+        -------------------- Chaos ---------------------
+        ["pttg_elite_snikch"] = { general_subtype="wh2_dlc14_skv_deathmaster_snikch", agents={"random"}, faction = "pttg_skv_skaven", culture = "wh2_main_skv_skaven", subculture = "wh2_main_sc_skv_skaven", mandatory_units = {{key="wh2_main_skv_inf_death_globe_bombardiers"},{key="wh2_dlc14_skv_inf_eshin_triads_0"},}, units = {}, alignment = "chaos", act = 2 },
+        -------------------- ACT 3 --------------------
+        -------------------- Order --------------------
+        ["pttg_elite_malakai"] = { general_subtype="wh3_dlc25_dwf_malakai_makaisson", agents={"random", "random"}, faction = "pttg_dwf_dwarfs", culture = "wh_main_dwf_dwarfs", subculture = "wh_main_sc_dwf_dwarfs", mandatory_units = {{key="wh3_dlc25_dwf_veh_thunderbarge_malakai"},{key="wh3_dlc25_dwf_art_goblin_hewer"},}, units = {}, alignment = "order", act = 3 },        
+        -------------------- Neutral ------------------
+        ["pttg_elite_noctilus"] = { general_subtype="wh2_dlc11_cst_noctilus", agents={"random", "random"}, faction = "pttg_cst_vampire_coast", culture = "wh2_dlc11_cst_vampire_coast", subculture = "wh2_dlc11_sc_cst_vampire_coast", mandatory_units = {{key="wh2_dlc11_cst_mon_necrofex_colossus_0"},{key="wh2_dlc11_cst_mon_rotting_leviathan_0"},}, units = {}, alignment = "neutral", act = 3 },
+        -------------------- Chaos ---------------------
+        ["pttg_elite_tamurkhan"] = { general_subtype="wh3_dlc25_nur_tamurkhan", agents={"wh3_dlc25_nur_kayzk_the_befouled", "random"}, faction = "pttg_nur_nurgle", culture = "wh3_main_nur_nurgle", subculture = "wh3_main_sc_nur_nurgle", mandatory_units = {{key="wh3_dlc25_nur_chieftain_mon_toad_dragon"},{key="wh3_dlc25_nur_chieftain_cav_rot_knights"},}, units = {}, alignment = "chaos", act = 3 },
+
+        -------------------- Other --------------------
+        -------------------- Order --------------------
+        -------------------- Neutral ------------------
+        ["pttg_wef_forest_spirits"] = { faction = "pttg_wef_forest_spirits", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = { { key = "wh2_dlc16_wef_mon_malicious_treeman_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treeman_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_wolves_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_malicious_treekin_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_hawks_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_feral_manticore", weight = 5 }, { key = "wh2_dlc16_wef_mon_giant_spiders_0", weight = 10 }, { key = "wh_dlc05_wef_mon_great_eagle_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treekin_0", weight = 20 }, { key = "wh2_dlc16_wef_mon_cave_bats", weight = 20 }, { key = "wh2_dlc16_wef_inf_malicious_dryads_0", weight = 40 }, { key = "wh_dlc05_wef_inf_dryads_0", weight = 40 }, }, alignment = 'order', act = { 1, 2 } },
+
+        -------------------- Chaos ---------------------
     }
 
     -- TODO fix the commented templates with cool mili groups or units

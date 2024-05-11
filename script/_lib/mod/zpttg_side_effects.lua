@@ -107,7 +107,7 @@ function pttg_side_effects:add_agent_to_force(agent_info, force)
     end
 
     local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), home:name(), false, true, 10)
-    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.key, agent_x, agent_y)
+    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.subtype, agent_x, agent_y)
 
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
     cm:embed_agent_in_force(agent, force)
@@ -173,7 +173,7 @@ function pttg_side_effects:randomize_start(random_general)
             x,
             y,
             "general",
-            pttg_merc_pool:get_random_general(faction:name()),
+            pttg_merc_pool:get_random_general(faction:name()).subtype,
             "",
             "",
             "",

@@ -9,12 +9,15 @@ local merc_in_queue = {}
 
 local function init_glory_units()
     -- Disable TTC MercPanel Listeners
-    ttc.add_listeners_to_mercenary_panel = function() return nil end
+    if ttc then
+        ttc.add_listeners_to_mercenary_panel = function() return nil end
+    end
 end
 
 
 local function get_or_create_recruit_glory()
-    local docker_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker", "recruitment_options", "title_docker")
+    local docker_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker",
+        "recruitment_options", "title_docker")
     local recruit_glory_uic = find_uicomponent(docker_uic, "recruit_glory")
     local mercenary_cost = find_uicomponent(docker_uic, "tx_mercenariers_cost")
     if not mercenary_cost then
@@ -28,7 +31,7 @@ local function get_or_create_recruit_glory()
         recruit_glory_uic:SetTooltipText("Total Available Recruitment Glory Points", true)
         recruit_glory_uic:SetVisible(true)
     end
-    
+
     mercenary_cost:SetVisible(false)
     return recruit_glory_uic
 end
@@ -48,7 +51,7 @@ local function hide_disabled()
             local unit_uic = find_uicomponent(list_box_uic, reference_unit)
 
             if unit_uic then
-                if pttg_merc_pool.active_merc_pool[unit] then-- unit_uic:CurrentState() == "active" then
+                if pttg_merc_pool.active_merc_pool[unit] then -- unit_uic:CurrentState() == "active" then
                     pttg:log(string.format("[pttg_glory_cost] - Adding %s to available mercs.", unit))
                     available_merc_units[unit] = unit_info
                 else
@@ -149,7 +152,7 @@ local function glory_cost_listeners()
             for _, merc in pairs(merc_in_queue) do
                 local unit_record = pttg_merc_pool.merc_units[merc]
                 pttg_glory:add_recruit_glory(unit_record.cost)
-                
+
                 pttg:log(string.format("Refunding %s for %i", merc, unit_record.cost))
             end
             merc_in_queue = {}
@@ -165,7 +168,9 @@ local function glory_cost_listeners()
         "pttg_glory_merc_shop",
         "ComponentLClickUp",
         function(context)
-            return ttc.is_merc_panel_open()
+            local merc_display = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel",
+                "recruitment_docker", "recruitment_options", "mercenary_display")
+            return is_uicomponent(merc_display) and merc_display:Visible(true)
         end,
         function(context)
             local uic = UIComponent(context.component)
@@ -188,7 +193,7 @@ local function glory_cost_listeners()
                     { "units_panel", "main_units_panel", "units" })
                 local merc = find_uicomponent(armyList, "temp_merc_" .. tostring(#merc_in_queue - 1))
                 if merc ~= false then
-                    pttg:log("The new queued mercenary appeared: "..unit_key)
+                    pttg:log("The new queued mercenary appeared: " .. unit_key)
                     local unit_record = pttg_merc_pool.merc_units[unit_key]
                     pttg_glory:remove_recruit_glory(unit_record.cost)
                 else
@@ -205,7 +210,9 @@ local function glory_cost_listeners()
         "pttg_glory_merc_shop",
         "ComponentLClickUp",
         function(context)
-            return ttc.is_merc_panel_open()
+            local merc_display = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel",
+                "recruitment_docker", "recruitment_options", "mercenary_display")
+            return is_uicomponent(merc_display) and merc_display:Visible(true)
         end,
         function(context)
             --# assume context: CA_UIContext
@@ -226,7 +233,8 @@ local function glory_cost_listeners()
                 finalise_uics()
             end
         end,
-        true);
+        true
+    );
 end
 
 cm:add_first_tick_callback(function() init_glory_units() end)

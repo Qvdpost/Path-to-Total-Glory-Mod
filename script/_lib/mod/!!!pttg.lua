@@ -30,9 +30,9 @@ local pttg = {
         active_shop_items = {},
         recruitable_mercs = {},
         recruit_chances = {
-            { 100, 100, 100 }, -- act one, only core units
-            { 80, 120, 120 }, -- only core & special
-            { 65, 95, 100 },
+            { 95, 100, 100 }, -- act one, only core units
+            { 75, 100, 120 }, -- only core & special
+            { 50, 95, 100 },
         },
         elite_recruit_chances = {
             { 50, 100, 100 },

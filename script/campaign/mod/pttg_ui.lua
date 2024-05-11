@@ -316,7 +316,8 @@ function pttg_UI:disable_event_feed()
         "military_unit_recruited",
         "diplomacy_faction_encountered",
         "diplomacy_faction_emerges",
-        "character_rank_gained"
+        "character_rank_gained",
+        "mercenary_unit_character_level_restriction_lifted"
     }
     
     for _, event in pairs(events) do
@@ -346,13 +347,6 @@ core:add_listener(
     function(context)
         pttg:log("[pttg_ui] Next phase triggered")
 
-        if not cm:get_saved_value("pttg_RandomStart") then
-            pttg_UI:hide_map()
-            cm:trigger_dilemma(cm:get_local_faction_name(), 'pttg_RandomStart')
-            cm:set_saved_value("pttg_RandomStart", true)
-            return
-        end
-
         pttg_UI:disable_next_phase_button()
         pttg_shop:disable_shop_button()
 
@@ -378,6 +372,21 @@ core:add_listener(
         end
     end,
     true
+)
+
+core:add_listener(
+    "pttg_mode_selection",
+    "IncidentOccuredEvent",
+    function(context) return context:dilemma() == "pttg_how_its_played" end,
+    function(context)
+        if not cm:get_saved_value("pttg_RandomStart") then
+            pttg_UI:hide_map()
+            cm:trigger_dilemma(cm:get_local_faction_name(), 'pttg_RandomStart')
+            cm:set_saved_value("pttg_RandomStart", true)
+            return
+        end
+    end,
+    false
 )
 
 core:add_listener(

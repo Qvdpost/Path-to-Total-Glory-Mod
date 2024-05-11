@@ -63,6 +63,16 @@ local function init()
 
     pttg_UI:enable_next_phase_button()
 
+    how_its_played = intervention:new("pttg_how_its_played", 0, function() cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true) end)
+    how_its_played:add_precondition(function() return cm:is_new_game() end)
+    how_its_played:set_must_trigger(true)
+    how_its_played:set_callback(function() cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true); how_its_played:complete() end)
+    how_its_played:add_trigger_condition(
+		"ScriptEventCampaignIntroComplete", 
+		true
+	)
+    how_its_played:start()
+
     core:trigger_custom_event('pttg_init_complete', {})
 end
 

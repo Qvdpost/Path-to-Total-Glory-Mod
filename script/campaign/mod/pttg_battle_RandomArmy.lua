@@ -42,7 +42,7 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 
 	--the formulae we use for each tier
 	local low_tier_modifier  = 10
-	local mid_tier_modifier  = power * 2
+	local mid_tier_modifier  = power * 1
 	local high_tier_modifier = power * 2
 
 

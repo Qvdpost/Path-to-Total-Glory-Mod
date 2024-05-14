@@ -46,7 +46,7 @@ local function init()
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_center_camera_post_battle",  pttg_UI.center_camera, pttg_UI)
-
+    
 
     if not pttg:get_state('army_cqi') then
         pttg:set_state('army_cqi', cm:get_local_faction():faction_leader():military_force():command_queue_index())
@@ -63,15 +63,6 @@ local function init()
 
     pttg_UI:enable_next_phase_button()
 
-    how_its_played = intervention:new("pttg_how_its_played", 0, function() cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true) end)
-    how_its_played:add_precondition(function() return cm:is_new_game() end)
-    how_its_played:set_must_trigger(true)
-    how_its_played:set_callback(function() cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true); how_its_played:complete() end)
-    how_its_played:add_trigger_condition(
-		"ScriptEventCampaignIntroComplete", 
-		true
-	)
-    how_its_played:start()
 
     core:trigger_custom_event('pttg_init_complete', {})
 end
@@ -188,12 +179,35 @@ core:add_listener(
     true
 )
 
+cm:add_first_tick_callback(
+    function()
+        local how_its_played = intervention:new("pttg_how_its_played", 60, function() end)
+        if how_its_played then
+            pttg:log("adding pttg_how_its_played")
+            how_its_played:set_must_trigger(true)
+            how_its_played:set_callback(function()
+                cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true)
+                how_its_played:complete()
+            end)
+        
+            how_its_played:add_trigger_condition(
+                "ScriptEventIntroCutsceneFinished", 
+                function() return cm:is_new_game() end
+            )
+        
+            how_its_played:start()
+        end
+    end
+)
+
+
 core:add_listener(
     "init_PathToTotalGlory",
     "pttg_procgen_finished",
     true,
     function(context)
         init()
+        
     end,
     false
 )

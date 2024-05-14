@@ -5,20 +5,21 @@ PttG_Event = {
 
 }
 
-function PttG_Event:new(key, callback, eligibility_callback, weight)
+function PttG_Event:new(key, event_info)
     local self = {}
         
     self.key = key
-    self.weight = weight
-    self.callback = callback
-    self.eligibility_callback = eligibility_callback
+    self.weight = event_info.weight
+    self.callback = event_info.callback
+    self.eligibility_callback = event_info.eligibility_callback
+    self.type = event_info.type
 
     setmetatable(self, { __index = PttG_Event })
     return self
 end
 
 function PttG_Event.repr(self)
-    return string.format("Event(%s): %s", self.key, self.weight)
+    return string.format("Event(%s): %s | %s", self.key, self.weight, self.type)
 end
 
 local pttg_event_pool = {
@@ -28,9 +29,9 @@ local pttg_event_pool = {
 }
 
 function pttg_event_pool:add_event(key, info)
-    local event = PttG_Event:new(key, info.callback, info.eligibility_callback, info.weight)
+    local event = PttG_Event:new(key, info)
     if not event then
-        script_error("Could not add event. Skipping")
+        script_error("Could not create event. Skipping")
         return false
     end
 
@@ -53,9 +54,12 @@ end
 
 function pttg_event_pool:init_events()
     local events_all = {
-        ["pttg_EventGlory"] = { weight = 10, callback = pttg_EventGlory_callback, eligibility_callback = pttg_EventGlory_eligibility_callback },
+        ["pttg_EventGlory"] = { weight = 10, callback = pttg_EventGlory_callback, eligibility_callback = pttg_EventGlory_eligibility_callback, type='dilemma' },
     }
     self:add_events(events_all)
+
+    self:add_event("pttg_HiringBoard", { weight = 25, callback=pttg_HiringBoard_callback, eligibility_callback=pttg_HiringBoard_eligibility_callback, type="incident" })
+
 
     self.excluded_event_pool = pttg:get_state('excluded_event_pool')
 end
@@ -79,9 +83,9 @@ function pttg_event_pool:random_event()
         faction = cm:get_local_faction()
     }
 
-    for event, info in pairs(self.event_pool) do
-        if info.eligibility_callback(context) then
-            pttg_pool_manager:add_item(event_pool_key, event, info.weight)
+    for key, event in pairs(self.event_pool) do
+        if event.eligibility_callback(context) then
+            pttg_pool_manager:add_item(event_pool_key, event, event.weight)
         end
     end
 

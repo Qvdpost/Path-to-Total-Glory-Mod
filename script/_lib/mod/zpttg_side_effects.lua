@@ -21,16 +21,16 @@ function pttg_side_effects:heal_force(factor, use_tier_scale)
 
         
         if unit:unit_class() ~= "com" then
-            if use_tier_scale then
-                scale = 1 / pttg_merc_pool.merc_units[unit:unit_key()].tier
+            if use_tier_scale and pttg_merc_pool.merc_units[unit:unit_key()].cost > 1 then
+                scale = 1 / pttg_merc_pool.merc_units[unit:unit_key()].cost
             end
             pttg:log(string.format("[pttg_RestRoom] Healing unit %s to  %s(%s + %s).", unit:unit_key(), base + (factor * scale), base, (factor * scale)))
             ---@diagnostic disable-next-line: undefined-field
             cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + (factor * scale), 0.01, 1))
-        else -- TODO: Heal characters for half (should we?)
+        else -- TODO: Heal characters for less (should we?)
             ---@diagnostic disable-next-line: undefined-field
             pttg:log(string.format("[pttg_RestRoom] Healing character %s to  %s(%s + %s).", unit:unit_key(), base + (factor / 2), base, (factor / 2)))
-            cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + (factor / 2), 0.01, 1))
+            cm:set_unit_hp_to_unary_of_maximum(unit, math.clamp(base + (factor / 1.5), 0.01, 1))
         end
     end
 end
@@ -150,8 +150,10 @@ pttg_effect_pool:add_campaign_effect('pttg_zany_mode', {callback=pttg_side_effec
 
 
 function pttg_side_effects:randomize_start(random_general)
+    pttg:log("Randomizing start")
     local military_force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     local general = military_force:general_character()
+    cm:set_character_immortality(cm:char_lookup_str(general), false)
     local faction = cm:get_local_faction()
 
     local home = faction:home_region()
@@ -179,14 +181,18 @@ function pttg_side_effects:randomize_start(random_general)
             "",
             "",
             "",
-            false,			
+            true,			
             -- Generals created this way does not come with a trait and aren't immortal
             function(cqi)
                 pttg:log("[pttg_side_effects] Post processing new lord");
                 pttg:set_state('army_cqi', cm:get_character_by_cqi(cqi):military_force():command_queue_index())
 
-                local random_agent = pttg_merc_pool:get_random_agent(cm:get_local_faction_name())
-                pttg_side_effects:add_agent_to_force(random_agent)
+                local char_str = cm:char_lookup_str(cqi)
+                cm:set_character_immortality(char_str, true)
+                cm:set_character_unique(char_str, true);
+
+                -- local random_agent = pttg_merc_pool:get_random_agent(cm:get_local_faction_name())
+                -- pttg_side_effects:add_agent_to_force(random_agent)
             end
         ); 
     else

@@ -66,7 +66,26 @@ core:add_listener(
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_battle_defeat" end,
     function(context)
+        pttg:log("Game over.")
+        local faction = cm:get_local_faction()
 
+        local characters = {}
+        for i = 0, faction:character_list():num_items() - 1 do
+            table.insert(characters, faction:character_list():item_at(i))   
+        end
+        for _, character in pairs(characters) do
+            pttg:log("Killing: ".. character:character_subtype_key().. "|" .. character:character_type_key())
+            cm:kill_character(cm:char_lookup_str(character), true)
+        end
+
+        local regions = {}
+        for i = 0, faction:region_list():num_items() - 1 do
+            table.insert(regions, faction:region_list():item_at(i))
+        end
+        for _, region in pairs(regions) do
+            pttg:log("Abandoning: ".. region:name())
+            cm:set_region_abandoned(region:name())
+        end
     end,
     true
 )

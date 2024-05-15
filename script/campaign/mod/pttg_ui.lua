@@ -294,7 +294,6 @@ function pttg_UI:center_camera()
     cm:callback(
         function()
             local character = cm:get_character_by_mf_cqi(pttg:get_state('army_cqi'))
-            cm:replenish_action_points(cm:char_lookup_str(character));
             common.call_context_command("CcoCampaignCharacter", character:command_queue_index(), "SelectAndZoom(false)")
         end,
         0.2

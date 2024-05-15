@@ -190,11 +190,23 @@ function pttg_side_effects:randomize_start(random_general)
                 local char_str = cm:char_lookup_str(cqi)
                 cm:set_character_immortality(char_str, true)
                 cm:set_character_unique(char_str, true);
+                cm:callback(
+                    function()
+                        common.call_context_command("CcoCampaignCharacter", cqi, "SelectAndZoom(false)")
+                    end,
+                    0.2
+                )
             end
         ); 
     else
         cm:teleport_to(cm:char_lookup_str(general), x, y)
         cm:remove_all_units_from_general(general)
+        cm:callback(
+            function()
+                common.call_context_command("CcoCampaignCharacter", general:command_queue_index(), "SelectAndZoom(false)")
+            end,
+            0.2
+        )
     end
     
     pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))

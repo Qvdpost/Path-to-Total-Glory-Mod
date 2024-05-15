@@ -113,13 +113,23 @@ core:add_listener(
         local choose_path = cm:create_dilemma_builder('pttg_ChoosePath')
 
         local payload = cm:create_payload()
+        -- 3 loops to ensure button order
         for _, edge in pairs(cursor.edges) do
             if edge.dst_x < cursor.x then
                 choose_path:add_choice_payload("FIRST", payload)
-            elseif edge.dst_x == cursor.x then
+                break
+            end
+        end
+        for _, edge in pairs(cursor.edges) do
+            if edge.dst_x == cursor.x then
                 choose_path:add_choice_payload("SECOND", payload)
-            elseif edge.dst_x > cursor.x then
+                break
+            end
+        end
+        for _, edge in pairs(cursor.edges) do
+            if edge.dst_x > cursor.x then
                 choose_path:add_choice_payload("THIRD", payload)
+                break
             end
         end
 

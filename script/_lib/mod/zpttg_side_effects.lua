@@ -190,9 +190,6 @@ function pttg_side_effects:randomize_start(random_general)
                 local char_str = cm:char_lookup_str(cqi)
                 cm:set_character_immortality(char_str, true)
                 cm:set_character_unique(char_str, true);
-
-                -- local random_agent = pttg_merc_pool:get_random_agent(cm:get_local_faction_name())
-                -- pttg_side_effects:add_agent_to_force(random_agent)
             end
         ); 
     else

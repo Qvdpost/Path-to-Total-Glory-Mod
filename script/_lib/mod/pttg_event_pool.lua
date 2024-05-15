@@ -84,6 +84,7 @@ function pttg_event_pool:random_event()
     }
 
     for key, event in pairs(self.event_pool) do
+        context.event = event
         if event.eligibility_callback(context) then
             pttg_pool_manager:add_item(event_pool_key, event, event.weight)
         end

@@ -2,6 +2,8 @@ local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_side_effects = core:get_static_object("pttg_side_effects")
+local pttg_events = core:get_static_object("pttg_event_pool")
+
 
 function pttg_EventGlory_callback(context)
     if context:choice_key() == 'FIRST' then
@@ -91,6 +93,14 @@ function pttg_HiringBoard_eligibility_callback(context)
         return false
     end
 
+    if force:character_list():num_items() == 1 then
+        context.event.weight = 25
+    elseif force:character_list():num_items() == 2 then
+        context.event.weight = 15
+    elseif force:character_list():num_items() == 3 then
+        context.event.weight = 5
+    end
+
     return true
 end
 
@@ -118,7 +128,7 @@ function pttg_AgentRecruit_callback(context)
 	if choice == 'SIXTH' then -- a Wizard
         pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'wizard'}), force)
 	end
-	if choice == 'EIGTH' then -- Illegible
+	if choice == 'EIGhTH' then -- Illegible
         -- TODO: make this something cool. Unique hero perhaps?
         pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), 'random'), force)
 	end

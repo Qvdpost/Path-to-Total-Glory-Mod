@@ -76,7 +76,25 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_ChooseStart")
 
-        cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseStart')
+        local choose_start = cm:create_dilemma_builder('pttg_ChooseStart')
+
+        local cursor = pttg:get_cursor()
+        local act = 1
+        if cursor then
+            act = cursor.z + 1
+        end
+
+        local payload_map = {
+            "FIRST", "SECOND", "THIRD", "FOURTH", "FIFTH", "SIXTH", "SEVENTH", "EIGHTH"
+        }
+        local payload = cm:create_payload()
+        for _, node in pairs(pttg:get_state('maps')[act][1]) do
+            if node:is_connected() then
+                choose_start:add_choice_payload(payload_map[node.x], payload)
+            end
+        end
+
+        cm:launch_custom_dilemma_from_builder(choose_start, cm:get_local_faction())
     end,
     true
 )
@@ -92,29 +110,20 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_ChoosePath")
 
+        local choose_path = cm:create_dilemma_builder('pttg_ChoosePath')
 
-        -- Choose a path dilemma
-        if #cursor.edges == 3 then
-            cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathLMR')
-        elseif #cursor.edges == 2 then
-            if (cursor.edges[1].dst_x < cursor.x and cursor.edges[2].dst_x == cursor.x) or
-                (cursor.edges[2].dst_x < cursor.x and cursor.edges[1].dst_x == cursor.x) then
-                cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathLM')
-            elseif (cursor.edges[1].dst_x == cursor.x and cursor.edges[2].dst_x > cursor.x) or
-                (cursor.edges[2].dst_x == cursor.x and cursor.edges[1].dst_x > cursor.x) then
-                cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathMR')
-            else
-                cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathLR')
-            end
-        else
-            if cursor.edges[1].dst_x < cursor.x then
-                cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathL')
-            elseif cursor.edges[1].dst_x > cursor.x then
-                cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathR')
-            else
-                cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChoosePathM')
+        local payload = cm:create_payload()
+        for _, edge in pairs(cursor.edges) do
+            if edge.dst_x < cursor.x then
+                choose_path:add_choice_payload("FIRST", payload)
+            elseif edge.dst_x == cursor.x then
+                choose_path:add_choice_payload("SECOND", payload)
+            elseif edge.dst_x > cursor.x then
+                choose_path:add_choice_payload("THIRD", payload)
             end
         end
+
+        cm:launch_custom_dilemma_from_builder(choose_path, cm:get_local_faction())
     end,
     true
 )

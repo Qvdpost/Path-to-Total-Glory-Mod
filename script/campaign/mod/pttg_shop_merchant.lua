@@ -203,6 +203,8 @@ core:add_listener(
         elseif shop_item.category == 'unit' then
             pttg_merc_pool:add_active_unit(shop_item.key, 1)
             pttg_glory:add_recruit_glory(pttg_merc_pool.merc_units[shop_item.key].cost)
+            local pttg_UI = core:get_static_object("pttg_UI")
+            pttg_UI:highlight_recruitment(true)
         end
     end,
     true

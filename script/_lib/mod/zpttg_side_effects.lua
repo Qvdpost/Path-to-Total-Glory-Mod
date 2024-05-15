@@ -151,6 +151,8 @@ pttg_effect_pool:add_campaign_effect('pttg_zany_mode', {callback=pttg_side_effec
 
 function pttg_side_effects:randomize_start(random_general)
     pttg:log("Randomizing start")
+    local pttg_UI = core:get_static_object('pttg_UI')
+
     local military_force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     local general = military_force:general_character()
     cm:set_character_immortality(cm:char_lookup_str(general), false)
@@ -190,23 +192,13 @@ function pttg_side_effects:randomize_start(random_general)
                 local char_str = cm:char_lookup_str(cqi)
                 cm:set_character_immortality(char_str, true)
                 cm:set_character_unique(char_str, true);
-                cm:callback(
-                    function()
-                        common.call_context_command("CcoCampaignCharacter", cqi, "SelectAndZoom(false)")
-                    end,
-                    0.2
-                )
+                pttg_UI:center_camera()
             end
         ); 
     else
         cm:teleport_to(cm:char_lookup_str(general), x, y)
         cm:remove_all_units_from_general(general)
-        cm:callback(
-            function()
-                common.call_context_command("CcoCampaignCharacter", general:command_queue_index(), "SelectAndZoom(false)")
-            end,
-            0.2
-        )
+        pttg_UI:center_camera()
     end
     
     pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))
@@ -215,6 +207,7 @@ function pttg_side_effects:randomize_start(random_general)
     pttg_merc_pool:trigger_recruitment(1, { -10, -5, 100 })
     
     pttg_glory:add_recruit_glory(pttg:get_difficulty_mod('random_start_recruit_glory'))
+    pttg_UI:highlight_recruitment(true)
 end
 
 function pttg_RandomStart_callback(context)

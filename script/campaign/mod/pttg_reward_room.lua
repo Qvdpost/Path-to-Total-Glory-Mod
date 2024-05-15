@@ -27,7 +27,9 @@ core:add_listener(
             pttg:log("[pttg_RewardChosen] Increasing WoM.")
             pttg_mod_wom:increase(25)
         elseif context:choice_key() == 'THIRD' then -- Glory Reward
+            pttg:log("[pttg_RewardChosen] Rewarding Glory")
             pttg_glory:reward_glory(40, 25)
+            core:trigger_custom_event("pttg_glory_focus", {})
         else                                        -- Decide Later
             pttg:set_state('pending_reward', true)
             core:trigger_custom_event('pttg_Idle', {})

@@ -1,4 +1,9 @@
-local pttg_UI = {}
+local pttg_UI = {
+    faction_buttons = {
+        pttg_map_button = true,
+        button_mortuary_cult = true
+    }
+}
 local pttg = core:get_static_object("pttg");
 local pttg_shop = core:get_static_object("pttg_glory_shop");
 
@@ -6,11 +11,13 @@ function pttg_UI:init()
     pttg:log("[pttg_ui] Initialising UI and listeners")
     self:ui_created()
     self:disable_event_feed()
+    self:hide_faction_buttons()
 end
 
 function pttg_UI:get_or_create_map()
     local parent = core:get_ui_root()
     local map_ui_name = "pttg_map"
+
     local map_ui = find_uicomponent(parent, map_ui_name)
     if map_ui then
         return map_ui
@@ -202,14 +209,26 @@ function pttg_UI:populate_map()
 end
 
 function pttg_UI:get_or_create_map_button()
-    local parent = find_uicomponent("menu_bar", "buttongroup")
-    local map_button = core:get_or_create_component("pttg_map_button", "ui/templates/round_small_button_toggle", parent)
+    pttg:log("Getting/Creating Map Button")
+    local root = core:get_ui_root()
+    local faction_buttons = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management")
+    
+    if not faction_buttons then
+        script_error("Could not find the faction buttons! How can this be?")
+        return
+    end
+
+    local map_button = find_uicomponent(faction_buttons, "pttg_map_button")
+    if map_button then
+        return map_button
+    end
+
+    map_button = core:get_or_create_component("pttg_map_button", "ui/templates/round_hud_button_toggle", faction_buttons)
 
     map_button:SetImagePath("ui/skins/warhammer3/icon_cathay_compass.png")
     map_button:SetTooltipText(common.get_localised_string("pttg_map_tooltip"), true)
     map_button:SetVisible(true)
-    map_button:SetDockingPoint(6)
-    map_button:SetDockOffset(map_button:Width() * -2.8, 0)
+
 
     core:add_listener(
         "pttg_UI_button",
@@ -219,6 +238,14 @@ function pttg_UI:get_or_create_map_button()
         end,
         function(context)
             core:get_tm():real_callback(function()
+                local parent = core:get_ui_root()
+
+                local map_ui = find_uicomponent(parent, "pttg_map")
+                if map_ui:Visible() then
+                    self:hide_map()
+                    return
+                end
+
                 self:show_map()
             end, 5, "pttg_map_button")
         end,
@@ -229,16 +256,25 @@ function pttg_UI:get_or_create_map_button()
 end
 
 function pttg_UI:get_or_create_next_phase()
+    pttg:log("Getting/Creating Next Phase Button")
     local root = core:get_ui_root()
-    local faction_buttons = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management")
-
-    if not faction_buttons then
+    local end_turn_docker = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "end_turn_docker")
+    
+    if not end_turn_docker then
         script_error("Could not find the faction buttons! How can this be?")
         return
     end
 
-    local pttg_next_phase = UIComponent(faction_buttons:CreateComponent("pttg_next_phase",
-        "ui/templates/round_hud_button_toggle"))
+    local pttg_next_phase = find_uicomponent(end_turn_docker, "pttg_next_phase")
+    if pttg_next_phase then
+        return pttg_next_phase
+    end
+
+    pttg_next_phase = core:get_or_create_component("pttg_next_phase", "ui/templates/round_extra_large_button", end_turn_docker)
+    local end_turn_button = find_uicomponent(end_turn_docker, "button_end_turn")
+
+    end_turn_button:SetVisible(false)
+    pttg_next_phase:SetDockingPoint(9)
 
     pttg_next_phase:SetImagePath("ui/skins/default/button_indicator_arrow_active.png")
     pttg_next_phase:SetTooltipText("Proceed to the next phase.", true)
@@ -259,35 +295,27 @@ end
 
 function pttg_UI:disable_next_phase_button()
     pttg:log("[pttg_ui] Disabling next phase button.")
-    local root = core:get_ui_root()
+    local phase_button = self:get_or_create_next_phase()
 
-    local phase_button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management",
-        "pttg_next_phase")
 
     if not phase_button then
         pttg:log("[pttg_ui] Could not find next phase button.")
         return
     end
     phase_button:SetDisabled(true)
-    phase_button:StopPulseHighlight()
-    phase_button:Highlight(false)
+    phase_button:SetState('inactive')
 end
 
 function pttg_UI:enable_next_phase_button()
     pttg:log("[pttg_ui] Highlighting next phase button.")
-    local root = core:get_ui_root()
-
-    local phase_button = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management",
-        "pttg_next_phase")
+    local phase_button = self:get_or_create_next_phase()
 
     if not phase_button then
         pttg:log("[pttg_ui] Could not find next phase button.")
         return
     end
-
     phase_button:SetDisabled(false)
-    phase_button:StartPulseHighlight(2)
-    phase_button:Highlight(true)
+    phase_button:SetState('active')
 end
 
 function pttg_UI:center_camera()
@@ -324,6 +352,38 @@ function pttg_UI:disable_event_feed()
     end
 end
 
+function pttg_UI:highlight_recruitment(should_highlight)
+    pttg:log("Setting Recruitment highlight to: "..tostring(should_highlight))
+    local root = core:get_ui_root()
+    local army_buttons = find_uicomponent(root, "hud_campaign", "hud_center_docker", "small_bar",
+        "button_subpanel_parent", "button_subpanel", "button_group_army")
+    if not army_buttons then
+        pttg:log("Could not find army buttons. Not highlighting.")
+        return
+    end
+    local pttg_recruit = find_uicomponent(army_buttons, "mercenary_recruitment_button_container", "button_mercenary_recruit_pttg_raise_dead")
+    if pttg_recruit then
+        pttg_recruit:Highlight(should_highlight, true)
+    end
+end
+
+function pttg_UI:hide_faction_buttons()
+    local root = core:get_ui_root()
+    local faction_buttons = find_uicomponent(root, "hud_campaign", "faction_buttons_docker", "button_group_management")
+    
+    if not faction_buttons then
+        script_error("Could not find the faction buttons! How can this be?")
+        return
+    end
+
+    for i = 0, faction_buttons:ChildCount() - 1 do
+		local uic_child = UIComponent(faction_buttons:Find(i));
+		if not pttg_UI.faction_buttons[uic_child:Id()] then
+            uic_child:SetVisible(false)
+        end
+	end;
+end
+
 core:add_listener(
     "pttg_UI_button_listener",
     "ComponentLClickUp",
@@ -332,6 +392,10 @@ core:add_listener(
     end,
     function(context)
         pttg_UI:hide_map()
+        local map_button = pttg_UI:get_or_create_map_button()
+        if map_button then
+            map_button:SetState('active')
+        end
     end,
     true
 )
@@ -394,7 +458,7 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_PanelOpened",
+    "pttg_next_phase_button_listener",
     "PanelOpenedCampaign",
     true,
     function()
@@ -403,24 +467,59 @@ core:add_listener(
         local uim = cm:get_campaign_ui_manager();
         if uim:get_open_blocking_panel() then
             pttg_UI:disable_next_phase_button()
+            return
+        end
+
+        local events = find_uicomponent("events", "event_layouts")
+        if events and events:Visible() then
+            pttg_UI:disable_next_phase_button()
+            return
         end
     end,
     true
 )
 
 core:add_listener(
-    "pttg_PanelOpened",
+    "pttg_next_phase_button_listener",
     "PanelClosedCampaign",
     true,
     function()
-        pttg:log("[pttg_ui] panel opened.")
+        pttg:log("[pttg_ui] panel closed.")
 
         local uim = cm:get_campaign_ui_manager();
         if uim:get_open_blocking_panel() then
             return
         end
 
+        local events = find_uicomponent("events", "event_layouts")
+        if events and events:Visible() then
+            return
+        end
+
         pttg_UI:enable_next_phase_button()
+    end,
+    true
+)
+
+core:add_listener(
+    "pttg_highlight_recruitment",
+    "pttg_recruit_reward",
+    true,
+    function(context)
+        pttg_UI:highlight_recruitment(true)
+        pttg_UI:disable_next_phase_button()
+    end,
+    true
+)
+
+core:add_listener(
+    "pttg_highlight_recruitment",
+    "PanelOpenedCampaign",
+    function(context)
+        return context.string == "mercenary_recruitment"
+    end,
+    function(context)
+        pttg_UI:highlight_recruitment(false)
     end,
     true
 )

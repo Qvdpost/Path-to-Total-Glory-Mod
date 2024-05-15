@@ -23,6 +23,8 @@ local function init()
 
     -- Fixes Nurgle recruit starting health.
     recruited_unit_health.units_to_starting_health_bonus_values = {}
+
+    cm:get_campaign_ui_manager():lock_ui()
 end
 
 cm:add_first_tick_callback(function() init() end);

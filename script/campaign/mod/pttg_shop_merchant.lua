@@ -179,6 +179,49 @@ function pttg_glory_shop:enable_shop_button()
     return
 end
 
+local function get_or_create_merchant_glory()
+    local docker_uic = find_uicomponent(core:get_ui_root(), "mortuary_cult", "treasury_jars_list")
+    local glory_uic = find_uicomponent(docker_uic, "dy_glory")
+    local treasury = find_uicomponent(docker_uic, "dy_treasury")
+
+    if glory_uic then
+        return glory_uic
+    end
+
+    if treasury then
+        glory_uic = UIComponent(treasury:CopyComponent("dy_glory"))
+        glory_uic_icon = find_uicomponent(glory_uic, "treasury_icon")
+        glory_uic_icon:SetImagePath("ui/skins/default/faction_icon_selected.png", 0)
+        glory_uic_icon:SetTooltipText("Glory", true)
+        glory_uic:SetStateText(tostring(pttg_glory:get_glory_value()), "")
+        glory_uic:SetTooltipText("Total Available Glory Points", true)
+        glory_uic:SetVisible(true)
+        treasury:SetVisible(false)
+    end
+    
+    return glory_uic
+end
+
+local function update_merchant_glory()
+    local glory_uic = get_or_create_merchant_glory()
+    if glory_uic then
+        glory_uic:SetStateText(tostring(pttg_glory:get_glory_value()), "")
+    end
+end
+
+core:add_listener(
+    "pttg_MercPanelOpened",
+    "PanelOpenedCampaign",
+    function(context)
+        return context.string == "mortuary_cult"
+    end,
+    function()
+        pttg:log("[pttg_glory_cost] - mortuary_cult panel opened.")
+        get_or_create_merchant_glory()
+    end,
+    true
+)
+
 core:add_listener(
     "pttg_Merchant",
     "RitualCompletedEvent",
@@ -196,6 +239,7 @@ core:add_listener(
 
         pttg:log(string.format("[pttg_MerchantRecruitRitualCompleted] The purchased item is: %s(%s)", shop_item.key, shop_item.category))
 
+        update_merchant_glory()
 
         if shop_item.category == 'merchandise' then
             pttg_glory_shop.excluded_shop_items[context:ritual():ritual_key()] = true
@@ -209,6 +253,7 @@ core:add_listener(
     end,
     true
 )
+
 
 core:add_listener(
     "pttg_Merchant",

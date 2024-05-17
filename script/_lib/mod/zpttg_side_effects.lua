@@ -168,8 +168,19 @@ function pttg_side_effects:randomize_start(random_general)
 
     if random_general then
         cm:disable_event_feed_events(true, "wh_event_category_character", "", "");
-        cm:kill_character(cm:char_lookup_str(general), true);
+        pttg:log("Clearing out starting agents.")
+        pttg:log("Agent count: "..faction:character_list():num_items())
+        local characters = {}
+        for i = 0, faction:character_list():num_items() - 1 do
+            table.insert(characters, faction:character_list():item_at(i))
+        end
+        for _, char in pairs(characters) do
+            pttg:log("Clearing out: ".. char:character_subtype_key().."|"..char:character_type_key())
+            cm:kill_character(cm:char_lookup_str(char), true)
+        end
+        pttg:log("Clearing out starting agents done.")
         cm:callback(function() cm:disable_event_feed_events(false, "wh_event_category_character", "", "") end, 1) 
+
     
         cm:create_force_with_general(
             faction:name(),
@@ -192,13 +203,16 @@ function pttg_side_effects:randomize_start(random_general)
                 local char_str = cm:char_lookup_str(cqi)
                 cm:set_character_immortality(char_str, true)
                 cm:set_character_unique(char_str, true);
+
+                cm:zero_action_points(cm:char_lookup_str(cqi))
+
                 pttg_UI:center_camera()
             end
         ); 
     else
         cm:teleport_to(cm:char_lookup_str(general), x, y)
         cm:remove_all_units_from_general(general)
-        pttg_UI:center_camera()
+        cm:real_callback(function() pttg_UI:center_camera() end, 500)
     end
     
     pttg_merc_pool:trigger_recruitment(pttg:get_difficulty_mod('random_start_recruit_merc_count'), pttg:get_difficulty_mod('random_start_chances'))

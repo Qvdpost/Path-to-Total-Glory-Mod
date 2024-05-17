@@ -228,7 +228,7 @@ function pttg_battle_templates:get_random_battle_template(act)
 end
 
 function pttg_battle_templates:get_random_elite_battle_template(act)
-    local random_encounter_alignment = cm:random_number(99) - math.clamp(pttg:get_state('alignment') / 2, -33, 33)
+    local random_encounter_alignment = cm:random_number(99) - math.clamp(pttg:get_state('alignment') / 2, -30, 30)
 
     local alignment_templates = nil
     if random_encounter_alignment <= 33 then -- order encounter
@@ -240,12 +240,17 @@ function pttg_battle_templates:get_random_elite_battle_template(act)
     end
 
     local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
-    pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.key))
-
+    
     local player_general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
-    while random_encounter.general_subtype == player_general:character_subtype_key() do
+    -- TODO: Add fallback when the pool is entirely excluded
+    while random_encounter.general_subtype == player_general:character_subtype_key() or self.excluded_army_templates[random_encounter.key] do
         random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
     end
+    
+    pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.key))
+    
+    self.excluded_army_templates[random_encounter.key] = true
+    pttg:set_state('excluded_army_templates', self.excluded_army_templates)
 
     return random_encounter
 end
@@ -263,11 +268,18 @@ function pttg_battle_templates:get_random_boss_battle_template(act)
     end
 
     local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
+    
     local player_general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
-    while random_encounter.general_subtype == player_general:character_subtype_key() do
+    -- TODO: Add fallback when the pool is entirely excluded
+    while random_encounter.general_subtype == player_general:character_subtype_key() or self.excluded_army_templates[random_encounter.key] do
         random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
     end
-    pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.key))
+    
+    pttg:log(string.format("[pttg_army_templates] Random Boss template: %s", random_encounter.key))
+
+    self.excluded_army_templates[random_encounter.key] = true
+    pttg:set_state('excluded_army_templates', self.excluded_army_templates)
+
     return random_encounter
 end
 
@@ -415,6 +427,8 @@ local function init()
         pttg_battle_templates:add_template('boss',
             template, template_info)
     end
+
+    pttg_battle_templates.excluded_army_templates = pttg:get_state("excluded_army_templates")
 end
 
 core:add_listener(

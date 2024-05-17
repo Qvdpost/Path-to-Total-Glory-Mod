@@ -150,8 +150,7 @@ function pttg_UI:hide_map()
     local parent = core:get_ui_root()
     local map_ui_name = "pttg_map"
     local map_ui = find_uicomponent(parent, map_ui_name)
-    if not map_ui then
-        script_error("Could not find the map! How can this be?")
+    if not map_ui or not map_ui:Visible() then
         return
     end
     map_ui:SetVisible(false)
@@ -443,26 +442,13 @@ core:add_listener(
 )
 
 core:add_listener(
-    "pttg_mode_selection",
-    "IncidentOccuredEvent",
-    function(context) return context:dilemma() == "pttg_how_its_played" end,
-    function(context)
-        if not cm:get_saved_value("pttg_RandomStart") then
-            pttg_UI:hide_map()
-            cm:trigger_dilemma(cm:get_local_faction_name(), 'pttg_RandomStart')
-            cm:set_saved_value("pttg_RandomStart", true)
-            return
-        end
-    end,
-    false
-)
-
-core:add_listener(
     "pttg_next_phase_button_listener",
     "PanelOpenedCampaign",
     true,
     function()
         pttg:log("[pttg_ui] panel opened.")
+
+        pttg_UI:hide_faction_buttons()
 
         local uim = cm:get_campaign_ui_manager();
         if uim:get_open_blocking_panel() then
@@ -485,6 +471,8 @@ core:add_listener(
     true,
     function()
         pttg:log("[pttg_ui] panel closed.")
+
+        pttg_UI:hide_faction_buttons()
 
         local uim = cm:get_campaign_ui_manager();
         if uim:get_open_blocking_panel() then

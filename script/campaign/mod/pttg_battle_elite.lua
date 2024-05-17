@@ -26,7 +26,8 @@ core:add_listener(
             pttg:get_difficulty_mod('encounter_size')                                                         -- easy:2+y|9+y|14+y medium:4+y|11+y|16+y hard:6+y|11+y|16+y
         local general_level = (cursor.z - 1) * 20 + cursor.y + 5
 
-        invasion_size = invasion_size - #(invasion_template_army.agents or {})
+        -- TODO: Should invasions scale down for heroes?
+        -- invasion_size = invasion_size - #(invasion_template_army.agents or {})
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))

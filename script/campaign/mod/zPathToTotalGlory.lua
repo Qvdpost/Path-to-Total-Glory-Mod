@@ -36,7 +36,8 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera_on_resolve",  pttg_UI.center_camera, pttg_UI, {}, 3)
 
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
-    
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
+
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_show_map_path",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
     
@@ -44,12 +45,25 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_update_map", pttg_UI.populate_map, pttg_UI, {}, 3)
     
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
-    pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_center_camera_post_battle",  pttg_UI.center_camera, pttg_UI)
+
+
     
 
     if not pttg:get_state('army_cqi') then
-        pttg:set_state('army_cqi', cm:get_local_faction():faction_leader():military_force():command_queue_index())
+        local faction = cm:get_local_faction()
+        local force = faction:faction_leader():military_force()
+        if not force:is_null_interface() then
+            pttg:set_state('army_cqi', force:command_queue_index())
+        else
+            for i = 0, faction:character_list():num_items() - 1 do
+                local character = faction:character_list():item_at(i)
+                if not character:military_force():is_null_interface() and character:character_type_key() ~= 'colonel' then
+                    pttg:set_state('army_cqi', character:military_force():command_queue_index())
+                    break
+                end
+            end
+        end
     end
 
 
@@ -219,6 +233,20 @@ cm:add_first_tick_callback(
     end
 )
 
+core:add_listener(
+    "pttg_mode_selection",
+    "IncidentOccuredEvent",
+    function(context) return context:dilemma() == "pttg_how_its_played" end,
+    function(context)
+        if not cm:get_saved_value("pttg_RandomStart") then
+            pttg_UI:hide_map()
+            cm:trigger_dilemma(cm:get_local_faction_name(), 'pttg_RandomStart')
+            cm:set_saved_value("pttg_RandomStart", true)
+            return
+        end
+    end,
+    false
+)
 
 core:add_listener(
     "init_PathToTotalGlory",

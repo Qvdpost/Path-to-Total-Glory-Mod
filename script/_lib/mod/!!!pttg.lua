@@ -52,7 +52,8 @@ local pttg = {
         excluded_effect_pool = {},
         glory_recruit_default = {2, 3, 4},
         glory_recruit_elite = {3, 4, 4},
-        glory_recruit_boss = 4
+        glory_recruit_boss = 4,
+        excluded_army_templates = {},
     },
     
     persistent_keys = {
@@ -74,7 +75,8 @@ local pttg = {
         alignment = true,
         glory_reward_modifier = true,
         glory_recruit_modifier = true,
-        excluded_effect_pool = true
+        excluded_effect_pool = true,
+        excluded_army_templates = true,
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},

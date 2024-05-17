@@ -25,6 +25,8 @@ core:add_listener(
         ((cursor.z - 1) * 2)                                                                         -- easy:12|14|16 medium:14|16|18 hard:16|18|20
         local general_level = (cursor.z - 1) * 20 + cursor.y + 10
 
+        local invasion_chevrons = (cursor.z - 1) * 2 + (math.floor(cursor.y / 2) * cursor.z)
+
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))
 
@@ -42,6 +44,7 @@ core:add_listener(
             invasion_template_army.general_subtype, --	opt_general_subtype
             general_level,                          --	opt_general_level
             invasion_template_army.agents,
+            invasion_chevrons,
             nil                                     --	opt_effect_bundle
         )
     end,

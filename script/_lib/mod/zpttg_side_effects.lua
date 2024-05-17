@@ -113,6 +113,23 @@ function pttg_side_effects:add_agent_to_force(agent_info, force)
     cm:embed_agent_in_force(agent, force)
 end
 
+function pttg_side_effects:grant_units_chevrons(chevrons, force)
+    if not force then
+        force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+    end
+
+    local unit_list = force:unit_list()
+
+    for i = 0, unit_list:num_items() - 1 do
+        local unit = unit_list:item_at(i);
+
+        pttg:log(string.format("[pttg_side_effects] Giving unit chevrons: %s|%s", unit:unit_key(), chevrons))
+        if unit:unit_class() ~= "com" then
+            cm:add_experience_to_unit(unit, chevrons)
+        end
+    end
+end
+
 function pttg_side_effects.zany_mode(factions)
     if not factions or type(factions) ~= 'table' then
         script_error("Adding zany factions without valid faction array.")

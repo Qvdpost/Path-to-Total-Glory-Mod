@@ -89,6 +89,8 @@ function WH_Random_Army_Generator:generate_random_army(key, template_key, num_un
 		template.subculture, template.alignment))
 	pttg:log(string.format("[generate_random_army] %s, %s", #template.mandatory_units, #template.units))
 
+	num_units = math.min(19, num_units + #template.agents)
+
 	if #template.mandatory_units > 0 then
 		for _, unit in pairs(template.mandatory_units) do
 			unit_info = pttg_merc_pool.merc_units[unit.key]

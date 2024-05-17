@@ -44,7 +44,6 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_hide_map_resolve_room", pttg_UI.hide_map, pttg_UI, {}, 1)
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_update_map", pttg_UI.populate_map, pttg_UI, {}, 3)
     
-    pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_heal_post_battle", pttg_side_effects.heal_force, pttg_side_effects, {0.1, true})
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_center_camera_post_battle",  pttg_UI.center_camera, pttg_UI)
 
 
@@ -214,6 +213,9 @@ core:add_listener(
 
 cm:add_first_tick_callback(
     function()
+        if not cm:is_new_game() then
+            return
+        end
         local how_its_played = intervention:new("pttg_how_its_played", 60, function() end)
         if how_its_played then
             pttg:log("adding pttg_how_its_played")

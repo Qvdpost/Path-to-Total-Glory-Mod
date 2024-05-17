@@ -18,6 +18,7 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     opt_general_subtype,
     opt_general_level,
     opt_agents,
+    opt_chevrons,
     opt_effect_bundle,
     opt_player_is_generated_force
 )
@@ -50,7 +51,7 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
 
 
     forced_battle:add_new_force(forced_battle_key, generated_force, generated_force_faction,
-        destroy_generated_force_after_battle, opt_effect_bundle, opt_general_subtype, opt_general_level, agents)
+        destroy_generated_force_after_battle, opt_effect_bundle, opt_general_subtype, opt_general_level, agents, opt_chevrons)
 
     local attacker = target_force_cqi
     local defender = forced_battle_key
@@ -93,7 +94,7 @@ function Forced_Battle_Manager:pttg_trigger_forced_battle_with_generated_army(
     forced_battle:trigger_battle(attacker, defender, x, y, is_ambush)
 end
 
-function forced_battle:add_new_force(force_key, unit_list, faction_key, destroy_after_battle, opt_effect_bundle,opt_general_subtype,opt_general_level, opt_agents)
+function forced_battle:add_new_force(force_key, unit_list, faction_key, destroy_after_battle, opt_effect_bundle,opt_general_subtype,opt_general_level, opt_agents, opt_chevrons)
 	local force_list = self.force_list
 	
 	if not is_string(force_key) then
@@ -156,6 +157,13 @@ function forced_battle:add_new_force(force_key, unit_list, faction_key, destroy_
 		return false
     end
 
+    new_force.chevrons = opt_chevrons or 0
+
+    if new_force.chevrons ~= 0 and not is_number(new_force.chevrons) then
+        script_error("ERROR: Forced Battle Manager: new forced battle force "..force_key.." has been given a chevrons parameter, but parameter is not a number")
+		return false
+    end
+
 	new_force.unit_list = unit_list
 
 	force_list[force_key]= new_force
@@ -207,6 +215,8 @@ function forced_battle:forced_battle_stage_2()
     end
 
     pttg_side_effects:grant_characters_levels(force.general_level, generated_force)
+
+    pttg_side_effects:grant_units_chevrons(force.chevrons, generated_force)
 
     -- can't ambush a garrisoned force
     if target_force:has_garrison_residence() then

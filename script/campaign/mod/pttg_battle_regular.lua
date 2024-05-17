@@ -19,9 +19,10 @@ core:add_listener(
 
         local invasion_power = 2 + (cursor.z - 1) * 2 +
         pttg:get_difficulty_mod('ai_army_power_mod')                                                      -- easy:1|3|5 medium:2|4|6 hard:3|5|7
-        local invasion_size = ((cursor.z - 1) * 7) + cursor.y +
-        pttg:get_difficulty_mod('encounter_size')                                                         -- easy:2+y|9+y|14+y medium:4+y|11+y|16+y hard:6+y|11+y|16+y
+        local invasion_size = ((cursor.z - 1) * 12) + cursor.y +
+        pttg:get_difficulty_mod('encounter_size')                                                         -- easy:2+y|14+y|19+y medium:4+y|16+y|20 hard:6+y|16+y|20
         local general_level = (cursor.z - 1) * 20 + cursor.y
+        local invasion_chevrons = (cursor.z - 1) * 2 + (math.floor(cursor.y / 2) * cursor.z)
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))
@@ -40,6 +41,7 @@ core:add_listener(
             invasion_template_army.general_subtype, --	opt_general_subtype
             general_level,                          --	opt_general_level
             invasion_template_army.agents,
+            invasion_chevrons,
             nil                                     --	opt_effect_bundle
         )
     end,

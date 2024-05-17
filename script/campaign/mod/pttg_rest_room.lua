@@ -8,7 +8,6 @@ local function rest()
     pttg:log("[pttg_RestRoom] Resting troops: ")
 
     pttg_side_effects:heal_force(pttg:get_state('replenishment_factor'))
-
     core:trigger_custom_event('pttg_Idle', {})
 end
 
@@ -25,19 +24,19 @@ local function train_general()
 end
 
 
-core:add_listener(
-    "pttg_rest_train",
-    "UnitEffectPurchased",
-    true,
-    function(context)
-        pttg:log("Training merc: ", context:unit():unit_key())
-        cm:add_experience_to_unit(context:unit(), 9);
-    end,
-    true
-)
+-- core:add_listener(
+--     "pttg_rest_train",
+--     "UnitEffectPurchased",
+--     true,
+--     function(context)
+--         pttg:log("Training merc: ", context:unit():unit_key())
+--         cm:add_experience_to_unit(context:unit(), 9);
+--     end,
+--     true
+-- )
 
 core:add_listener(
-    "path_chose_LMR",
+    "pttg_RestRoom",
     "DilemmaChoiceMadeEvent",
     function(context)
         return context:dilemma() == 'pttg_RestRoom'

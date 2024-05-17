@@ -26,6 +26,8 @@ core:add_listener(
             pttg:get_difficulty_mod('encounter_size')                                                         -- easy:2+y|9+y|14+y medium:4+y|11+y|16+y hard:6+y|11+y|16+y
         local general_level = (cursor.z - 1) * 20 + cursor.y + 5
 
+        local invasion_chevrons = (cursor.z - 1) * 2 + (math.floor(cursor.y / 2) * cursor.z)
+
         -- TODO: Should invasions scale down for heroes?
         -- invasion_size = invasion_size - #(invasion_template_army.agents or {})
 
@@ -46,6 +48,7 @@ core:add_listener(
             invasion_template_army.general_subtype, --	opt_general_subtype
             general_level,                          --	opt_general_level
             invasion_template_army.agents,
+            invasion_chevrons,
             nil                                     --	opt_effect_bundle TODO: add effect bundles
         )
     end,

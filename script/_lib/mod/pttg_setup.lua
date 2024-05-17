@@ -8,6 +8,9 @@ local function init()
     
     -- Fixes Nurgle recruit starting health.
     recruited_unit_health.units_to_starting_health_bonus_values = {}
+
+    -- Do not reward post-battle rewards.
+    core:remove_listener("award_random_magical_item")
 end
 
 local function post_init()

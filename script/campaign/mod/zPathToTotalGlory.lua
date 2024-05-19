@@ -1,5 +1,5 @@
 local pttg = core:get_static_object("pttg");
-local procgen = core:get_static_object("procgen")
+local pttg_setup = core:get_static_object("pttg_setup");
 local pttg_UI = core:get_static_object("pttg_UI")
 local pttg_tele = core:get_static_object("pttg_tele")
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
@@ -13,9 +13,10 @@ local pttg_effect_pool = core:get_static_object("pttg_effect_pool")
 
 local function init()
     pttg:load_state();
+
+
     pttg_merc_pool:init_active_merc_pool()
 
-    cm:disable_end_turn(true)
 
     pttg_effect_pool:load_campaign_effects()
     pttg_effect_pool:apply_campaign_effects()
@@ -76,6 +77,7 @@ local function init()
 
     pttg_UI:enable_next_phase_button()
 
+    pttg_setup:post_init()
 
     core:trigger_custom_event('pttg_init_complete', {})
 end
@@ -213,24 +215,26 @@ core:add_listener(
 
 cm:add_first_tick_callback(
     function()
-        if not cm:is_new_game() then
-            return
-        end
+        -- if not cm:is_new_game() then
+        --     return
+        -- end
         local how_its_played = intervention:new("pttg_how_its_played", 60, function() end)
-        if how_its_played then
-            pttg:log("adding pttg_how_its_played")
-            how_its_played:set_must_trigger(true)
-            how_its_played:set_callback(function()
-                cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true)
-                how_its_played:complete()
-            end)
-        
-            how_its_played:add_trigger_condition(
-                "ScriptEventIntroCutsceneFinished", 
-                function() return cm:is_new_game() end
-            )
-        
-            how_its_played:start()
+        if cm:is_new_game() then
+            if how_its_played then
+                pttg:log("adding pttg_how_its_played")
+                how_its_played:set_must_trigger(true)
+                how_its_played:set_callback(function()
+                    cm:trigger_incident(cm:get_local_faction_name(), 'pttg_how_its_played', true)
+                    how_its_played:complete()
+                end)
+            
+                how_its_played:add_trigger_condition(
+                    "ScriptEventIntroCutsceneFinished", 
+                    function() return cm:is_new_game() end
+                )
+            
+                how_its_played:start()
+            end
         end
     end
 )

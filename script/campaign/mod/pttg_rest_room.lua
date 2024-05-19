@@ -11,13 +11,14 @@ local function rest()
     core:trigger_custom_event('pttg_Idle', {})
 end
 
-local function train_mercenary()
+local function upgrade_mercenary()
     pttg:log("[pttg_RestRoom] Training mercenary: ")
-    pttg_glory:add_training_glory(1)
+    pttg_glory:add_warband_upgrade_glory(1)
     core:trigger_custom_event('pttg_Idle', {})
 end
 
 local function train_general()
+    -- TODO: add an intenisty increasing buff perhaps?
     pttg:log("[pttg_RestRoom] Training general: ")
     pttg_side_effects:grant_general_levels(5)
     core:trigger_custom_event('pttg_Idle', {})
@@ -47,7 +48,7 @@ core:add_listener(
         if context:choice_key() == 'FIRST' then
             rest()
         elseif context:choice_key() == 'SECOND' then
-            train_mercenary()
+            upgrade_mercenary()
         else
             train_general()
         end

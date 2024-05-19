@@ -77,6 +77,4 @@ function pttg_upkeep:init()
     end
 end
 
-cm:add_first_tick_callback(function() pttg_upkeep:init() end);
-
 core:add_static_object("pttg_upkeep", pttg_upkeep);

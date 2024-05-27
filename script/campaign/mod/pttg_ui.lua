@@ -1,11 +1,13 @@
+local pttg = core:get_static_object("pttg");
+local pttg_shop = core:get_static_object("pttg_glory_shop");
+
 local pttg_UI = {
     faction_buttons = {
         pttg_map_button = true,
-        button_mortuary_cult = true
+        button_mortuary_cult = true,
+        button_technology = true
     }
 }
-local pttg = core:get_static_object("pttg");
-local pttg_shop = core:get_static_object("pttg_glory_shop");
 
 function pttg_UI:init()
     pttg:log("[pttg_ui] Initialising UI and listeners")
@@ -445,8 +447,8 @@ core:add_listener(
     "pttg_next_phase_button_listener",
     "PanelOpenedCampaign",
     true,
-    function()
-        pttg:log("[pttg_ui] panel opened.")
+    function(context)
+        pttg:log("[pttg_ui] panel opened: "..context.string)
 
         pttg_UI:hide_faction_buttons()
 

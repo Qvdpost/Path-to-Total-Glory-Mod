@@ -12,8 +12,12 @@ local function rest()
 end
 
 local function upgrade_mercenary()
-    pttg:log("[pttg_RestRoom] Training mercenary: ")
-    pttg_glory:add_warband_upgrade_glory(1)
+    pttg:log("[pttg_RestRoom] Upgrading mercenary: ")
+    local pttg_warband_upgrade = core:get_static_object("pttg_warband_upgrade")
+
+    local cursor = pttg:get_cursor()
+    pttg_glory:add_warband_upgrade_glory(pttg:get_state("add_warband_upgrade_glory")[cursor.z])
+    pttg_warband_upgrade:highlight_warband(true)
     core:trigger_custom_event('pttg_Idle', {})
 end
 
@@ -23,18 +27,6 @@ local function train_general()
     pttg_side_effects:grant_general_levels(5)
     core:trigger_custom_event('pttg_Idle', {})
 end
-
-
--- core:add_listener(
---     "pttg_rest_train",
---     "UnitEffectPurchased",
---     true,
---     function(context)
---         pttg:log("Training merc: ", context:unit():unit_key())
---         cm:add_experience_to_unit(context:unit(), 9);
---     end,
---     true
--- )
 
 core:add_listener(
     "pttg_RestRoom",

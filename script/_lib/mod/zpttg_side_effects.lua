@@ -9,6 +9,54 @@ local pttg_side_effects = {
 
 }
 
+function pttg_side_effects:unlock_active_tech(amount)
+    local faction_key = cm:get_local_faction_name()
+    local record = cco("CcoCampaignFaction", faction_key)
+    local active_research = record:Call("TechnologyManagerContext.CurrentResearchingTechnologyContext")
+    if not active_research then
+        core:add_listener(
+            "pttg_research_active_tech",
+            "PanelClosedCampaign",
+            function(context) return context.string == 'technology_panel' end,
+            function(context)
+                out('Unlock callback: '..amount)
+                self:unlock_active_tech(amount)
+            end,
+            false
+        )
+        return
+    end
+
+    if amount > 1 then
+        core:add_listener(
+            "pttg_research_active_tech",
+            "PanelClosedCampaign",
+            function(context) return context.string == 'technology_panel' end,
+            function(context)
+                out('Unlock callback: '..amount-1)
+                self:unlock_active_tech(amount - 1)
+            end,
+            false
+        )
+    end
+
+    pttg_side_effects:unlock_tech(active_research:Call("RecordContext.Key"))
+end
+
+function pttg_side_effects:unlock_tech(tech_key)
+    local faction_key = cm:get_local_faction_name()
+    local completed_techs = pttg:get_state('completed_techs')
+
+    for key, _ in pairs(completed_techs) do
+        cm:instantly_research_technology(faction_key, key, false)
+    end
+
+    completed_techs[tech_key] = true
+    pttg:set_state('completed_techs', completed_techs)
+
+    cm:instantly_research_technology(faction_key, tech_key, true)
+end
+
 function pttg_side_effects:heal_force(factor, use_tier_scale)
     local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
     local unit_list = force:unit_list()
@@ -485,6 +533,17 @@ core:add_listener(
         pttg_side_effects:randomize_start(false)
     end,
     false
+)
+
+core:add_listener(
+    "pttg_rest_train",
+    "UnitEffectPurchased",
+    true,
+    function(context)
+        pttg:log("Training merc: ", context:unit():unit_key())
+        cm:add_experience_to_unit(context:unit(), 3);
+    end,
+    true
 )
 
 core:add_listener(

@@ -42,7 +42,7 @@ function pttg_warband_upgrade:highlight_warband(should_highlight)
 end
 
 function pttg_warband_upgrade:update_warband_glory()
-    local glory_uic = pttg_warband_upgrade:get_or_create_merchant_glory()
+    local glory_uic = pttg_warband_upgrade:get_or_create_pooled_resource_ui()
     if glory_uic then
         glory_uic:SetStateText(tostring(pttg_glory:get_warband_glory_value()), "")
     end

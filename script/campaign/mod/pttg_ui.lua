@@ -170,8 +170,13 @@ function pttg_UI:populate_map()
             cursor = nil
         end
     end
+    pttg:log("Populating map act: "..tostring(act))
     local map = pttg:get_state('maps')[act]
 
+    if not map then
+        pttg:log("No map to populate")
+        return
+    end
 
     local map_title = find_uicomponent(map_ui, 'panel_title')
     if not map_title then

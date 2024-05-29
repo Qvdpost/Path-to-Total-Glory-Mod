@@ -211,12 +211,44 @@ function forced_battle:forced_battle_stage_2()
 
     for _, agent in pairs(force.agents or {}) do
         pttg:log(string.format("Adding agent %s to spawned force.", agent.key))
-        pttg_side_effects:add_agent_to_force(agent, generated_force)
+        local character = pttg_side_effects:add_agent_to_force(agent, generated_force)
+
+        local agent_record = cco("CcoAgentSubtypeRecord", agent.key)
+
+        local is_legend = (agent_record:Call("OnscreenNameOverride"):find("Legendary") ~= nil)
+        pttg:log("Agent "..agent.key.." is legend: "..tostring(is_legend)..". Changing name to: ".. agent_record:Call("AssociatedUnitOverride.Name"))
+        if is_legend then
+            cm:change_character_custom_name(
+                character,
+                agent_record:Call("AssociatedUnitOverride.Name"),
+                "",
+                "",
+                ""
+            )
+        end
     end
 
     pttg_side_effects:grant_characters_levels(force.general_level, generated_force)
 
     pttg_side_effects:grant_units_chevrons(force.chevrons, generated_force)
+
+    -- change name of general if they are unique
+    local general_record = cco("CcoAgentSubtypeRecord", generated_force:general_character():character_subtype_key())
+
+    local is_legend = (general_record:Call("OnscreenNameOverride"):find("Legendary") ~= nil)
+    pttg:log("General "..generated_force:general_character():character_subtype_key().." is legend: "..tostring(is_legend)..". Changing name to: ".. general_record:Call("AssociatedUnitOverride.Name"))
+
+    if is_legend then
+        cm:change_character_custom_name(
+           generated_force:general_character(),
+           general_record:Call("AssociatedUnitOverride.Name"),
+            "",
+            "",
+            ""
+        )
+    end
+
+    
 
     -- can't ambush a garrisoned force
     if target_force:has_garrison_residence() then

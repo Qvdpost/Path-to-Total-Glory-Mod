@@ -55,9 +55,10 @@ local pttg = {
         glory_recruit_boss = 4,
         excluded_army_templates = {},
         add_warband_upgrade_glory = {2, 3, 3},
-        tech_completion_rate = 1,
+        tech_completion_rate = 2,
         completed_techs = {},
-        
+        wom_lower_threshold = 25,
+        wom_upper_threshold = 100,
     },
     
     persistent_keys = {
@@ -83,7 +84,9 @@ local pttg = {
         excluded_army_templates = true,
         add_warband_upgrade_glory = true,
         tech_completion_rate = true,
-        completed_techs = {},
+        completed_techs = true,
+        wom_lower_threshold = true,
+        wom_upper_threshold = true,
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},

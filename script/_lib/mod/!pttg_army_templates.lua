@@ -242,9 +242,16 @@ function pttg_battle_templates:get_random_elite_battle_template(act)
     local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
     
     local player_general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
-    -- TODO: Add fallback when the pool is entirely excluded
-    while random_encounter.general_subtype == player_general:character_subtype_key() or self.excluded_army_templates[random_encounter.key] do
+
+    local tries = 1
+    while (random_encounter.general_subtype == player_general:character_subtype_key() or self.excluded_army_templates[random_encounter.key]) and tries < 10 do
         random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
+        tries = tries + 1
+    end
+    if tries == 10 then 
+        while random_encounter.general_subtype == player_general:character_subtype_key() do
+            random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
+        end
     end
     
     pttg:log(string.format("[pttg_army_templates] Random Elite template: %s", random_encounter.key))
@@ -270,9 +277,16 @@ function pttg_battle_templates:get_random_boss_battle_template(act)
     local random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
     
     local player_general = cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()
-    -- TODO: Add fallback when the pool is entirely excluded
-    while random_encounter.general_subtype == player_general:character_subtype_key() or self.excluded_army_templates[random_encounter.key] do
+    
+    local tries = 0
+    while (random_encounter.general_subtype == player_general:character_subtype_key() or self.excluded_army_templates[random_encounter.key]) and tries < 10 do
         random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
+        tries = tries + 1
+    end
+    if tries == 10 then 
+        while random_encounter.general_subtype == player_general:character_subtype_key() do
+            random_encounter = alignment_templates[cm:random_number(#alignment_templates)]
+        end
     end
     
     pttg:log(string.format("[pttg_army_templates] Random Boss template: %s", random_encounter.key))
@@ -333,7 +347,7 @@ local function init()
         ["pttg_boss_arkhan"] = { general_subtype="wh2_dlc09_tmb_arkhan", agents={"random", "random"}, faction = "wh2_dlc09_tmb_tombking_qb1", culture = "wh2_dlc09_tmb_tomb_king", subculture = "wh2_dlc09_sc_tmb_tomb_kings", mandatory_units = {{key="wh2_dlc09_tmb_veh_khemrian_warsphinx_0"}, {key="wh2_dlc09_tmb_mon_necrosphinx_0"}, {key="wh2_dlc09_tmb_art_casket_of_souls_0"}}, units = {}, alignment = 'neutral', act = 3 },
         -------------------- Chaos ---------------------
         ["pttg_boss_archaon"] = { general_subtype="wh_main_chs_archaon", agents={"random", "random"}, faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {{key ="wh_main_chs_art_hellcannon"}, {key="wh_dlc01_chs_inf_chosen_2"}}, units = {}, alignment = 'chaos', act = 3 },
-        ["pttg_boss_belakor"] = { general_subtype="wh3_main_dae_belakor", agents={"random", "random"}, faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {{key ="wh_main_chs_art_hellcannon"}, {key="wh_dlc01_chs_inf_chosen_2"}}, units = {}, alignment = 'chaos', act = 3 },
+        ["pttg_boss_belakor"] = { general_subtype="wh3_main_dae_belakor", agents={"random", "random"}, faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", military_grouping = "wh3_main_group_belakor", mandatory_units = {{key ="wh_main_chs_art_hellcannon"}, {key="wh_dlc01_chs_inf_chosen_2"}}, units = {}, alignment = 'chaos', act = 3 },
     }
 
     -- TODO Fix elite encounters.
@@ -371,10 +385,10 @@ local function init()
         -------------------- Neutral ------------------
         ["pttg_wef_forest_spirits"] = { faction = "wh_dlc05_wef_wood_elves_qb1", culture = "wh_dlc05_wef_wood_elves", subculture = "wh_dlc05_sc_wef_wood_elves", mandatory_units = {}, units = { { key = "wh2_dlc16_wef_mon_malicious_treeman_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treeman_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_wolves_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_malicious_treekin_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_hawks_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_harpies_0", weight = 10 }, { key = "wh2_dlc16_wef_mon_feral_manticore", weight = 5 }, { key = "wh2_dlc16_wef_mon_giant_spiders_0", weight = 10 }, { key = "wh_dlc05_wef_mon_great_eagle_0", weight = 10 }, { key = "wh_dlc05_wef_mon_treekin_0", weight = 20 }, { key = "wh2_dlc16_wef_mon_cave_bats", weight = 20 }, { key = "wh2_dlc16_wef_inf_malicious_dryads_0", weight = 40 }, { key = "wh_dlc05_wef_inf_dryads_0", weight = 40 }, }, alignment = 'neutral', act = { 1, 2, 3 }, military_grouping = "wh2_dlc16_group_drycha" },
         -------------------- Chaos ---------------------
-        ["pttg_elite_valkia"] = { general_subtype="wh3_dlc20_kho_valkia", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
-        ["pttg_elite_vilitch"] = { general_subtype="wh3_dlc20_tze_vilitch", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
-        ["pttg_elite_festus"] = { general_subtype="wh3_dlc20_nur_festus", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
-        ["pttg_elite_azazel"] = { general_subtype="wh3_dlc20_sla_azazel", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
+        ["pttg_elite_valkia"] = { general_subtype="wh3_dlc20_kho_valkia", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", military_grouping = "wh3_dlc20_group_chs_valkia", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
+        ["pttg_elite_vilitch"] = { general_subtype="wh3_dlc20_tze_vilitch", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", military_grouping = "wh3_dlc20_group_chs_vilitch", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
+        ["pttg_elite_festus"] = { general_subtype="wh3_dlc20_nur_festus", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", military_grouping = "wh3_dlc20_group_chs_festus", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
+        ["pttg_elite_azazel"] = { general_subtype="wh3_dlc20_sla_azazel", faction = "wh_main_chs_chaos_qb1", culture = "wh_main_chs_chaos", subculture = "wh_main_sc_chs_chaos", military_grouping = "wh3_dlc20_group_chs_azazel", mandatory_units = {}, units = {}, alignment = 'chaos', act = { 1, 2, 3 } },
     }
 
     -- TODO fix the commented templates with cool mili groups or units

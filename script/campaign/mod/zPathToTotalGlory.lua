@@ -27,7 +27,6 @@ local function init()
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_recruit_glory", pttg_glory.reset_recruit_glory, pttg_glory)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_merc_pool", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_reset_glory_shop", pttg_glory_shop.reset_rituals, pttg_glory_shop)
-    pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_winds_of_magic_down", pttg_mod_wom.decrease, pttg_mod_wom, { 5 })
 
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_reset_recruit_glory_start", pttg_glory.reset_recruit_glory, pttg_glory)
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_reset_merc_pool_start", pttg_merc_pool.reset_active_merc_pool, pttg_merc_pool)

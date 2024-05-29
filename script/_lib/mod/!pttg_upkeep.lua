@@ -65,7 +65,7 @@ function pttg_upkeep:resolve(phase)
     pttg:log(string.format("[pttg_upkeep] Resolving upkeep in phase: %s", phase))
     for prio, callbacks in pairs(self.callbacks[phase]) do
         for name, callback in pairs(callbacks) do
-            pttg:log(string.format("[pttg_upkeep] Executing %s(%s)", name, prio))
+            pttg:log(string.format("[pttg_upkeep] Executing %s(prio:%s)", name, prio))
             callback.func(callback.object, unpack(callback.payload))
         end
     end

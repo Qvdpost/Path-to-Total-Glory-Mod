@@ -159,6 +159,8 @@ function pttg_side_effects:add_agent_to_force(agent_info, force)
 
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
     cm:embed_agent_in_force(agent, force)
+
+    return agent
 end
 
 function pttg_side_effects:grant_units_chevrons(chevrons, force)

@@ -58,12 +58,7 @@ core:add_listener(
     function(context)
         pttg_glory:reward_glory(105, 95)
 
-        cm:callback( -- we need to wait a tick for this to work, so we don't loop this event
-            function()
-                pttg_mod_wom:increase(10)
-            end,
-            0.4
-        )
+        pttg_mod_wom:increase(10)
 
         pttg_upkeep:resolve("pttg_PostRoomBattle")
 
@@ -75,6 +70,11 @@ core:add_listener(
             unique_only = true,
             recruit_glory = 4
         })
+
+        cm:callback(
+            function() cm:trigger_incident(cm:get_local_faction():name(), 'pttg_boss_treasure', true) end,
+            0.4
+        )
     end,
     true
 )

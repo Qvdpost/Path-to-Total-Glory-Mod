@@ -18,14 +18,4 @@ function pttg_setup:post_init()
     cm:zero_action_points(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state("army_cqi")):general_character()))
 end
 
--- core:add_listener(
---     "pttg_mode_selection",
---     "IncidentOccuredEvent",
---     function(context) return context:dilemma() == "pttg_how_its_played" end,
---     function(context)
---         pttg_setup:post_init()
---     end,
---     false
--- )
-
 core:add_static_object("pttg_setup", pttg_setup);

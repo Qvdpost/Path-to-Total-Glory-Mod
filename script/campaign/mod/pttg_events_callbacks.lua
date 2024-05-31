@@ -37,7 +37,7 @@ function pttg_HiringBoard_callback(context)
     local hiring_board = cm:create_dilemma_builder('pttg_AgentRecruit')
     local faction = cm:get_local_faction()
 
-    for agent_type, _ in pairs(pttg_merc_pool.faction_to_agents[faction:name()]) do 
+    for agent_type, _ in pairs(pttg_merc_pool:recruitable_agents(faction:name())) do 
         local agent_payload = cm:create_payload()
         if agent_type == 'champion' then
 			hiring_board:add_choice_payload("FIRST", agent_payload);
@@ -130,6 +130,8 @@ function pttg_AgentRecruit_callback(context)
 	end
 	if choice == 'EIGhTH' then -- Illegible
         -- TODO: make this something cool. Unique hero perhaps?
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), 'random'), force)
+        local factions = cm:model():world():faction_list()
+        local random_faction = factions:item_at(cm:random_number(factions:num_items()-1, 0))
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(random_faction:name(), 'random'), force)
 	end
 end

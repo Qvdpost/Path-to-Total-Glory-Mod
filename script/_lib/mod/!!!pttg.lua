@@ -18,7 +18,7 @@ local pttg = {
         army_cqi = false,
         event_room_chances = { monster = 10, shop = 3, treasure = 2 },
         shop_sizes = {
-            merchandise = 1,
+            merchandise = 5,
             units = 5
         },
         shop_chances = {
@@ -57,8 +57,7 @@ local pttg = {
         add_warband_upgrade_glory = {2, 3, 3},
         tech_completion_rate = 2,
         completed_techs = {},
-        wom_lower_threshold = 25,
-        wom_upper_threshold = 100,
+        wom_efficiency = 0.25
     },
     
     persistent_keys = {
@@ -85,8 +84,7 @@ local pttg = {
         add_warband_upgrade_glory = true,
         tech_completion_rate = true,
         completed_techs = true,
-        wom_lower_threshold = true,
-        wom_upper_threshold = true,
+        wom_efficiency = true,
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},

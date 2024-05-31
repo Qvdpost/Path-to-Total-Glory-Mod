@@ -36,7 +36,7 @@ local function init()
     pttg_upkeep:add_callback("pttg_ResolveRoom", "pttg_center_camera_on_resolve",  pttg_UI.center_camera, pttg_UI, {}, 3)
 
     pttg_upkeep:add_callback("pttg_Idle", "pttg_center_camera_idle", pttg_UI.center_camera, pttg_UI)
-    pttg_upkeep:add_callback("pttg_Idle", "pttg_level_characters", pttg_side_effects.grant_characters_levels, pttg_side_effects, {1})
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_level_characters", pttg_side_effects.grant_characters_passive_levels, pttg_side_effects, {1, 2})
 
     pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_show_map_start",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
     pttg_upkeep:add_callback("pttg_ChoosePath", "pttg_show_map_path",  pttg_UI.populate_and_show_map, pttg_UI, {}, 3)
@@ -163,6 +163,11 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_ResolveRoom")
 
+        -- TODO: verify this works for legendary and is not intrusive
+        if cm:get_difficulty() == 5 then -- legendary
+            cm:save()
+        end
+
         if cursor.class == pttg_RoomType.MonsterRoom then
             core:trigger_custom_event('pttg_StartRoomBattle', {})
         elseif cursor.class == pttg_RoomType.MonsterRoomElite then
@@ -190,10 +195,13 @@ core:add_listener(
         pttg:set_state('cur_phase', "pttg_Rewards")
         
         pttg_upkeep:resolve("pttg_Rewards")
+        
+        pttg_UI:highlight_event_accept(false)
 
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
         
-        pttg:set_state('cur_phase', "pending_reward")
+        pttg:set_state('pending_reward', true)
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

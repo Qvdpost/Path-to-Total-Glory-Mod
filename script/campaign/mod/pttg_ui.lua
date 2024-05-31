@@ -341,10 +341,8 @@ function pttg_UI:disable_event_feed()
         "agent_recruited",
         "diplomacy_trespassing",
         "conquest_battle",
-        "character_ancillary_gained",
         "character_ancillary_lost",
         "character_ancillary_lost_stolen",
-        "faction_ancillary_gained",
         "faction_ancillary_gained_stolen",
         "military_unit_recruited",
         "diplomacy_faction_encountered",
@@ -388,6 +386,21 @@ function pttg_UI:hide_faction_buttons()
             uic_child:SetVisible(false)
         end
 	end;
+
+    -- TODO: instead of hiding, make use of notifications for leftover upgrades/recruitments
+    local notification_frame = find_uicomponent(core:get_ui_root(), "faction_buttons_docker", "notification_frame");
+    if notification_frame then
+        notification_frame:SetVisible(false)
+    end
+end
+
+function pttg_UI:highlight_event_accept(should_highlight)
+    local root = core:get_ui_root()
+    local accept_button = find_uicomponent(root, "events", "button_set", "accept_holder", "button_accept")
+
+    if accept_button then
+        accept_button:Highlight(should_highlight)
+    end
 end
 
 core:add_listener(
@@ -428,8 +441,13 @@ core:add_listener(
 
         if cur_phase == "pttg_Idle" then
             if pttg:get_state("pending_reward") then
-                pttg:log("[pttg_ui] Pending reward found. Triggering phase 3")
-                core:trigger_custom_event('pttg_Rewards', {})
+                pttg:log("[pttg_ui] Pending reward found. Triggering rewards")
+                local im = cm:get_intervention_manager()
+                if im:is_another_intervention_queued() then
+                    im:start_next_intervention(true)
+                else
+                    core:trigger_custom_event('pttg_Rewards', {})
+                end
             else
                 if pttg:get_cursor() == nil or pttg:get_cursor().class == pttg_RoomType.BossRoom then
                     pttg:log("[pttg_ui] Triggering start")

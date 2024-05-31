@@ -11,7 +11,7 @@ local function hide_recruit_buttons()
     local button_ids = { "button_recruitment", "button_renown", "button_renown", "button_allied_recruitment",
         "button_blessed_spawn_pool", "button_imperial_supplies_pool", "button_contained_army_panel", "button_navy_panel",
         "button_army_panel", "button_setrapy", "button_raise_dead", "button_mercenaries", "button_flesh_lab_pool",
-        "button_monster_pen_pool", "button_nurgle_mercenaries", "button_detachments", "", "" }
+        "button_monster_pen_pool", "button_nurgle_mercenaries", "button_detachments" }
     for _, button_id in pairs(button_ids) do
         local button_uic = find_uicomponent(army_buttons, button_id)
         if button_uic then
@@ -32,6 +32,27 @@ local function hide_recruit_buttons()
             button_uic:SetVisible(false)
         end
     end
+
+    cm:real_callback(
+        function() 
+            if pttg_glory:get_warband_glory_value() == 0 then
+                local button_uic = find_uicomponent(army_buttons, "button_warbands_upgrade")
+                if button_uic then
+                    button_uic:SetVisible(false)
+                end
+                local warband_uic = find_uicomponent(root, "units_panel","main_units_panel","warband_upgrades_docker","warband_upgrades")
+                if warband_uic then
+                    warband_uic:SetVisible(false)
+                end
+            else
+                local button_uic = find_uicomponent(army_buttons, "button_warbands_upgrade")
+                if button_uic then
+                    button_uic:SetVisible(true)
+                end
+            end
+        end,
+        50
+    )
 end
 
 
@@ -44,6 +65,7 @@ cm:add_first_tick_callback(
             true,
             function(context)
                 hide_recruit_buttons()
+                cm:real_callback(hide_recruit_buttons, 50)
             end,
             true
         )
@@ -54,6 +76,7 @@ cm:add_first_tick_callback(
             true,
             function(context)
                 hide_recruit_buttons()
+                cm:real_callback(hide_recruit_buttons, 50)
             end,
             true
         )
@@ -64,6 +87,7 @@ cm:add_first_tick_callback(
             true,
             function(context)
                 hide_recruit_buttons()
+                cm:real_callback(hide_recruit_buttons, 50)
             end,
             true
         )

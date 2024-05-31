@@ -54,10 +54,15 @@ core:add_listener(
     function(context) return context:dilemma() == "pttg_battle_victory" end,
     function(context)
         pttg:log("[pttg_battle_victory] Victory event received.")
+
+        local pttg_UI = core:get_static_object("pttg_UI")
+        pttg_UI:highlight_event_accept(true)
+
+        
         pttg_glory:reward_glory(20, 10)
-
+        
         pttg_upkeep:resolve("pttg_PostRoomBattle")
-
+                
         core:trigger_custom_event('pttg_Rewards', {})
     end,
     true

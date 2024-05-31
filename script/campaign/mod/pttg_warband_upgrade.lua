@@ -38,6 +38,9 @@ function pttg_warband_upgrade:highlight_warband(should_highlight)
     local button = find_uicomponent(army_buttons, "button_warbands_upgrade")
     if button then
         button:Highlight(should_highlight, true)
+        if should_highlight then
+            button:SetVisible(true)
+        end
     end
 end
 

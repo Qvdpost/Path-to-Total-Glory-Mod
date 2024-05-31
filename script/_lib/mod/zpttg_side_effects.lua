@@ -142,6 +142,13 @@ function pttg_side_effects:grant_characters_levels(amount, force)
     end
 end
 
+function pttg_side_effects:grant_characters_passive_levels(amount, step)
+    local cursor = pttg:get_cursor()
+    if cursor and cursor.y % step == 0 then
+        self:grant_characters_levels(amount)
+    end
+end
+
 function pttg_side_effects:add_agent_to_force(agent_info, force)
     if not force then
         force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))

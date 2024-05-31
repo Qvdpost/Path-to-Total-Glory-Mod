@@ -1045,6 +1045,24 @@ function pttg_merc_pool:is_eligible_agent(object, faction_key)
    return true
 end
 
+function pttg_merc_pool:recruitable_agents(faction_name)
+    local result = {}
+    local agent_pairs = self.faction_to_agents[faction_name]
+
+    for agent_type, agents in pairs(agent_pairs) do
+        for _, agent in pairs(agents) do
+            if agent.recruitable then
+                if result[agent_type] then
+                    table.insert(result[agent_type], agent)
+                else
+                    result[agent_type] = { agent }
+                end
+            end
+        end
+    end
+    return result
+end
+
 
 
 function pttg_merc_pool:update_merc(merc)

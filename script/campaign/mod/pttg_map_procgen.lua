@@ -373,7 +373,8 @@ local function add_boss(map)
 
     local boss_row = {}
     for x = 1, #map[1] do
-        table.insert(boss_row, MapRoomNode:new(x, #map + 1))
+        -- table.insert(boss_row, MapRoomNode:new(x, #map + 1))
+        table.insert(boss_row, boss_node) -- all nodes lead to the boss
     end
     boss_row[boss_node.x] = boss_node
 

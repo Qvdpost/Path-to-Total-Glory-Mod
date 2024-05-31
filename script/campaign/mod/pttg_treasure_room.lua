@@ -40,14 +40,14 @@ local function pttg_small_treasure_callback(context)
     pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
     local random_item
     if rando <= 75 then
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
+        local rewards = pttg_item_pool:get_reward_items(1, pttg:get_state("excluded_items"))
         if #rewards > 0 then
             random_item = rewards[cm:random_number(#rewards)]
         end
     else
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
+        local rewards = pttg_item_pool:get_reward_items(2, pttg:get_state("excluded_items"))
         if #rewards > 0 then
-            random_item = rewards
+            random_item = rewards[cm:random_number(#rewards)]
         end
     end
 
@@ -61,6 +61,8 @@ local function pttg_small_treasure_callback(context)
     if cm:random_number(100) <= 50 then
         pttg_glory:reward_glory(27, 23)
     end
+
+    pttg_item_pool:exclude_item(random_item)
 end
 
 local function pttg_medium_treasure_callback(context)
@@ -69,17 +71,17 @@ local function pttg_medium_treasure_callback(context)
     pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
     local random_item
     if rando <= 35 then
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[1]
+        local rewards = pttg_item_pool:get_reward_items(1, pttg:get_state("excluded_items"))
         if #rewards > 0 then
             random_item = rewards[cm:random_number(#rewards)]
         end
     elseif rando <= 85 then
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
+        local rewards = pttg_item_pool:get_reward_items(2, pttg:get_state("excluded_items"))
         if #rewards > 0 then
             random_item = rewards[cm:random_number(#rewards)]
         end
     else
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[3]
+        local rewards = pttg_item_pool:get_reward_items(3, pttg:get_state("excluded_items"))
         if #rewards > 0 then
             random_item = rewards[cm:random_number(#rewards)]
         end
@@ -95,6 +97,8 @@ local function pttg_medium_treasure_callback(context)
     if cm:random_number(100) <= 35 then
         pttg_glory:reward_glory(55, 45)
     end
+
+    pttg_item_pool:exclude_item(random_item)
 end
 
 local function pttg_large_treasure_callback(context)
@@ -103,12 +107,12 @@ local function pttg_large_treasure_callback(context)
     pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
     local random_item
     if rando <= 75 then
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[2]
+        local rewards = pttg_item_pool:get_reward_items(2, pttg:get_state("excluded_items"))
         if #rewards > 0 then
             random_item = rewards[cm:random_number(#rewards)]
         end
     else
-        local rewards = pttg_item_pool:get_reward_items(pttg:get_state("excluded_items"))[3]
+        local rewards = pttg_item_pool:get_reward_items(3, pttg:get_state("excluded_items"))
         if #rewards > 0 then
             random_item = rewards[cm:random_number(#rewards)]
         end
@@ -124,10 +128,26 @@ local function pttg_large_treasure_callback(context)
     if cm:random_number(100) <= 50 then
         pttg_glory:reward_glory(82, 68)
     end
+
+    pttg_item_pool:exclude_item(random_item)
 end
 
 local function pttg_boss_treasure_callback(context)
-    --body of the callback; what should happen for each choice?
+    pttg:log("[pttg_TreasureRoom] resolving boss treasure: ")
+
+    local rewards = pttg_item_pool:get_reward_items(4, pttg:get_state("excluded_items"))
+    if #rewards > 0 then
+        random_item = rewards[cm:random_number(#rewards)]
+    end
+
+    if not random_item then
+        script_error("[pttg_treasure] No item reward available!")
+        return false
+    end
+
+    cm:add_ancillary_to_faction(context:faction(), random_item.key, false)
+
+    pttg_item_pool:exclude_item(random_item)
 end
 
 core:add_listener(

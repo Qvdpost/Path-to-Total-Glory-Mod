@@ -25,8 +25,13 @@ local function setup_post_battle_option_listener()
                 core:trigger_custom_event("pttg_glory_focus", {})
             end
 
-            pttg:log("Adjusting Winds of Magic")
-            pttg_wom:set_wom(pttg_battle.completed_wom_reserves)
+            -- TODO: reduce wom in case of auto-resolve?
+            if pttg_battle.spent_wom_reserves then
+                pttg:log("Adjusting Winds of Magic for spent wom: "..pttg_battle.spent_wom_reserves)
+                local efficiency = pttg:get_state('wom_efficiency')
+                pttg_wom:decrease(pttg_battle.spent_wom_reserves - (pttg_battle.spent_wom_reserves * efficiency))
+                pttg_battle.spent_wom_reserves = nil
+            end
 		end,
 		true
 	);

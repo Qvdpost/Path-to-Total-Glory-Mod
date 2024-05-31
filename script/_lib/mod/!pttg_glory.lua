@@ -59,6 +59,24 @@ function pttg_glory:add_warband_upgrade_glory(amount)
     "pttg_glory_warband_upgrade", amount)
 end
 
+function pttg_glory:add_tech_glory(amount)
+    if amount < 0 then
+        pttg:log("[pttg_glory] Cannot add negative glory.")
+        return false
+    end
+    cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_technology_glory",
+    "pttg_glory_point_technology", amount)
+end
+
+function pttg_glory:remove_tech_glory(amount)
+    if amount < 0 then
+        pttg:log("[pttg_glory] Cannot remove negative glory.")
+        return false
+    end
+    cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_technology_glory",
+    "pttg_glory_point_technology", -amount)
+end
+
 function pttg_glory:get_glory_value()
     local faction = cm:get_faction(cm:get_local_faction_name(true))
     local player_glory = faction:pooled_resource_manager():resource("pttg_glory_points"):value()
@@ -74,6 +92,12 @@ end
 function pttg_glory:get_warband_glory_value()
     local faction = cm:get_faction(cm:get_local_faction_name(true))
     local player_glory = faction:pooled_resource_manager():resource("pttg_warband_upgrade_glory"):value()
+    return player_glory
+end
+
+function pttg_glory:get_tech_glory_value()
+    local faction = cm:get_faction(cm:get_local_faction_name(true))
+    local player_glory = faction:pooled_resource_manager():resource("pttg_technology_glory"):value()
     return player_glory
 end
 

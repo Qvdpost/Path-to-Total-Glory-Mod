@@ -26,8 +26,8 @@ function pttg_battle:battle_ended()
     self.completed_wom_reserves = player_wom:Call("ReserveWind") + player_wom:Call("CurrentWind")
     self.spent_wom_reserves = math.max(self.intial_wom_reserves - self.completed_wom_reserves, 0)
     
-    core:svr_save_string("spent_wom_reserves", tostring(pttg_battle.spent_wom_reserves))
     pttg:log("Spent WoM: "..tostring(pttg_battle.spent_wom_reserves))
+    core:svr_save_string("spent_wom_reserves", tostring(pttg_battle.spent_wom_reserves))
 end
 
 local function pttg_battle_init()

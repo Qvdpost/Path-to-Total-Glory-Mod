@@ -30,7 +30,12 @@ core:add_listener(
         elseif context:choice_key() == 'THIRD' then -- Glory Reward
             pttg:log("[pttg_RewardChosen] Rewarding Glory")
             -- TODO award faction resource
-            pttg_side_effects:unlock_active_tech(pttg:get_state('tech_completion_rate'))
+            pttg_glory:add_tech_glory(pttg:get_state('tech_completion_rate'))
+            local tech_button = find_uicomponent(core:get_ui_root(), "hud_campaign", "faction_buttons_docker", "button_group_management", "button_technology")
+            if tech_button then
+                tech_button:Highlight(true)
+            end
+            pttg_side_effects:unlock_active_tech()
         else                                        -- Decide Later
             pttg:set_state('pending_reward', true)
             core:trigger_custom_event('pttg_Idle', {})

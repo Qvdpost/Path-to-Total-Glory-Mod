@@ -9,38 +9,33 @@ local pttg_side_effects = {
 
 }
 
-function pttg_side_effects:unlock_active_tech(amount)
+
+core:add_listener(
+    "pttg_research_active_tech",
+    "PanelClosedCampaign",
+    function(context) return context.string == 'technology_panel' end,
+    function(context)
+        if pttg_glory:get_tech_glory_value() > 0 then
+            local faction_key = cm:get_local_faction_name()
+            local record = cco("CcoCampaignFaction", faction_key)
+            local active_research = record:Call("TechnologyManagerContext.CurrentResearchingTechnologyContext")
+            if active_research then
+                pttg_side_effects:unlock_tech(active_research:Call("RecordContext.Key"))
+                pttg_glory:remove_tech_glory(1)
+            end
+        end
+    end,
+    true
+)
+
+function pttg_side_effects:unlock_active_tech()
     local faction_key = cm:get_local_faction_name()
     local record = cco("CcoCampaignFaction", faction_key)
     local active_research = record:Call("TechnologyManagerContext.CurrentResearchingTechnologyContext")
-    if not active_research then
-        core:add_listener(
-            "pttg_research_active_tech",
-            "PanelClosedCampaign",
-            function(context) return context.string == 'technology_panel' end,
-            function(context)
-                out('Unlock callback: '..amount)
-                self:unlock_active_tech(amount)
-            end,
-            false
-        )
-        return
-    end
-
-    if amount > 1 then
-        core:add_listener(
-            "pttg_research_active_tech",
-            "PanelClosedCampaign",
-            function(context) return context.string == 'technology_panel' end,
-            function(context)
-                out('Unlock callback: '..amount-1)
-                self:unlock_active_tech(amount - 1)
-            end,
-            false
-        )
-    end
-
-    pttg_side_effects:unlock_tech(active_research:Call("RecordContext.Key"))
+    if active_research then
+        pttg_side_effects:unlock_tech(active_research:Call("RecordContext.Key"))
+        pttg_glory:remove_tech_glory(1)
+    end    
 end
 
 function pttg_side_effects:unlock_tech(tech_key)

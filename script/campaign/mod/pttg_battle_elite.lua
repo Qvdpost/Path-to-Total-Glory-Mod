@@ -80,6 +80,7 @@ core:add_listener(
             recruit_glory=pttg:get_state('glory_recruit_elite')[cursor.z] 
         })
 
+        core:trigger_custom_event('pttg_random_treasure', {})
     end,
     true
 )

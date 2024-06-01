@@ -391,7 +391,6 @@ core:add_listener(
                 "wh2_dlc17_bst_malagor",
                 "wh3_dlc20_chs_kholek",
                 "wh3_dlc24_tze_the_deceivers",
-                "wh3_main_vmp_caravan_of_blue_roses",
                 "wh2_dlc17_bst_taurox",
                 "wh2_main_skv_clan_skryre",
                 "wh3_dlc23_chd_zhatan",
@@ -555,16 +554,16 @@ core:add_listener(
     false
 )
 
-core:add_listener(
-    "pttg_rest_train",
-    "UnitEffectPurchased",
-    true,
-    function(context)
-        pttg:log("Training merc: ", context:unit():unit_key())
-        cm:add_experience_to_unit(context:unit(), 3);
-    end,
-    true
-)
+-- core:add_listener(
+--     "pttg_rest_train",
+--     "UnitEffectPurchased",
+--     true,
+--     function(context)
+--         pttg:log("Training merc: ", context:unit():unit_key())
+--         cm:add_experience_to_unit(context:unit(), 3);
+--     end,
+--     true
+-- )
 
 core:add_listener(
     "pttg_event_resolved",

@@ -150,6 +150,50 @@ local function pttg_boss_treasure_callback(context)
     pttg_item_pool:exclude_item(random_item)
 end
 
+local function pttg_random_treasure_callback(context)
+    pttg:log("[pttg_TreasureRoom] resolving random treasure: ")
+    local rando = cm:random_number(100)
+    pttg:log("[pttg_TreasureRoom] Rolled a "..rando)
+    local random_item
+    if rando <= 50 then
+        local rewards = pttg_item_pool:get_reward_items(1, pttg:get_state("excluded_items"))
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
+    elseif rando <= 83 then
+        local rewards = pttg_item_pool:get_reward_items(2, pttg:get_state("excluded_items"))
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
+    else
+        local rewards = pttg_item_pool:get_reward_items(3, pttg:get_state("excluded_items"))
+        if #rewards > 0 then
+            random_item = rewards[cm:random_number(#rewards)]
+        end
+    end
+
+    if not random_item then
+        script_error("[pttg_treasure] No item reward available!")
+        return false
+    end
+
+    cm:add_ancillary_to_faction(context:faction(), random_item.key, false)
+
+    pttg_item_pool:exclude_item(random_item)
+end
+
+core:add_listener(
+    "pttg_TreasureRoom",
+    "pttg_random_treasure",
+    true,
+    function(context)
+        pttg:log("[pttg_TreasureRoom] resolving random treasure: ")
+
+        pttg_random_treasure_callback(context)
+    end,
+    true
+)
+
 core:add_listener(
     "pttg_treasure_chest",
     "IncidentOccuredEvent",

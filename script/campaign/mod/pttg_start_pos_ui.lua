@@ -60,12 +60,21 @@ cm:add_first_tick_callback(
     function()
 
         core:add_listener(
-            "pttg_hide_recruit_buttons",
-            "CharacterSelected",
-            true,
+            "pttg_show_upgrade_button",
+            "PanelOpenedCampaign",
+            function(context) return context.string == "units_panel" end,
             function(context)
-                hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
+                               
+                cm:repeat_callback(
+                    function()
+                        local uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "button_group_unit", "button_purchasable_effects")
+                        if uic and not uic:Visible() then
+                            uic:SetVisible(true)
+                        end
+                    end, 
+                    0.05, 
+                    "pttg_repeat_show_upgrade_button"
+                )
             end,
             true
         )
@@ -73,10 +82,10 @@ cm:add_first_tick_callback(
         core:add_listener(
             "pttg_hide_recruit_buttons",
             "PanelOpenedCampaign",
-            true,
+            function(context) return context.string == "units_panel" end,
             function(context)
                 hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
+                cm:repeat_callback(hide_recruit_buttons, 0.05, "pttg_repeat_hide_recruit_buttons")
             end,
             true
         )
@@ -84,68 +93,10 @@ cm:add_first_tick_callback(
         core:add_listener(
             "pttg_hide_recruit_buttons",
             "PanelClosedCampaign",
-            true,
+            function(context) return context.string == "units_panel" end,
             function(context)
-                hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
-            end,
-            true
-        )
-        
-        core:add_listener(
-            "pttg_hide_recruit_buttons",
-            "ComponentLClickUp",
-            function(context)
-                local army_panel = find_uicomponent(core:get_ui_root(), "hud_campaign", "hud_center_docker", "small_bar",
-                    "button_subpanel_parent", "button_subpanel", "button_group_army")
-                return is_uicomponent(army_panel) and army_panel:Visible(true)
-            end,
-            function(context)
-                hide_recruit_buttons()
-            end,
-            true
-        );
-        
-        core:add_listener(
-            "pttg_hide_recruit_buttons",
-            "UnitCreated",
-            true,
-            function(context)
-                hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
-            end,
-            true
-        )
-        
-        core:add_listener(
-            "pttg_hide_recruit_buttons",
-            "UnitDisbanded",
-            true,
-            function(context)
-                hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
-            end,
-            true
-        )
-        
-        core:add_listener(
-            "pttg_hide_recruit_buttons",
-            "UnitTrained",
-            true,
-            function(context)
-                hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
-            end,
-            true
-        )
-        
-        core:add_listener(
-            "pttg_hide_recruit_buttons",
-            "UnitMergedAndDestroyed",
-            true,
-            function(context)
-                hide_recruit_buttons()
-                cm:real_callback(hide_recruit_buttons, 50)
+                cm:remove_callback("pttg_repeat_hide_recruit_buttons")
+                cm:remove_callback("pttg_repeat_show_upgrade_button")
             end,
             true
         )

@@ -581,33 +581,55 @@ core:add_listener(
 
         cm:callback(
             function(context)
-                local upgrade_count = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades", "units_panel_scrap_upgrades", "scrap_upgrades_parent", "list_clip", "list_box"):ChildCount() - 1
-                local new_height = 90 * upgrade_count
-                local scraps = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades")
+                local scrap_upgrades = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades")
+                if not scrap_upgrades then
+                    return
+                end
+                local scrap_upgrades_unit_panel = find_uicomponent(scrap_upgrades, "units_panel_scrap_upgrades")
+                if not scrap_upgrades_unit_panel then
+                    return
+                end
+                local scrap_upgrades_parent = find_uicomponent(scrap_upgrades_unit_panel, "scrap_upgrades_parent")
+                if not scrap_upgrades_parent then
+                    return
+                end
+                local list_clip = find_uicomponent(scrap_upgrades_parent, "list_clip")
+                if not list_clip then
+                    return
+                end
+                local list_box = find_uicomponent(list_clip, "list_box")
+                if not list_box then
+                    return
+                end
+                local upgrade_count = list_box:ChildCount()
+
+                for i = 0, upgrade_count-1 do 
+                    local uic = UIComponent(list_box:Find(i))
+
+                    if uic:Id():find("flesh_lab") then
+                        uic:SetVisible(false)
+                        upgrade_count = upgrade_count - 1
+                    end
+                end
+                local new_height = 90 * (upgrade_count - 1)
         
-                local scraps_cco = scraps:GetContextObject("ContextsList")
-                console_print(tostring(scraps_cco))
-                -- scraps.ContextsList.At(1).PurchasableEffectsList.Size
-                scraps:SetCanResizeHeight(true)
-                local width, height = scraps:Dimensions()
-                scraps:Resize(width, new_height)
+                scrap_upgrades:SetCanResizeHeight(true)
+                local width, height = scrap_upgrades:Dimensions()
+                scrap_upgrades:Resize(width, new_height)
         
-                scraps = find_uicomponent(scraps, "units_panel_scrap_upgrades")
-                scraps:SetCanResizeHeight(true)
-                local width, height = scraps:Dimensions()
-                scraps:Resize(width, new_height)
+                scrap_upgrades_unit_panel:SetCanResizeHeight(true)
+                local width, height = scrap_upgrades_unit_panel:Dimensions()
+                scrap_upgrades_unit_panel:Resize(width, new_height)
+
+                scrap_upgrades_parent:SetCanResizeHeight(true)
+                local width, height = scrap_upgrades_parent:Dimensions()
+                scrap_upgrades_parent:Resize(width, new_height)
         
-                scraps = find_uicomponent(scraps, "scrap_upgrades_parent")
-                scraps:SetCanResizeHeight(true)
-                local width, height = scraps:Dimensions()
-                scraps:Resize(width, new_height)
-        
-                scraps = find_uicomponent(scraps, "list_clip")
-                scraps:SetCanResizeHeight(true)
-                local width, height = scraps:Dimensions()
-                scraps:Resize(width, new_height)
+                list_clip:SetCanResizeHeight(true)
+                local width, height = list_clip:Dimensions()
+                list_clip:Resize(width, new_height)
             end,
-            0.2
+            0.05
         )
         
     end,

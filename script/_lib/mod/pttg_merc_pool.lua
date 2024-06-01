@@ -1051,7 +1051,7 @@ function pttg_merc_pool:recruitable_agents(faction_name)
 
     for agent_type, agents in pairs(agent_pairs) do
         for _, agent in pairs(agents) do
-            if agent.recruitable then
+            if agent.recruitable and self:is_eligible_agent(agent, faction_name) then
                 if result[agent_type] then
                     table.insert(result[agent_type], agent)
                 else

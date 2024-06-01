@@ -57,7 +57,8 @@ local pttg = {
         add_warband_upgrade_glory = {2, 3, 3},
         tech_completion_rate = 2,
         completed_techs = {},
-        wom_efficiency = 0.25
+        wom_efficiency = 0.25,
+        faction_resource_factor = 1,
     },
     
     persistent_keys = {
@@ -85,6 +86,7 @@ local pttg = {
         tech_completion_rate = true,
         completed_techs = true,
         wom_efficiency = true,
+        faction_resource_factor = true
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},

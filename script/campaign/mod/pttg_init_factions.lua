@@ -813,10 +813,10 @@ function pttg_faction_effects:reward_faction_resource()
     end
 
     if pooled_resource then
-        cm:faction_add_pooled_resource(faction_key, pooled_resource, pooled_resource_factor, amount)
+        cm:faction_add_pooled_resource(faction_key, pooled_resource, pooled_resource_factor, amount * pttg:get_state("faction_resource_factor"))
     end
     if pooled_resource2 then
-        cm:faction_add_pooled_resource(faction_key, pooled_resource2, pooled_resource_factor2, amount2)
+        cm:faction_add_pooled_resource(faction_key, pooled_resource2, pooled_resource_factor2, amount2 * pttg:get_state("faction_resource_factor"))
     end
 end
 

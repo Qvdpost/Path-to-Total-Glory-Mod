@@ -3,6 +3,7 @@ local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_warband_upgrade = core:get_static_object("pttg_warband_upgrade")
 local pttg_side_effects = core:get_static_object("pttg_side_effects")
+local pttg_faction_effects = core:get_static_object("pttg_faction_effects")
 
 
 core:add_listener(
@@ -36,6 +37,8 @@ core:add_listener(
                 tech_button:Highlight(true)
             end
             pttg_side_effects:unlock_active_tech()
+
+            pttg_faction_effects:reward_faction_resource()
         else                                        -- Decide Later
             pttg:set_state('pending_reward', true)
             core:trigger_custom_event('pttg_Idle', {})

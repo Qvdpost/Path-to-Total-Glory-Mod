@@ -3,9 +3,33 @@ local pttg_shop = core:get_static_object("pttg_glory_shop");
 
 local pttg_UI = {
     faction_buttons = {
-        pttg_map_button = true,
-        button_mortuary_cult = true,
-        button_technology = true
+        button_missions = true,
+        button_diplomacy = true,
+        button_rituals = true,
+        button_slaves = true,
+        button_skaven_corruption = true,
+        sword_of_khaine = true,
+
+        -- pttg_map_button = true,
+        -- button_mortuary_cult = true,
+        -- button_technology = true,
+        -- button_ikit_workshop = true,
+        -- button_beastmen_panel = true,
+        -- button_chaos_gifts = true,
+        -- button_hellforge = true,
+        -- button_great_game_rituals = true,
+        -- button_sotek_sacrifices = true,
+        -- button_hunters = true,
+        -- button_districts_of_nuln = true,
+        -- button_black_tower = true,
+        -- button_college_of_magic = true,
+        -- button_matters_of_state = true,
+        -- button_schemes = true,
+        -- button_changing_of_the_ways = true,
+        -- button_tamurkhan_chiefs = true,
+        -- button_nurgle_plagues = true,
+        -- button_book_of_grudges = true,
+        -- button_toz = true,
     }
 }
 
@@ -382,7 +406,7 @@ function pttg_UI:hide_faction_buttons()
 
     for i = 0, faction_buttons:ChildCount() - 1 do
 		local uic_child = UIComponent(faction_buttons:Find(i));
-		if not pttg_UI.faction_buttons[uic_child:Id()] then
+		if pttg_UI.faction_buttons[uic_child:Id()] then
             uic_child:SetVisible(false)
         end
 	end;
@@ -545,6 +569,49 @@ core:add_listener(
         pttg_UI:init()
     end,
     false
+)
+
+core:add_listener(
+    "pttg_scrap_upgrades",
+    "ComponentLClickUp",
+    function(context)
+        return context.string == "button_purchasable_effects"
+    end,
+    function(context)
+
+        cm:callback(
+            function(context)
+                local upgrade_count = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades", "units_panel_scrap_upgrades", "scrap_upgrades_parent", "list_clip", "list_box"):ChildCount() - 1
+                local new_height = 90 * upgrade_count
+                local scraps = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades")
+        
+                local scraps_cco = scraps:GetContextObject("ContextsList")
+                console_print(tostring(scraps_cco))
+                -- scraps.ContextsList.At(1).PurchasableEffectsList.Size
+                scraps:SetCanResizeHeight(true)
+                local width, height = scraps:Dimensions()
+                scraps:Resize(width, new_height)
+        
+                scraps = find_uicomponent(scraps, "units_panel_scrap_upgrades")
+                scraps:SetCanResizeHeight(true)
+                local width, height = scraps:Dimensions()
+                scraps:Resize(width, new_height)
+        
+                scraps = find_uicomponent(scraps, "scrap_upgrades_parent")
+                scraps:SetCanResizeHeight(true)
+                local width, height = scraps:Dimensions()
+                scraps:Resize(width, new_height)
+        
+                scraps = find_uicomponent(scraps, "list_clip")
+                scraps:SetCanResizeHeight(true)
+                local width, height = scraps:Dimensions()
+                scraps:Resize(width, new_height)
+            end,
+            0.2
+        )
+        
+    end,
+    true
 )
 
 core:add_static_object("pttg_UI", pttg_UI);

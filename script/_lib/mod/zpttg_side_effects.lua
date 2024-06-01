@@ -209,6 +209,22 @@ function pttg_side_effects.zany_mode(factions)
         end
     end
 
+    local faction_key = cm:get_local_faction_name()
+    local faction_table = {}
+    for _, faction in pairs(factions) do
+        faction_table[faction] = true
+    end
+    for _, agent in pairs(pttg_merc_pool.agents) do
+        if faction_table[agent.faction] then
+            if not pttg_merc_pool.faction_to_agents[faction_key][agent.type] then
+                pttg_merc_pool.faction_to_agents[faction_key][agent.type] = {}
+            end
+            if agent.recruitable then
+                table.insert(pttg_merc_pool.faction_to_agents[faction_key][agent.type], agent)
+            end
+        end
+    end
+
     pttg_merc_pool.merc_pool = {}
     pttg_merc_pool:reset_merc_pool()
     pttg_merc_pool:init_merc_pool()

@@ -18,7 +18,7 @@ local function setup_post_battle_option_listener()
 
             elseif context:get_outcome_key() == "enslave" or context:get_outcome_key() == "enslave_replenishment_only" or context:get_outcome_key() == "none" then
                 -- Replenish Force
-                pttg_side_effects:heal_force(0.2, true)
+                pttg_side_effects:heal_force(pttg:get_state("captive_replenishment_factor"), true)
             elseif context:get_outcome_key() == "release" then
                 -- Gain Glory
                 -- pttg_glory:reward_glory(25)

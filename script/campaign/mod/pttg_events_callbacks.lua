@@ -109,29 +109,31 @@ function pttg_AgentRecruit_callback(context)
     local choice = context:choice_key()
 
     local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
+    local cursor = pttg:get_cursor()
+    local level = 0.6 * cursor.y + 12 * cursor.z
     -- TODO: add prices per agent
 	if choice == 'FIRST' then -- a Champion
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'champion'}), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'champion'}), level, force)
 	end
     if choice == 'SECOND' then -- a Dignitary
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'dignitary'}), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'dignitary'}), level, force)
     end
     if choice == 'THIRD' then -- an Engineer
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'engineer'}), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'engineer'}), level, force)
     end
     if choice == 'FOURTH' then -- a Runesmith
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'runesmith'}), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'runesmith'}), level, force)
     end
     if choice == 'FIFTH' then -- a Spy
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'spy'}), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'spy'}), level, force)
     end
 	if choice == 'SIXTH' then -- a Wizard
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'wizard'}), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'wizard'}), level, force)
 	end
 	if choice == 'EIGhTH' then -- Illegible
         -- TODO: make this something cool. Unique hero perhaps?
         local factions = cm:model():world():faction_list()
         local random_faction = factions:item_at(cm:random_number(factions:num_items()-1, 0))
-        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(random_faction:name(), 'random'), force)
+        pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(random_faction:name(), 'random'), level, force)
 	end
 end

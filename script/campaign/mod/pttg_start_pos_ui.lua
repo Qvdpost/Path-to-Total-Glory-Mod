@@ -1,7 +1,6 @@
 local pttg = core:get_static_object("pttg")
 
 local function hide_recruit_buttons()
-    pttg:log("Hiding recruit buttons.")
     local root = core:get_ui_root()
     local army_buttons = find_uicomponent(root, "hud_campaign", "hud_center_docker", "small_bar",
         "button_subpanel_parent", "button_subpanel", "button_group_army")

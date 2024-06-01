@@ -144,7 +144,7 @@ function pttg_side_effects:grant_characters_passive_levels(amount, step)
     end
 end
 
-function pttg_side_effects:add_agent_to_force(agent_info, force)
+function pttg_side_effects:add_agent_to_force(agent_info, level, force)
     if not force then
         force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     end
@@ -159,7 +159,7 @@ function pttg_side_effects:add_agent_to_force(agent_info, force)
     local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), home:name(), false, true, 10)
     local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.subtype, agent_x, agent_y)
 
-    cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), force:general_character():rank(), true)
+    cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), level, true)
     cm:embed_agent_in_force(agent, force)
 
     return agent
@@ -528,9 +528,7 @@ core:add_listener(
         elseif choice == 'SIXTH' then -- The Everliving
             pttg_side_effects.zany_mode({
                 "wh2_main_def_har_ganeth",
-                "wh2_dlc16_wef_drycha",
                 "wh2_dlc11_def_the_blessed_dread",
-                "wh2_twa03_def_rakarth",
                 "wh2_main_def_hag_graef",
                 "wh2_main_def_naggarond",
                 "wh2_dlc16_wef_sisters_of_twilight",
@@ -540,9 +538,7 @@ core:add_listener(
                 "wh2_main_hef_order_of_loremasters",
                 "wh2_main_hef_nagarythe",
                 "wh_dlc05_wef_wood_elves",
-                "wh2_main_def_cult_of_pleasure",
                 "wh2_dlc15_hef_imrik",
-                "wh2_main_hef_avelorn",
             })
         else -- Regrets
             cm:trigger_dilemma(cm:get_local_faction_name(), 'pttg_RandomStart')

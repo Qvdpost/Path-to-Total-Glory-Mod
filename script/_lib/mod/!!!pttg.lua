@@ -44,7 +44,8 @@ local pttg = {
         recruit_count = 5,
         excluded_items = {},
         excluded_shop_items = {},
-        replenishment_factor = 0.3,
+        replenishment_factor = 0.4,
+        captive_replenishment_factor = 0.2,
         excluded_event_pool = {},
         alignment = 0,
         glory_reward_modifier = 1,
@@ -76,6 +77,7 @@ local pttg = {
         excluded_items = true,
         excluded_shop_items = true,
         replenishment_factor = true,
+        captive_replenishment_factor = true,
         excluded_event_pool = true,
         alignment = true,
         glory_reward_modifier = true,
@@ -86,7 +88,7 @@ local pttg = {
         tech_completion_rate = true,
         completed_techs = true,
         wom_efficiency = true,
-        faction_resource_factor = true
+        faction_resource_factor = true,
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},

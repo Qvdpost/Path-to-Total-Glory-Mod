@@ -14,6 +14,8 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_EliteRoomBattle")
 
+        pttg:set_state("battle_ongoing", "pttg_elite_battle_victory")
+
 
         local invasion_template_army = pttg_battle_templates:get_random_elite_battle_template(cursor.z)
         local invasion_template = invasion_template_army.key
@@ -70,6 +72,8 @@ core:add_listener(
         )
 
         pttg_upkeep:resolve("pttg_PostRoomBattle")
+
+        pttg:set_state("battle_ongoing", false)
 
         local cursor = pttg:get_cursor()
 

@@ -1,5 +1,6 @@
 local pttg = core:get_static_object("pttg");
 local pttg_shop = core:get_static_object("pttg_glory_shop");
+local pttg_glory = core:get_static_object("pttg_glory")
 
 local pttg_UI = {
     faction_buttons = {
@@ -483,6 +484,13 @@ core:add_listener(
 
                 core:trigger_custom_event('pttg_ChoosePath', {})
             end
+        elseif cur_phase == "pttg_ResolveRoom" then
+            -- If next phase is trigered but the battle is not completed, assume a misfire of the post-battle completion.
+            if pttg:get_state("battle_ongoing") then
+                cm:trigger_incident(cm:get_local_faction_name(), pttg:get_state("battle_ongoing"), true)
+            else
+                core:trigger_custom_event(cur_phase, {})
+            end
         else -- assume we're stuck in a phase where an intervention misfired
             core:trigger_custom_event(cur_phase, {})
         end
@@ -571,6 +579,56 @@ core:add_listener(
     false
 )
 
+function pttg_UI:hide_flesh_lab_upgrades()
+    local scrap_upgrades = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades")
+    if not scrap_upgrades then
+        return
+    end
+    local scrap_upgrades_unit_panel = find_uicomponent(scrap_upgrades, "units_panel_scrap_upgrades")
+    if not scrap_upgrades_unit_panel then
+        return
+    end
+    local scrap_upgrades_parent = find_uicomponent(scrap_upgrades_unit_panel, "scrap_upgrades_parent")
+    if not scrap_upgrades_parent then
+        return
+    end
+    local list_clip = find_uicomponent(scrap_upgrades_parent, "list_clip")
+    if not list_clip then
+        return
+    end
+    local list_box = find_uicomponent(list_clip, "list_box")
+    if not list_box then
+        return
+    end
+    local upgrade_count = list_box:ChildCount()
+
+    for i = 0, upgrade_count-1 do 
+        local uic = UIComponent(list_box:Find(i))
+
+        if uic:Id():find("flesh_lab") then
+            uic:SetVisible(false)
+            upgrade_count = upgrade_count - 1
+        end
+    end
+    local new_height = 90 * (upgrade_count - 1)
+
+    scrap_upgrades:SetCanResizeHeight(true)
+    local width, height = scrap_upgrades:Dimensions()
+    scrap_upgrades:Resize(width, new_height)
+
+    scrap_upgrades_unit_panel:SetCanResizeHeight(true)
+    local width, height = scrap_upgrades_unit_panel:Dimensions()
+    scrap_upgrades_unit_panel:Resize(width, new_height)
+
+    scrap_upgrades_parent:SetCanResizeHeight(true)
+    local width, height = scrap_upgrades_parent:Dimensions()
+    scrap_upgrades_parent:Resize(width, new_height)
+
+    list_clip:SetCanResizeHeight(true)
+    local width, height = list_clip:Dimensions()
+    list_clip:Resize(width, new_height)
+end
+
 core:add_listener(
     "pttg_scrap_upgrades",
     "ComponentLClickUp",
@@ -581,53 +639,8 @@ core:add_listener(
 
         cm:callback(
             function(context)
-                local scrap_upgrades = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "scrap_upgrades")
-                if not scrap_upgrades then
-                    return
-                end
-                local scrap_upgrades_unit_panel = find_uicomponent(scrap_upgrades, "units_panel_scrap_upgrades")
-                if not scrap_upgrades_unit_panel then
-                    return
-                end
-                local scrap_upgrades_parent = find_uicomponent(scrap_upgrades_unit_panel, "scrap_upgrades_parent")
-                if not scrap_upgrades_parent then
-                    return
-                end
-                local list_clip = find_uicomponent(scrap_upgrades_parent, "list_clip")
-                if not list_clip then
-                    return
-                end
-                local list_box = find_uicomponent(list_clip, "list_box")
-                if not list_box then
-                    return
-                end
-                local upgrade_count = list_box:ChildCount()
-
-                for i = 0, upgrade_count-1 do 
-                    local uic = UIComponent(list_box:Find(i))
-
-                    if uic:Id():find("flesh_lab") then
-                        uic:SetVisible(false)
-                        upgrade_count = upgrade_count - 1
-                    end
-                end
-                local new_height = 90 * (upgrade_count - 1)
-        
-                scrap_upgrades:SetCanResizeHeight(true)
-                local width, height = scrap_upgrades:Dimensions()
-                scrap_upgrades:Resize(width, new_height)
-        
-                scrap_upgrades_unit_panel:SetCanResizeHeight(true)
-                local width, height = scrap_upgrades_unit_panel:Dimensions()
-                scrap_upgrades_unit_panel:Resize(width, new_height)
-
-                scrap_upgrades_parent:SetCanResizeHeight(true)
-                local width, height = scrap_upgrades_parent:Dimensions()
-                scrap_upgrades_parent:Resize(width, new_height)
-        
-                list_clip:SetCanResizeHeight(true)
-                local width, height = list_clip:Dimensions()
-                list_clip:Resize(width, new_height)
+                pttg_UI:hide_flesh_lab_upgrades()
+                cm:callback(pttg_UI.hide_flesh_lab_upgrades, 0.1)
             end,
             0.05
         )
@@ -635,6 +648,91 @@ core:add_listener(
     end,
     true
 )
+
+function pttg_UI:highlight_upgrade()
+    local function highlight_button()
+
+        if pttg_glory:get_training_glory() == 0 then
+            core:remove_listener("pttg_highlight_upgrade_button")
+            return
+        end
+        
+        
+        local events = find_uicomponent(core:get_ui_root(), "events")
+        if events and events:Visible() then
+            return
+        end
+
+        local units_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "units")
+        if not units_uic then
+            return
+        end
+
+        local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
+        local char_count = force:character_list():num_items()
+
+        local unit_count = units_uic:ChildCount() - 1
+        local random_unit_uic = find_uicomponent(units_uic, "LandUnit "..tostring(cm:random_number(unit_count, char_count)))
+        if not random_unit_uic then
+            return
+        end
+
+        
+
+        random_unit_uic:Highlight(true, true)
+
+        cm:callback(
+            function()
+                random_unit_uic:Highlight(false)
+            end,
+            2
+        )
+
+        core:add_listener(
+            "pttg_unstuck_mouse",
+            "ComponentLClickUp",
+            function(context)
+                return context.string == random_unit_uic:Id()
+            end,
+            function (context)
+                cm:callback(
+                    function()
+                        local panel = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel")
+                        local button = find_uicomponent(panel, "button_group_unit", "button_purchasable_effects")
+                        if button then
+                            button:Highlight(true)
+
+                            core:remove_listener("pttg_highlight_upgrade_button")
+            
+                            cm:callback(
+                                function()
+                                    button:Highlight(false)
+                                    cm:set_saved_value("pttg_upgrade_highlight_shown", true)
+                                end,
+                                2
+                            )
+                        end
+                    end,
+                    0.4
+                )
+            end,
+            false
+        )
+    end
+
+    core:add_listener(
+        "pttg_highlight_upgrade_button",
+        "PanelOpenedCampaign",
+        function(context)
+            return context.string == "units_panel" and pttg:get_state("cur_phase") == "pttg_Idle"
+        end,
+        function(context)
+            cm:callback(highlight_button, 0.4)
+        end,
+        true
+    )
+end
+
 
 core:add_static_object("pttg_UI", pttg_UI);
 

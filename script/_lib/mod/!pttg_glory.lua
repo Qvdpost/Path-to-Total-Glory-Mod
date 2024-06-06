@@ -89,6 +89,12 @@ function pttg_glory:get_recruit_glory_value()
     return player_glory
 end
 
+function pttg_glory:get_training_glory()
+    local faction = cm:get_faction(cm:get_local_faction_name(true))
+    local player_glory = faction:pooled_resource_manager():resource("pttg_glory_training_points"):value()
+    return player_glory
+end
+
 function pttg_glory:get_warband_glory_value()
     local faction = cm:get_faction(cm:get_local_faction_name(true))
     local player_glory = faction:pooled_resource_manager():resource("pttg_warband_upgrade_glory"):value()

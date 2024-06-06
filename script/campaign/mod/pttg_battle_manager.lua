@@ -208,10 +208,10 @@ function forced_battle:forced_battle_stage_2()
         generated_force = attacker_force
     end
 
-
+    local general_level = generated_force:general_character():rank()
     for _, agent in pairs(force.agents or {}) do
         pttg:log(string.format("Adding agent %s to spawned force.", agent.key))
-        local character = pttg_side_effects:add_agent_to_force(agent, generated_force)
+        local character = pttg_side_effects:add_agent_to_force(agent, general_level, generated_force)
 
         local agent_record = cco("CcoAgentSubtypeRecord", agent.key)
 

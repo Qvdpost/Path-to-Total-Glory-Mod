@@ -832,7 +832,7 @@ function pttg_merc_pool:add_unit_to_pool(unit, count)
         faction,
         unit,
         "pttg_raise_dead",
-        count, 0, 20, count,
+        count, 0, count, count,
         "", "", "",
         false, "pttg_" .. unit
     )
@@ -1120,8 +1120,8 @@ core:add_listener(
     "pttg_init_complete",
     true,
     function(context)
-        pttg_merc_pool:reset_merc_pool()
         pttg_merc_pool:init_merc_pool()
+        pttg_merc_pool:reset_merc_pool()
     end,
     false
 )

@@ -145,6 +145,7 @@ function pttg_side_effects:grant_characters_passive_levels(amount, step)
 end
 
 function pttg_side_effects:add_agent_to_force(agent_info, level, force)
+    pttg:log("Adding an agent [".. agent_info.subtype .."] of level: "..tostring(level))
     if not force then
         force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     end
@@ -157,7 +158,7 @@ function pttg_side_effects:add_agent_to_force(agent_info, level, force)
     end
 
     local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), home:name(), false, true, 10)
-    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.subtype, agent_x, agent_y)
+    local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.subtype, agent_x, agent_y, true)
 
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), level, true)
     cm:embed_agent_in_force(agent, force)

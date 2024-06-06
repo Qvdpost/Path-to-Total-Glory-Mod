@@ -36,40 +36,14 @@ local function get_or_create_recruit_glory()
     return recruit_glory_uic
 end
 
-local function hide_disabled()
-    pttg:log("[pttg_glory_cost] - Hiding disabled units.")
-    local recruitment_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker",
-        "recruitment_options", "mercenary_display")
-    if recruitment_uic then
-        local unit_list = find_uicomponent(recruitment_uic, "mercenary_display", "frame")
-        local listview_uic = find_uicomponent(unit_list, "listview")
-        local list_clip_uic = find_uicomponent(listview_uic, "list_clip")
-        local list_box_uic = find_uicomponent(list_clip_uic, "list_box")
-
-        for unit, unit_info in pairs(pttg_merc_pool.merc_units) do
-            local reference_unit = unit .. "_mercenary"
-            local unit_uic = find_uicomponent(list_box_uic, reference_unit)
-
-            if unit_uic then
-                if pttg_merc_pool.active_merc_pool[unit] then -- unit_uic:CurrentState() == "active" then
-                    pttg:log(string.format("[pttg_glory_cost] - Adding %s to available mercs.", unit))
-                    available_merc_units[unit] = unit_info
-                else
-                    unit_uic:SetVisible(false)
-                    unit_uic:SetDisabled(true)
-                end
-            end
-        end
-    end
-end
-
 local function finalise_uics()
     pttg:log("[pttg_glory_cost] - Handling components.")
 
     local recruitment_uic = find_uicomponent(core:get_ui_root(), "units_panel", "main_units_panel", "recruitment_docker",
         "recruitment_options", "mercenary_display")
     if recruitment_uic then
-        for unit, unit_info in pairs(available_merc_units) do
+        for unit, _ in pairs(pttg_merc_pool.active_merc_pool) do
+            local unit_info = pttg_merc_pool.merc_units[unit]
             pttg:log("[pttg_glory_cost] - Available Merc: " .. string.format("%s (%s)", unit, unit_info.cost))
             local glory_cost = unit_info.cost
             local listview_uic = find_uicomponent(recruitment_uic, "frame", "listview")
@@ -157,7 +131,6 @@ local function glory_cost_listeners()
             end
             merc_in_queue = {}
             get_or_create_recruit_glory()
-            hide_disabled()
             finalise_uics()
         end,
         true

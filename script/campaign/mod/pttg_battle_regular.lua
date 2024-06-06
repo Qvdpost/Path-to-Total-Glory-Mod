@@ -11,6 +11,8 @@ core:add_listener(
     function(context)
         local cursor = pttg:get_cursor()
 
+        pttg:set_state("battle_ongoing", "pttg_battle_victory")
+
         pttg_upkeep:resolve("pttg_RegularRoomBattle")
 
         local invasion_template_army = pttg_battle_templates:get_random_battle_template(cursor.z)
@@ -55,10 +57,8 @@ core:add_listener(
     function(context)
         pttg:log("[pttg_battle_victory] Victory event received.")
 
-        local pttg_UI = core:get_static_object("pttg_UI")
-        pttg_UI:highlight_event_accept(true)
+        pttg:set_state("battle_ongoing", false)
 
-        
         pttg_glory:reward_glory(20, 10)
         
         pttg_upkeep:resolve("pttg_PostRoomBattle")

@@ -60,6 +60,7 @@ local pttg = {
         completed_techs = {},
         wom_efficiency = 0.25,
         faction_resource_factor = 1,
+        battle_ongoing = false,
     },
     
     persistent_keys = {
@@ -89,6 +90,7 @@ local pttg = {
         completed_techs = true,
         wom_efficiency = true,
         faction_resource_factor = true,
+        battle_ongoing = true,
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},
@@ -171,9 +173,8 @@ function pttg:set_config(config_key, config_value)
 end
 
 function pttg:get_state(state_key)
-    if not self.state[state_key] then
+    if self.state[state_key] == nil then
         pttg:log('[get_state]' .. state_key .. ' does not exist.')
-        return nil
     end
 
     pttg:log('[get_state]' .. 'Get state ' .. state_key .. ':' .. tostring(self.state[state_key]))

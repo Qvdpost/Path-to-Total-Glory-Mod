@@ -206,6 +206,7 @@ function pttg_faction_effects:init()
 
         elseif faction_key == "wh2_dlc09_tmb_followers_of_nagash" then
             pttg:set_state("wom_efficiency", 75)
+            cm:remove_event_restricted_unit_record_for_faction("wh2_dlc09_tmb_art_casket_of_souls_0", faction_key);
         elseif faction_key == "wh3_main_dae_daemon_prince" then
             pttg:set_state("wom_efficiency", 50)
         elseif faction_key == "wh_main_grn_greenskins" then
@@ -305,7 +306,7 @@ function pttg_faction_effects:init()
         elseif faction_key == "wh2_dlc16_wef_sisters_of_twilight" then
 
         elseif faction_key == "wh2_dlc09_tmb_khemri" then
-
+            cm:remove_event_restricted_unit_record_for_faction("wh2_dlc09_tmb_art_casket_of_souls_0", faction_key);
         elseif faction_key == "wh3_main_emp_cult_of_sigmar" then
 
         elseif faction_key == "wh2_dlc11_cst_pirates_of_sartosa" then
@@ -372,12 +373,14 @@ function pttg_faction_effects:init()
 
         elseif faction_key == "wh2_dlc09_tmb_lybaras" then
             pttg:set_state("wom_efficiency", 50)
+            cm:remove_event_restricted_unit_record_for_faction("wh2_dlc09_tmb_art_casket_of_souls_0", faction_key);
         elseif faction_key == "wh2_main_skv_clan_skryre" then
             pttg:set_state("wom_efficiency", 50)
         elseif faction_key == "wh3_main_tze_oracles_of_tzeentch" then
             pttg:set_state("wom_efficiency", 100)
         elseif faction_key == "wh2_dlc09_tmb_exiles_of_nehek" then
             pttg:set_state("wom_efficiency", 50)
+            cm:remove_event_restricted_unit_record_for_faction("wh2_dlc09_tmb_art_casket_of_souls_0", faction_key);
         elseif faction_key == "wh3_main_ksl_ursun_revivalists" then
 
         elseif faction_key == "wh3_dlc23_chd_legion_of_azgorh" then

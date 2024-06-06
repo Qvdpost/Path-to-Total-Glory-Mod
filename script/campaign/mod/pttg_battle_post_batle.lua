@@ -12,10 +12,10 @@ local function setup_post_battle_option_listener()
             pttg:log("Processing Captive Option: "..context:get_outcome_key())
             
 			if context:get_outcome_key() == "kill" then
-                -- Gain Scrap for Upgrades
-                -- Highlight training somehow?
-                -- pttg_glory:add_training_glory(1)
-
+                if not cm:get_saved_value("pttg_upgrade_highlight_shown") then
+                    local pttg_UI = core:get_static_object('pttg_UI')
+                    pttg_UI:highlight_upgrade()
+                end
             elseif context:get_outcome_key() == "enslave" or context:get_outcome_key() == "enslave_replenishment_only" or context:get_outcome_key() == "none" then
                 -- Replenish Force
                 pttg_side_effects:heal_force(pttg:get_state("captive_replenishment_factor"), true)

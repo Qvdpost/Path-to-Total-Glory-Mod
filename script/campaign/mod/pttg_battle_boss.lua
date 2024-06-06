@@ -14,6 +14,8 @@ core:add_listener(
 
         pttg_upkeep:resolve("pttg_BossRoomBattle")
 
+        pttg:set_state("battle_ongoing", "pttg_boss_battle_victory")
+
         local invasion_template_army = pttg_battle_templates:get_random_boss_battle_template(cursor.z)
         local invasion_template = invasion_template_army.key
         local invasion_faction = invasion_template_army.faction
@@ -61,6 +63,8 @@ core:add_listener(
         pttg_mod_wom:increase(10)
 
         pttg_upkeep:resolve("pttg_PostRoomBattle")
+
+        pttg:set_state("battle_ongoing", false)
 
         cm:heal_military_force(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')))
 

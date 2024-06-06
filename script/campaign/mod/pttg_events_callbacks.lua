@@ -110,7 +110,7 @@ function pttg_AgentRecruit_callback(context)
 
     local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
     local cursor = pttg:get_cursor()
-    local level = 0.6 * cursor.y + 12 * cursor.z
+    local level = math.round(0.6 * cursor.y + (12 * (cursor.z - 1)))
     -- TODO: add prices per agent
 	if choice == 'FIRST' then -- a Champion
         pttg_side_effects:add_agent_to_force(pttg_merc_pool:get_random_agent(cm:get_local_faction_name(), {'champion'}), level, force)

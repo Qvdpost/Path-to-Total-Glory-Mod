@@ -3,6 +3,7 @@ local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
+local pttg_effect_pool = core:get_static_object("pttg_effect_pool")
 
 
 core:add_listener(
@@ -30,8 +31,8 @@ core:add_listener(
 
         local invasion_chevrons = (cursor.z - 1) * 2 + (math.floor(cursor.y / 2) * cursor.z)
 
-        -- TODO: Should invasions scale down for heroes?
-        -- invasion_size = invasion_size - #(invasion_template_army.agents or {})
+        local invasion_effect_bundle = invasion_template_army.effect_bundle or pttg_effect_pool:get_random_army_effect_bundle(pttg:get_difficulty_index() - 1)
+
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))
@@ -51,7 +52,7 @@ core:add_listener(
             general_level,                          --	opt_general_level
             invasion_template_army.agents,
             invasion_chevrons,
-            nil                                     --	opt_effect_bundle TODO: add effect bundles
+            invasion_effect_bundle                  --	opt_effect_bundle TODO: add effect bundles
         )
     end,
     true

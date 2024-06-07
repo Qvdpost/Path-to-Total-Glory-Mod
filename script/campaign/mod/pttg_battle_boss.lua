@@ -3,7 +3,7 @@ local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 local pttg_mod_wom = core:get_static_object("pttg_mod_wom")
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
-
+local pttg_effect_pool = core:get_static_object("pttg_effect_pool")
 
 core:add_listener(
     "pttg_BossRoomBattle",
@@ -21,13 +21,14 @@ core:add_listener(
         local invasion_faction = invasion_template_army.faction
 
 
-        local invasion_power = (cursor.z - 1) * 2 + 5 +
-        pttg:get_difficulty_mod('ai_army_power_mod')                                                 -- easy:4|6|8 medium:5|7|9 hard:6|8|10
-        local invasion_size = 10 + pttg:get_difficulty_mod('encounter_size') +
-        ((cursor.z - 1) * 2)                                                                         -- easy:12|14|16 medium:14|16|18 hard:16|18|20
+        local invasion_power = (cursor.z - 1) * 2 + 5 +  pttg:get_difficulty_mod('ai_army_power_mod') -- easy:4|6|8 medium:5|7|9 hard:6|8|10
+        local invasion_size = 10 + pttg:get_difficulty_mod('encounter_size') + ((cursor.z - 1) * 2)   -- easy:12|14|16 medium:14|16|18 hard:16|18|20
         local general_level = (cursor.z - 1) * 20 + cursor.y + 10
 
         local invasion_chevrons = (cursor.z - 1) * 2 + (math.floor(cursor.y / 2) * cursor.z)
+
+        local invasion_effect_bundle = invasion_template_army.effect_bundle or
+        pttg_effect_pool:get_random_army_effect_bundle(pttg:get_difficulty_index())
 
         pttg:log(string.format("[battle_event] Generating a battle with power: %i of size: %i against %s(%s)",
             invasion_power, invasion_size, invasion_faction, invasion_template))
@@ -47,7 +48,7 @@ core:add_listener(
             general_level,                          --	opt_general_level
             invasion_template_army.agents,
             invasion_chevrons,
-            nil                                     --	opt_effect_bundle
+            invasion_effect_bundle --	opt_effect_bundle
         )
     end,
     true

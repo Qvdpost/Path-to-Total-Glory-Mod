@@ -131,8 +131,9 @@ function forced_battle:add_new_force(force_key, unit_list, faction_key, destroy_
 
 	new_force.effect_bundle = opt_effect_bundle or nil
 
-	if new_force.effect_bundle ~= nil and not is_string(new_force.effect_bundle) then
-		script_error("ERROR: Forced Battle Manager: new forced battle force "..force_key.." has been given an effect_bundle parameter, but parameter is not a string")
+    -- TODO: cleaner check for effect bundle interface
+	if new_force.effect_bundle ~= nil and not (is_string(new_force.effect_bundle) or (new_force.effect_bundle.is_null_interface and not new_force.effect_bundle:is_null_interface())) then
+		script_error("ERROR: Forced Battle Manager: new forced battle force "..force_key.." has been given an effect_bundle parameter, but parameter is not a string or a valid interface")
 		return false
 	end
 
@@ -167,6 +168,171 @@ function forced_battle:add_new_force(force_key, unit_list, faction_key, destroy_
 	new_force.unit_list = unit_list
 
 	force_list[force_key]= new_force
+end
+
+---- Internal - Function called when the force of the invasion is spawned
+function invasion:force_created(general_cqi, declare_war, invite_attacker_allies, invite_defender_allies, was_respawn)
+	self.general_cqi = general_cqi;
+	self.declare_war = declare_war;
+	self.invite_attacker_allies = invite_attacker_allies;
+	self.invite_defender_allies = invite_defender_allies;
+	
+	if was_respawn == nil then
+		was_respawn = false;
+	end
+	
+	if self.target_type ~= "NONE" then
+		cm:cai_disable_movement_for_character("character_cqi:"..general_cqi);
+		
+		if self.target_type == "PATROL" then
+			self.patrol_position = 1;
+		end
+	end
+	
+	if self.immortal_general ~= nil then
+		out.invasions("\t\tMaking Character Immortal: "..tostring(self.immortal_general));
+		cm:set_character_immortality("character_cqi:"..general_cqi, self.immortal_general);
+	end
+	
+	local force = cm:force_from_general_cqi(general_cqi);
+	
+	if force then
+		self.force_cqi = force:command_queue_index();
+	end
+	
+	out.invasions("\t\tForce Spawned (General CQI: "..tostring(general_cqi)..", Force CQI: "..tostring(self.force_cqi)..", Invasion: "..tostring(self.key)..")");
+	
+	self.turn_spawned = cm:model():turn_number();
+	
+	if self.callback ~= nil and type(self.callback) == "function" then
+		self.callback(self);
+	end
+	
+	if #self.effect > 0 then
+		self:apply_effect();
+	end
+
+    if #self.custom_effect > 0 then
+		self:apply_custom_effect();
+	end
+	
+	if self.experience_amount then
+		self:add_character_experience();
+	end
+	
+	if self.unit_experience_amount then
+		self:add_unit_experience();
+	end
+	
+	if self.target_faction ~= nil then
+		local this_faction = cm:get_faction(self.faction);
+		local enemy_faction = cm:get_faction(self.target_faction);
+		
+		if this_faction and enemy_faction then
+			if this_faction:at_war_with(enemy_faction) == false then
+				if declare_war == true then
+					if this_faction:is_vassal() then
+						cm:force_declare_war(this_faction:master():name(), self.target_faction, invite_attacker_allies, invite_defender_allies);
+					else
+						cm:force_declare_war(self.faction, self.target_faction, invite_attacker_allies, invite_defender_allies);
+					end
+					
+					out.invasions("\t\t\tDeclared war on "..tostring(self.target_faction));
+				end
+			end
+		end
+	end
+	
+	if was_respawn == true then
+		self.respawn_turn = 0;
+		
+		if self.respawn_count and self.respawn_count > -1 then
+			self.respawn_count = self.respawn_count - 1;
+			
+			if self.respawn_count == 0 then
+				self.respawn = false;
+				self.respawn_delay = nil;
+				self.respawn_turn = nil;
+			end
+		end
+		core:trigger_event("ScriptEventInvasionManagerRespawn", cm:get_character_by_cqi(general_cqi));
+	end
+end
+
+--- @function apply_custom_effect
+--- @desc Allows you to apply a custom effect bundle to the forces in this invasion
+--- @p string effect_key, The key of the effect bundle
+--- @p number turns, The turns the effect bundle will be applied for after the invasion is started
+function invasion:apply_custom_effect(effect)
+	if not effect then
+		for i = 1, #self.custom_effect do
+			out.invasions("Invasion: Applying stored custom effect '"..self.custom_effect[i]:key().."' ("..self.custom_effect[i]:duration()..") to force "..self.force_cqi);
+			cm:apply_custom_effect_bundle_to_force(self.custom_effect[i], cm:get_military_force_by_cqi(self.force_cqi));
+		end;
+	elseif self.started then
+		out.invasions("Invasion: Applying custom effect '"..effect:key().."' ("..effect:duration()..") to force "..self.force_cqi);
+        cm:apply_custom_effect_bundle_to_force(effect, cm:get_military_force_by_cqi(self.force_cqi));
+	else
+        if not self.custom_effect then
+            self.custom_effect = {}
+        end
+		out.invasions("Invasion: Preparing custom effect '"..effect:key().."' ("..effect:duration()..")");
+		table.insert(self.custom_effect, effect);
+	end
+end
+
+function forced_battle:spawn_generated_force(force_key, x, y)
+	local force = self.force_list[force_key]
+	
+	local new_x,new_y = cm:find_valid_spawn_location_for_character_from_position(force.faction_key,x,y,true,7)
+
+	---remove any invasions with the same key just in case
+	invasion_manager:remove_invasion(force.key)
+
+	self.invasion_key = force.key..new_x..new_y
+
+	local forced_battle_force = invasion_manager:new_invasion(force.key,force.faction_key, force.unit_list,{new_x, new_y})
+	if force.general_subtype ~= nil then
+		forced_battle_force:create_general(false, force.general_subtype)
+	end
+	if force.general_level ~= nil then
+		forced_battle_force:add_character_experience(force.general_level, true)
+	end
+
+	if force.effect_bundle ~=nil then
+		local bundle_duration = -1
+        if is_string(force.effect_bundle) then
+		    forced_battle_force:apply_effect(force.effect_bundle, bundle_duration)
+        else
+            forced_battle_force:apply_custom_effect(force.effect_bundle, bundle_duration)
+        end
+	end
+
+	--- here we target the spawned invasion at the force they're attacking, if it already exists, otherwise it'll just mooch around post-battle
+	local invasion_target_cqi
+	local invasion_target_faction_key
+
+	if self.target.is_existing then
+		invasion_target_cqi = cm:get_character_by_mf_cqi(self.target.cqi):command_queue_index()
+		invasion_target_faction_key = cm:get_character_by_mf_cqi(self.target.cqi):faction():name()
+	end
+
+	if self.attacker.is_existing then
+		invasion_target_cqi = cm:get_character_by_mf_cqi(self.attacker.cqi):command_queue_index()
+		invasion_target_faction_key = cm:get_character_by_mf_cqi(self.attacker.cqi):faction():name()
+	end
+
+	if self.target.existing or self.attacker.is_existing then
+		forced_battle_force:set_target("CHARACTER", invasion_target_cqi, invasion_target_faction_key)
+		forced_battle_force:add_aggro_radius(25, {invasion_target_faction_key}, 1)
+	end
+
+	forced_battle_force:start_invasion(
+		function()
+			self:forced_battle_stage_2(self)
+		end,
+		false,false,false)
+	force.spawned = true
 end
 
 function forced_battle:forced_battle_stage_2()

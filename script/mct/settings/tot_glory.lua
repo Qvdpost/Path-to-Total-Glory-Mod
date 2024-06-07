@@ -13,8 +13,9 @@ mct_mod:set_log_file_path("mod_logs/tot_glory.log")
 -- Difficulty
 local mct_option = mct_mod:add_new_option("difficulty", "dropdown")
 mct_option:add_dropdown_value("easy", "Easy", "Provides an easier experience.", true)
-mct_option:add_dropdown_value("regular", "Regular", "Regular difficulty.", false)
-mct_option:add_dropdown_value("hard", "Hard", "Encounter more legendary battles and more difficult enemies.", false)
+mct_option:add_dropdown_value("regular", "Regular", "Regular difficulty, quite challenging.", false)
+mct_option:add_dropdown_value("hard", "Hard", "Encounter more legendary battles and more difficult enemies. Bosses and Legendary armies gain stronger effects.", false)
+mct_option:add_dropdown_value("legendary", "Legendary", "Legendary battles become even harder.")
 
 mct_option:set_default_value("regular")
 

@@ -51,6 +51,7 @@ local pttg = {
         glory_reward_modifier = 1,
         glory_recruit_modifier = 1,
         excluded_effect_pool = {},
+        excluded_army_effect_pool = {},
         glory_recruit_default = {2, 3, 4},
         glory_recruit_elite = {3, 4, 4},
         glory_recruit_boss = 4,
@@ -84,6 +85,7 @@ local pttg = {
         glory_reward_modifier = true,
         glory_recruit_modifier = true,
         excluded_effect_pool = true,
+        excluded_army_effect_pool = true,
         excluded_army_templates = true,
         add_warband_upgrade_glory = true,
         tech_completion_rate = true,
@@ -93,7 +95,7 @@ local pttg = {
         battle_ongoing = true,
     },
 
-    difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3},
+    difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3, ['legendary'] = 4},
 
     difficulty_modifiers = {
         encounter_size = {2, 4, 6},
@@ -241,8 +243,14 @@ function pttg:load_seed()
     end
 end
 
+function pttg:get_difficulty_index()
+    local difficulty = self:get_config('difficulty')
+    self:log("Getting diffuclty index for:"..tostring(difficulty))
+    return self.difficulties[difficulty]
+end
+
 function pttg:get_difficulty_mod(key)
-    local index = self.difficulties[self:get_config('difficulty')]
+    local index = self:get_difficulty_index()
     return self.difficulty_modifiers[key][index]
 end
 

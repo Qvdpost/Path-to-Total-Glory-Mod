@@ -80,21 +80,24 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
     pttg:log("Populating shop with items from category: "..category)
     local faction = cm:get_local_faction()
 
-    local rando_tiers = { 0, 0, 0 }
+    local rando_tiers = { 0, 0, 0, 0 }
 
     for i = 1, num_items do
         local rando_tier = cm:random_number(100)
 
         if category == 'units' then
             rando_tier = rando_tier + pttg:get_state('recruit_rarity_offset')
+
         end
 
-        if rando_tier < chances[1] then
+        if rando_tier <= chances[1] then
             rando_tiers[1] = rando_tiers[1] + 1
-        elseif rando_tier < chances[2] then
+        elseif rando_tier <= chances[2] then
             rando_tiers[2] = rando_tiers[2] + 1
-        else
+        elseif rando_tier <= chances[3] then
             rando_tiers[3] = rando_tiers[3] + 1
+        else
+            rando_tiers[4] = rando_tiers[4] + 1
         end
     end
 

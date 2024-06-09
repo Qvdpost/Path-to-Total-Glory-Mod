@@ -86,7 +86,7 @@ function PttG_ArmyEffect:new(key, info)
     for _, effect in pairs(info.effects) do
         bundle:add_effect(effect.key, effect.scope, effect.value)
     end
-    bundle:set_duration(1)
+    bundle:set_duration(0)
     self.bundle = bundle
 
     setmetatable(self, { __index = PttG_ArmyEffect })
@@ -206,28 +206,27 @@ function pttg_effect_pool:get_random_army_effect(tier)
     if not success then
         script_error("Could not get a unexcluded random army effect. Returning random army effect for tier: "..tostring(tier))
     end
+    
     pttg:log("Random army effect: "..random_army_effect.key)
     return random_army_effect
 end
 
 function pttg_effect_pool:get_random_army_effect_bundle(tier)
-    if tier == 4 then
+    if tier >= 4 then -- Multiple army effects at tier 4
         local army_effects = {self:get_random_army_effect(tier-1), self:get_random_army_effect(tier-1)}
-        local effects = {}
+
         for _, army_effect in pairs(army_effects) do
             if not army_effect.pesistent then
                 self:exclude_army_effect(army_effect.key)
             end
-            for _, effect in pairs(army_effect.effects) do
-                table.insert(effects, effect)
-            end
         end
-        local merged_army_effect = PttG_ArmyEffect:new("temp_bundle", { effects=effects })
-        if not merged_army_effect then
-            script_error("Failed merging army effects.")
+
+        if not (army_effects[1] or army_effects[2]) then
+            script_error("Not able to find two army effects for tier: "..tostring(tier))
             return nil
         end
-        return merged_army_effect.bundle
+        
+        return {army_effects[1].bundle, army_effects[2].bundle}
     end
 
     local army_effect = self:get_random_army_effect(tier)
@@ -277,9 +276,9 @@ function pttg_effect_pool:init_effects()
 
     -- Requires entries in effect_bundles and localisation
     local army_effects = {
-        magic_resist_easy = { tier = 1, effects = { {key = "wh_main_effect_character_stat_magic_resistance", scope = "force_to_force_own", value = 10} }},
-        magic_resist_regular = { tier = 2, effects = { {key = "wh_main_effect_character_stat_magic_resistance", scope = "force_to_force_own", value = 30} }},
-        magic_resist_hard = { tier = 3, effects = { {key = "wh_main_effect_character_stat_magic_resistance", scope = "force_to_force_own", value = 60} }},
+        magic_resist_easy = { tier = 1, effects = { {key = "wh_main_effect_character_stat_magic_resistance", scope = "character_to_force_own", value = 20} }},
+        magic_resist_regular = { tier = 2, effects = { {key = "wh_main_effect_character_stat_magic_resistance", scope = "character_to_force_own", value = 30} }},
+        magic_resist_hard = { tier = 3, effects = { {key = "wh_main_effect_character_stat_magic_resistance", scope = "character_to_force_own", value = 60} }},
         monster_hunter_easy = { tier = 1, effects = { {key = "wh_main_effect_character_stat_bonus_vs_large", scope = "force_to_force_own", value = 10} }},
         monster_hunter_regular = { tier = 2, effects = { {key = "wh_main_effect_character_stat_bonus_vs_large", scope = "force_to_force_own", value = 20} }},
         monster_hunter_hard = { tier = 3, effects = { {key = "wh_main_effect_character_stat_bonus_vs_large", scope = "force_to_force_own", value = 40} }},

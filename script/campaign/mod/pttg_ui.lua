@@ -733,6 +733,55 @@ function pttg_UI:highlight_upgrade()
     )
 end
 
+function pttg_UI:show_custom_effect_bundle()
+    local enemy_uic = find_uicomponent(core:get_ui_root(), "popup_pre_battle", "enemy_combatants_panel")
+    if not enemy_uic then
+        return
+    end
+
+    local character_cco = cco("CcoCampaignCharacter", enemy_uic:GetContextObjectId("CcoCampaignCharacter"))
+    -- local effect_bundles = character_cco:Call("MilitaryForceContext.EffectBundleList")
+    local effect_bundles = character_cco:Call("EffectBundleList")
+
+    local effect_subpanel = find_uicomponent(enemy_uic, "army", "effect_bundles_docker_enemy", "subpanel_effect_bundles")
+    local effect_docker = find_uicomponent(effect_subpanel, "effect_background")
+    local effect_list = find_uicomponent(effect_docker, "effect_list")
+
+    if not (effect_subpanel and effect_docker and effect_list) then
+        return
+    end
+
+    if #effect_bundles > 0 then
+        effect_subpanel:SetVisible(true)
+        effect_docker:SetVisible(true)
+        effect_list:SetVisible(true)
+    end
+
+    for _, effect_bundle in pairs(effect_bundles) do
+        local custom_effect_address = effect_list:CreateComponent("custom_effect_"..effect_bundle:Call("Name"), "ui/templates/effect_bundle_entry.twui.xml")
+        local custom_effect = UIComponent(custom_effect_address)
+
+        custom_effect:SetContextObject(effect_bundle)
+        custom_effect:SetImagePath(effect_bundle:Call("IconPath"))
+
+        custom_effect:Layout()
+    end
+
+
+end
+
+core:add_listener(
+    "pttg_show_army_effect_bundles",
+    "PanelOpenedCampaign",
+    function(context)
+        return context.string == "popup_pre_battle"
+    end,
+    function(context)
+        cm:callback(pttg_UI.show_custom_effect_bundle, 0.4)
+    end,
+    true
+)
+
 
 core:add_static_object("pttg_UI", pttg_UI);
 

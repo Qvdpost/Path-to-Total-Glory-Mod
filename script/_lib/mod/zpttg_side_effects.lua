@@ -119,6 +119,7 @@ function pttg_side_effects:grant_characters_levels(amount, force)
     if not force then
         force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     end
+    
     local army_chars = force:character_list()
     for i = 0, army_chars:num_items()-1 do
         local character = army_chars:item_at(i)
@@ -133,6 +134,43 @@ function pttg_side_effects:grant_characters_levels(amount, force)
             local xp = cm.character_xp_per_level[math.min(current_character_rank + character_rank, 50)] - cm.character_xp_per_level[current_character_rank]
         
             cm:add_agent_experience(lookup, xp)
+            core:trigger_event("CharacterRankUp", character)
+        end
+    end
+end
+
+function pttg_side_effects:grant_characters_random_skills(number, force)
+    pttg:log("Assigning random skills to characters: ")
+    if not force then
+        force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+    end
+
+    local army_chars = force:character_list()
+    for i = 0, army_chars:num_items()-1 do
+        local character = army_chars:item_at(i)
+        local character_cco = cco("CcoCampaignCharacter", character:cqi())
+        if character_cco then
+            local tries = 0
+            local skill_count = number
+
+            pttg:log("Assigning "..skill_count.. " skills to "..character_cco:Call("Name"))
+
+            while skill_count > 0 and tries < 150 do
+                tries = tries + 1
+                local random_skill_index = cm:random_number(character_cco:Call("SkillList.Size")-1, 0)
+                local random_skill = character_cco:Call("SkillList.At("..random_skill_index..")")
+
+                pttg:log("Checking "..random_skill:Call("Name"))
+                local current_level = random_skill:Call("CurrentLevelContext.Level")
+                if random_skill:Call("CurrentLevelContext.Level") < random_skill:Call("TotalLevels") then
+                    cm:add_skill(character, random_skill:Call("Key"), true, true)
+                    if current_level < random_skill:Call("CurrentLevelContext.Level") then
+                        pttg:log("Assigned: "..random_skill:Call("Name").." at level: "..random_skill:Call("CurrentLevelContext.Level"))
+                        skill_count = skill_count - 1
+                        tries = 0
+                    end
+                end
+            end
         end
     end
 end

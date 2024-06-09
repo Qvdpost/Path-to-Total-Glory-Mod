@@ -132,7 +132,7 @@ function forced_battle:add_new_force(force_key, unit_list, faction_key, destroy_
 	new_force.effect_bundle = opt_effect_bundle or nil
 
     -- TODO: cleaner check for effect bundle interface
-	if new_force.effect_bundle ~= nil and not (is_string(new_force.effect_bundle) or (new_force.effect_bundle.is_null_interface and not new_force.effect_bundle:is_null_interface())) then
+	if new_force.effect_bundle ~= nil and not (is_string(new_force.effect_bundle) or (new_force.effect_bundle.is_null_interface and not new_force.effect_bundle:is_null_interface()) or is_table(new_force.effect_bundle)) then
 		script_error("ERROR: Forced Battle Manager: new forced battle force "..force_key.." has been given an effect_bundle parameter, but parameter is not a string or a valid interface")
 		return false
 	end
@@ -267,11 +267,11 @@ function invasion:apply_custom_effect(effect)
 	if not effect then
 		for i = 1, #self.custom_effect do
 			out.invasions("Invasion: Applying stored custom effect '"..self.custom_effect[i]:key().."' ("..self.custom_effect[i]:duration()..") to force "..self.force_cqi);
-			cm:apply_custom_effect_bundle_to_force(self.custom_effect[i], cm:get_military_force_by_cqi(self.force_cqi));
+			cm:apply_custom_effect_bundle_to_character(self.custom_effect[i], cm:get_military_force_by_cqi(self.force_cqi):general_character());
 		end;
 	elseif self.started then
 		out.invasions("Invasion: Applying custom effect '"..effect:key().."' ("..effect:duration()..") to force "..self.force_cqi);
-        cm:apply_custom_effect_bundle_to_force(effect, cm:get_military_force_by_cqi(self.force_cqi));
+        cm:apply_custom_effect_bundle_to_character(effect, cm:get_military_force_by_cqi(self.force_cqi):general_character());
 	else
         if not self.custom_effect then
             self.custom_effect = {}
@@ -301,10 +301,20 @@ function forced_battle:spawn_generated_force(force_key, x, y)
 
 	if force.effect_bundle ~=nil then
 		local bundle_duration = -1
-        if is_string(force.effect_bundle) then
-		    forced_battle_force:apply_effect(force.effect_bundle, bundle_duration)
+        if is_table(force.effect_bundle) then
+            for _, effect_bundle in pairs(force.effect_bundle) do
+                if is_string(force.effect_bundle) then
+                    forced_battle_force:apply_effect(effect_bundle, bundle_duration)
+                else 
+                    forced_battle_force:apply_custom_effect(effect_bundle, bundle_duration)
+                end
+            end
         else
-            forced_battle_force:apply_custom_effect(force.effect_bundle, bundle_duration)
+            if is_string(force.effect_bundle) then
+                forced_battle_force:apply_effect(force.effect_bundle, bundle_duration)            
+            else
+                forced_battle_force:apply_custom_effect(force.effect_bundle, bundle_duration)
+            end
         end
 	end
 
@@ -394,26 +404,27 @@ function forced_battle:forced_battle_stage_2()
         end
     end
 
-    pttg_side_effects:grant_characters_levels(force.general_level, generated_force)
-
-    pttg_side_effects:grant_units_chevrons(force.chevrons, generated_force)
-
     -- change name of general if they are unique
     local general_record = cco("CcoAgentSubtypeRecord", generated_force:general_character():character_subtype_key())
-
+    
     local is_legend = (general_record:Call("OnscreenNameOverride"):find("Legendary") ~= nil)
     pttg:log("General "..generated_force:general_character():character_subtype_key().." is legend: "..tostring(is_legend)..". Changing name to: ".. general_record:Call("AssociatedUnitOverride.Name"))
-
+    
     if is_legend then
         cm:change_character_custom_name(
-           generated_force:general_character(),
-           general_record:Call("AssociatedUnitOverride.Name"),
+            generated_force:general_character(),
+            general_record:Call("AssociatedUnitOverride.Name"),
             "",
             "",
             ""
         )
     end
+    
+    pttg_side_effects:grant_characters_levels(force.general_level, generated_force)
 
+    pttg_side_effects:grant_characters_random_skills(force.general_level, generated_force)
+
+    pttg_side_effects:grant_units_chevrons(force.chevrons, generated_force)
     
 
     -- can't ambush a garrisoned force

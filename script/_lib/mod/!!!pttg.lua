@@ -23,9 +23,9 @@ local pttg = {
         },
         shop_chances = {
             50,
-            10,
-            5,
-            2
+            83,
+            100,
+            100
         },
         active_shop_items = {},
         recruitable_mercs = {},
@@ -39,7 +39,7 @@ local pttg = {
             { 50, 95, 100 },
             { 40, 85, 100 },
         },
-        boss_recruit_chances = { -10, -5, 100 },
+        boss_recruit_chances = { -100, -100, 100 },
         recruit_rarity_offset = -5,
         recruit_count = 5,
         excluded_items = {},

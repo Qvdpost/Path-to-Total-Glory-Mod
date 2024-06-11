@@ -87,7 +87,9 @@ function pttg_glory_shop:populate_items(num_items, chances, category)
 
         if category == 'units' then
             rando_tier = rando_tier + pttg:get_state('recruit_rarity_offset')
-
+            if cm:random_number(100, 1) <= pttg:get_state("shop_special_recruit") then
+                rando_tier = rando_tier + chances[3] + 1
+            end
         end
 
         if rando_tier <= chances[1] then

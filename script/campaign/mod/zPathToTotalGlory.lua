@@ -46,9 +46,25 @@ local function init()
     
     pttg_upkeep:add_callback("pttg_PostRoomBattle", "pttg_center_camera_post_battle",  pttg_UI.center_camera, pttg_UI)
 
+    pttg_upkeep:add_callback("pttg_ChooseStart", "pttg_lock_in_general", 
+        function() 
+            pttg:set_state("general_fm_cqi", cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character():family_member():command_queue_index())
+        end
+    )
 
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_check_locked_general_alive", 
+        function()
+            if cm:get_family_member_by_cqi(pttg:get_state("general_fm_cqi")):character():is_null_interface() or cm:get_family_member_by_cqi(pttg:get_state("general_fm_cqi")):character():is_wounded() then
+                cm:callback(
+                    function()
+                        cm:trigger_incident(cm:get_local_faction_name(), "pttg_battle_defeat", true)
+                    end,
+                    0.4
+                )
+            end
+        end
+    )
     
-
     if not pttg:get_state('army_cqi') then
         local faction = cm:get_local_faction()
         local force = faction:faction_leader():military_force()

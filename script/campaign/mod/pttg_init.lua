@@ -122,7 +122,7 @@ local function init_merc_list()
         {"wh3_dlc25_nur_chieftain_inf_aspiring_champions_0", "special", 1, { military_groupings = {"other"}, category = "melee_infantry", tier = 4, cost = 4}},
         {"wh3_dlc25_nur_chieftain_inf_centigors_1", "special", 1, { military_groupings = {"other"}, category = "melee_cavalry", tier = 4, cost = 3}},
         {"wh3_dlc25_nur_chieftain_inf_chaos_dwarf_blunderbusses", "core", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 2}},
-        {"wh3_dlc25_nur_chieftain_inf_cygor_0", "rare", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = nil}},
+        {"wh3_dlc25_nur_chieftain_inf_cygor_0", "rare", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 4}},
         {"wh3_dlc25_nur_chieftain_inf_infernal_guard_fireglaives", "special", 2, { military_groupings = {"other"}, category = "missile_infantry", tier = 4, cost = 3}},
         {"wh3_dlc25_nur_chieftain_mon_dragon_ogre_shaggoth", "rare", 3, { military_groupings = {"other"}, category = "monster", tier = 4, cost = 4}},
         {"wh3_dlc25_nur_chieftain_mon_fimir_0", "rare", 1, { military_groupings = {"wh3_dlc25_nur_tamurkhan"}, category = "monstrous_infantry", tier = 4, cost = 3}},

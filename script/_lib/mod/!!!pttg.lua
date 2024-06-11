@@ -39,11 +39,12 @@ local pttg = {
             { 50, 95, 100 },
             { 40, 85, 100 },
         },
-        boss_recruit_chances = { -100, -100, 100 },
+        boss_recruit_chances = { -101, -100, 100 },
         recruit_rarity_offset = -5,
         recruit_count = 5,
         excluded_items = {},
         excluded_shop_items = {},
+        shop_special_recruit = 8,
         replenishment_factor = 0.4,
         captive_replenishment_factor = 0.2,
         excluded_event_pool = {},
@@ -62,6 +63,7 @@ local pttg = {
         wom_efficiency = 0.25,
         faction_resource_factor = 1,
         battle_ongoing = false,
+        general_fm_cqi = false,
     },
     
     persistent_keys = {
@@ -93,6 +95,8 @@ local pttg = {
         wom_efficiency = true,
         faction_resource_factor = true,
         battle_ongoing = true,
+        shop_special_recruit = true,
+        general_fm_cqi = true,
     },
 
     difficulties = {['easy'] = 1, ['regular'] = 2, ['hard'] = 3, ['legendary'] = 4},
@@ -250,7 +254,7 @@ function pttg:get_difficulty_index()
 end
 
 function pttg:get_difficulty_mod(key)
-    local index = self:get_difficulty_index()
+    local index = math.min(3, self:get_difficulty_index())
     return self.difficulty_modifiers[key][index]
 end
 

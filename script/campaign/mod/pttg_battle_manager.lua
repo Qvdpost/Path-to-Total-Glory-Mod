@@ -212,7 +212,7 @@ function invasion:force_created(general_cqi, declare_war, invite_attacker_allies
 		self:apply_effect();
 	end
 
-    if #self.custom_effect > 0 then
+    if self.custom_effect and #self.custom_effect > 0 then
 		self:apply_custom_effect();
 	end
 	

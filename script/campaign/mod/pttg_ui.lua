@@ -256,7 +256,7 @@ function pttg_UI:get_or_create_map_button()
 
     map_button = core:get_or_create_component("pttg_map_button", "ui/templates/round_hud_button_toggle", faction_buttons)
 
-    map_button:SetImagePath("ui/skins/warhammer3/icon_cathay_compass.png")
+    map_button:SetImagePath("ui/skins/default/minimap_compass.png")
     map_button:SetTooltipText(common.get_localised_string("pttg_map_tooltip"), true)
     map_button:SetVisible(true)
 

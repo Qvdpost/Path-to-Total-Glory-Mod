@@ -3,7 +3,7 @@ local pttg_side_effects = core:get_static_object("pttg_side_effects")
 local pttg_wom = core:get_static_object("pttg_mod_wom")
 local pttg_battle = core:get_static_object("pttg_battle")
 
-local function setup_post_battle_option_listener()
+local function setup_post_battle_listeners()
 	core:add_listener(
 		"pttg_post_battle_options",
 		"CharacterPostBattleCaptureOption",
@@ -37,4 +37,4 @@ local function setup_post_battle_option_listener()
 	);
 end
 
-cm:add_first_tick_callback(setup_post_battle_option_listener)
+cm:add_first_tick_callback(setup_post_battle_listeners)

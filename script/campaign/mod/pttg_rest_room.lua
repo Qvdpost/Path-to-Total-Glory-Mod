@@ -21,13 +21,6 @@ local function upgrade_mercenary()
     core:trigger_custom_event('pttg_Idle', {})
 end
 
-local function train_general()
-    -- TODO: add an intenisty increasing buff perhaps?
-    pttg:log("[pttg_RestRoom] Training general: ")
-    pttg_side_effects:grant_general_levels(5)
-    core:trigger_custom_event('pttg_Idle', {})
-end
-
 core:add_listener(
     "pttg_RestRoom",
     "DilemmaChoiceMadeEvent",
@@ -42,7 +35,7 @@ core:add_listener(
         elseif context:choice_key() == 'SECOND' then
             upgrade_mercenary()
         else
-            train_general()
+            cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_general_training')
         end
     end,
     true
@@ -58,6 +51,37 @@ core:add_listener(
         pttg_upkeep:resolve("pttg_RestRoom")
 
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_RestRoom')
+    end,
+    true
+)
+
+core:add_listener(
+    "pttg_GeneralTraining",
+    "DilemmaChoiceMadeEvent",
+    function(context)
+        return context:dilemma() == 'pttg_general_training'
+    end,
+    function(context)
+        pttg:log("[pttg_RestRoom] Training general: ")
+        pttg_side_effects:grant_general_levels(5)
+        
+        local choice = context:choice_key()
+
+        local general = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
+
+        if choice == 'FIRST' then -- Dueling
+            pttg_side_effects:character_melee_mastery_training(general)
+        end
+        if choice == 'SECOND' then -- Resilience
+            pttg_side_effects:character_defense_mastery_training(general)
+        end
+        if choice == 'THIRD' then -- The Arcane
+            pttg_side_effects:character_spell_mastery_training(general)
+        end
+        if choice == 'FOURTH' then -- Ranged Combat
+            pttg_side_effects:character_ranged_mastery_training(general)
+        end
+        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

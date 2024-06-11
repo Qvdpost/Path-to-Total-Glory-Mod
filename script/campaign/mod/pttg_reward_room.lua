@@ -36,7 +36,6 @@ core:add_listener(
             if tech_button then
                 tech_button:Highlight(true)
             end
-            pttg_side_effects:unlock_active_tech()
 
             pttg_faction_effects:reward_faction_resource()
         else                                        -- Decide Later

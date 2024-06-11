@@ -2,6 +2,7 @@ local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_battle_templates = core:get_static_object("pttg_battle_templates");
 local pttg_upkeep = core:get_static_object("pttg_upkeep")
+local pttg_side_effects = core:get_static_object("pttg_side_effects")
 
 
 core:add_listener(
@@ -73,26 +74,8 @@ core:add_listener(
     "IncidentOccuredEvent",
     function(context) return context:dilemma() == "pttg_battle_defeat" end,
     function(context)
-        pttg:log("Game over.")
-        local faction = cm:get_local_faction()
-
-        local characters = {}
-        for i = 0, faction:character_list():num_items() - 1 do
-            table.insert(characters, faction:character_list():item_at(i))   
-        end
-        for _, character in pairs(characters) do
-            pttg:log("Killing: ".. character:character_subtype_key().. "|" .. character:character_type_key())
-            cm:kill_character(cm:char_lookup_str(character), true)
-        end
-
-        local regions = {}
-        for i = 0, faction:region_list():num_items() - 1 do
-            table.insert(regions, faction:region_list():item_at(i))
-        end
-        for _, region in pairs(regions) do
-            pttg:log("Abandoning: ".. region:name())
-            cm:set_region_abandoned(region:name())
-        end
+        pttg:log("Game over; battle lost.")
+        pttg_side_effects:game_over()
     end,
     true
 )

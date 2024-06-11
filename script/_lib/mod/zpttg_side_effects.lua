@@ -43,12 +43,14 @@ function pttg_side_effects:unlock_tech(tech_key)
     local completed_techs = pttg:get_state('completed_techs')
 
     for key, _ in pairs(completed_techs) do
+        ---@diagnostic disable-next-line: undefined-field
         cm:instantly_research_technology(faction_key, key, false)
     end
 
     completed_techs[tech_key] = true
     pttg:set_state('completed_techs', completed_techs)
 
+    ---@diagnostic disable-next-line: undefined-field
     cm:instantly_research_technology(faction_key, tech_key, true)
 end
 
@@ -119,7 +121,7 @@ function pttg_side_effects:grant_characters_levels(amount, force)
     if not force then
         force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
     end
-    
+
     local army_chars = force:character_list()
     for i = 0, army_chars:num_items()-1 do
         local character = army_chars:item_at(i)
@@ -156,6 +158,9 @@ function pttg_side_effects:grant_characters_random_skills(number, force)
             pttg:log("Assigning "..skill_count.. " skills to "..character_cco:Call("Name"))
 
             while skill_count > 0 and tries < 150 do
+                if character_cco:Call("SkillList.Size") == 0 then
+                    break
+                end
                 tries = tries + 1
                 local random_skill_index = cm:random_number(character_cco:Call("SkillList.Size")-1, 0)
                 local random_skill = character_cco:Call("SkillList.At("..random_skill_index..")")
@@ -163,6 +168,7 @@ function pttg_side_effects:grant_characters_random_skills(number, force)
                 pttg:log("Checking "..random_skill:Call("Name"))
                 local current_level = random_skill:Call("CurrentLevelContext.Level")
                 if random_skill:Call("CurrentLevelContext.Level") < random_skill:Call("TotalLevels") then
+                    ---@diagnostic disable-next-line: undefined-field
                     cm:add_skill(character, random_skill:Call("Key"), true, true)
                     if current_level < random_skill:Call("CurrentLevelContext.Level") then
                         pttg:log("Assigned: "..random_skill:Call("Name").." at level: "..random_skill:Call("CurrentLevelContext.Level"))
@@ -182,6 +188,38 @@ function pttg_side_effects:grant_characters_passive_levels(amount, step)
     end
 end
 
+function pttg_side_effects:character_ranged_mastery_training(general)
+    if not character then
+        character = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
+    end
+
+    cm:force_add_trait(cm:char_lookup_str(character), "pttg_ranged_mastery", true, 1)
+end
+
+function pttg_side_effects:character_melee_mastery_training(character)
+    if not character then
+        character = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
+    end
+
+    cm:force_add_trait(cm:char_lookup_str(character), "pttg_melee_mastery", true, 1)
+end
+
+function pttg_side_effects:character_spell_mastery_training(character)
+    if not character then
+        character = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
+    end
+
+    cm:force_add_trait(cm:char_lookup_str(character), "pttg_spell_mastery", true, 1)
+end
+
+function pttg_side_effects:character_defense_mastery_training(character)
+    if not character then
+        character = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
+    end
+
+    cm:force_add_trait(cm:char_lookup_str(character), "pttg_defense_mastery", true, 1)
+end
+
 function pttg_side_effects:add_agent_to_force(agent_info, level, force)
     pttg:log("Adding an agent [".. agent_info.subtype .."] of level: "..tostring(level))
     if not force then
@@ -196,6 +234,7 @@ function pttg_side_effects:add_agent_to_force(agent_info, level, force)
     end
 
     local agent_x, agent_y = cm:find_valid_spawn_location_for_character_from_settlement(faction:name(), home:name(), false, true, 10)
+    ---@diagnostic disable-next-line: param-type-mismatch
     local agent = cm:create_agent(faction:name(), agent_info.type, agent_info.subtype, agent_x, agent_y, true)
 
     cm:add_agent_experience(cm:char_lookup_str(agent:command_queue_index()), level, true)
@@ -633,6 +672,30 @@ function pttg_side_effects:zero_merc_cost()
     recruitment_cost_bundle:set_duration(0);
 
     cm:apply_custom_effect_bundle_to_faction(recruitment_cost_bundle, faction);
+end
+
+function pttg_side_effects:game_over()
+    local faction = cm:get_local_faction()
+
+    local characters = {}
+    for i = 0, faction:character_list():num_items() - 1 do
+        table.insert(characters, faction:character_list():item_at(i))   
+    end
+    for _, character in pairs(characters) do
+        if not character:is_wounded() then
+            pttg:log("Killing: ".. character:character_subtype_key().. "|" .. character:character_type_key())
+            cm:kill_character(cm:char_lookup_str(character), true)
+        end
+    end
+
+    local regions = {}
+    for i = 0, faction:region_list():num_items() - 1 do
+        table.insert(regions, faction:region_list():item_at(i))
+    end
+    for _, region in pairs(regions) do
+        pttg:log("Abandoning: ".. region:name())
+        cm:set_region_abandoned(region:name())
+    end
 end
 
 core:add_static_object("pttg_side_effects", pttg_side_effects);

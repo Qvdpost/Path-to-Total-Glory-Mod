@@ -7,6 +7,7 @@ function pttg_setup:init()
     pttg:log("PathToTotalGlory Setup.")
     
     -- Fixes Nurgle recruit starting health.
+    ---@diagnostic disable-next-line: undefined-global
     recruited_unit_health.units_to_starting_health_bonus_values = {}
 
     -- Do not reward post-battle rewards.

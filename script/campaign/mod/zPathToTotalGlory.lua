@@ -214,10 +214,10 @@ core:add_listener(
         
         pttg_UI:highlight_event_accept(false)
 
+        pttg:set_state('pending_reward', true)
+        
         cm:trigger_dilemma(cm:get_local_faction():name(), 'pttg_ChooseReward')
         
-        pttg:set_state('pending_reward', true)
-        core:trigger_custom_event('pttg_Idle', {})
     end,
     true
 )

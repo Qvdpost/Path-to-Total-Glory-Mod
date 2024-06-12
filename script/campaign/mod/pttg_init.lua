@@ -9074,7 +9074,5 @@ cm:add_first_tick_callback(
         pttg_setup:init()
 
         init_merc_list()
-    
-        pttg_upkeep:init()    
     end
 )

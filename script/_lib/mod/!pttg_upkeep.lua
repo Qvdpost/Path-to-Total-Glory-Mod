@@ -66,7 +66,11 @@ function pttg_upkeep:resolve(phase)
     for prio, callbacks in pairs(self.callbacks[phase]) do
         for name, callback in pairs(callbacks) do
             pttg:log(string.format("[pttg_upkeep] Executing %s(prio:%s)", name, prio))
-            callback.func(callback.object, unpack(callback.payload))
+            if callback.object then
+                callback.func(callback.object, unpack(callback.payload))
+            else
+                callback.func(unpack(callback.payload))
+            end
         end
     end
 end
@@ -76,5 +80,7 @@ function pttg_upkeep:init()
         self.callbacks[key] = { {}, {}, {} }
     end
 end
+
+pttg_upkeep:init()    
 
 core:add_static_object("pttg_upkeep", pttg_upkeep);

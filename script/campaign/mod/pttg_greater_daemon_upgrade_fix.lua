@@ -1,4 +1,5 @@
 local pttg = core:get_static_object("pttg");
+local pttg_upkeep = core:get_static_object("pttg_upkeep")
 
 
 local function init() 
@@ -6,6 +7,8 @@ local function init()
 
     -- Greater Daemon Upgrade fixes
     greater_daemons.xp_preserved_on_conversion = 1
+
+    pttg_upkeep:add_callback("pttg_Idle", "pttg_character_rank_up", function() core:trigger_custom_event('pttg_character_rank_up', {}) end)
 end
 
 cm:add_first_tick_callback(init)
@@ -148,99 +151,126 @@ function CUS:update_new_character(old_char_details, new_char_interface, level_pr
     pttg:set_state("general_fm_cqi", new_char_interface:family_member():command_queue_index())
 end
 
+local function pttg_character_rank_up_countdown(countdown, cqi)
+	pttg_upkeep:remove_callback("pttg_Idle", "pttg_character_rank_up_countdown")
+	if countdown > 0 then
+		pttg_upkeep:add_callback("pttg_Idle", "pttg_character_rank_up_countdown", 
+			pttg_character_rank_up_countdown,
+			nil,
+			{countdown-1, cqi}
+		)
+	else
+		local character_list = cm:get_saved_value("player_herald_lords_to_ignore_rankup")
+
+		-- remove the character cqi, so we can ask again
+		for i = 1, #character_list do
+			if tonumber(tostring(cqi)) == character_list[i] then
+				table.remove(character_list, i)
+				break
+			end
+		end
+		
+		cm:set_saved_value("player_herald_lords_to_ignore_rankup", character_list)
+	end
+end
+
 core:add_listener(
     "pttg_greater_daemons_rank_up",
-    "pttg_Idle",
+    "pttg_character_rank_up",
     function(context)
         local culture = cm:get_local_faction():culture()
         return greater_daemons.valid_cultures[culture] ~= nil
     end,
     function(context)
-        local faction = cm:get_local_faction()
-        local mf_list = faction:military_force_list()
-
-        -- find any valid characters
-        for i = 0, mf_list:num_items() - 1 do
-            local current_general = mf_list:item_at(i):general_character()
-            local current_general_subtype = current_general:character_subtype_key()
-            local upgrade_details = greater_daemons.character_types[current_general_subtype]
-
-            if current_general:rank() >= greater_daemons.required_level_for_dilemma and upgrade_details and current_general:has_region() and not current_general:is_besieging() and not current_general:is_faction_leader() then
-                
-                local original_character_cqi = current_general:command_queue_index()
-                local character_list = cm:get_saved_value("player_herald_lords_to_ignore_rankup") or {}
-                local character_is_valid = true
-
-                -- check if the character has already been ignored by the player
-                for j = 1, #character_list do
-                    if original_character_cqi == character_list[j] then
-                        character_is_valid = false
-                    end
-                end
-
-                if character_is_valid and upgrade_details.dilemma then
-                    -- Send successful event with character CQI.
-                    core:trigger_event("ScriptEventHeraldUpgradeChance", cm:get_character_by_cqi(original_character_cqi))
-
-                    local function trigger_upgrade_dilemma()
-                        cm:trigger_dilemma_with_targets(faction:command_queue_index(), upgrade_details.dilemma, 0, 0, original_character_cqi, 0, 0, 0)
-
-                        core:add_listener(
-                            "wh3_main_dilemma_exalted_greater_daemon_choice",
-                            "DilemmaChoiceMadeEvent",
-                            function(context)
-                                return greater_daemons.valid_dilemmas[context:dilemma()]
-                            end,
-                            function(context)
-                                local choice = context:choice()
-                                
-                                if choice == 0 then
-                                    if upgrade_details.achievement_suffix then 
-                                        core:trigger_custom_event("ScriptEventPlayerReplacesHerald", {race = upgrade_details.achievement_suffix, faction = context:faction()})
-                                    end
-                                    
-                                    cm:callback(function() greater_daemons:upgrade_herald(current_general) end, 0.4)
-                                else
-                                    if choice == 1 then
-                                        -- ask again later
-                                        cm:add_turn_countdown_event(context:faction():name(), greater_daemons.delay_before_new_dilemma, "ScriptEventHeraldUpgradeCooldownExpired", tostring(original_character_cqi))
-                                    end
-                                    
-                                    -- keep track of this cqi to ask again later (or permanently ignore)
-                                    table.insert(character_list, original_character_cqi)
-                                    cm:set_saved_value("player_herald_lords_to_ignore_rankup", character_list)
-                                end
-                            end,
-                            false
-                        )
-                    end
-                    
-                    if cm:is_multiplayer() then
-                        trigger_upgrade_dilemma()
-                    else
-                        cm:trigger_transient_intervention(
-                            "herald_upgrade_intervention",
-                            function(intervention)
-                                intervention:scroll_camera_for_intervention(
-                                    nil,
-                                    current_general:display_position_x(),
-                                    current_general:display_position_y(),
-                                    "",
-                                    nil,
-                                    nil,
-                                    nil,
-                                    function()
-                                        trigger_upgrade_dilemma()
-                                    end
-                                )
-                            end
-                        )
-                    end
-                    -- just deal with one character per turn
-                    break
-                end
-            end
-        end
+		cm:callback(
+			function()
+				local faction = cm:get_local_faction()
+				local mf_list = faction:military_force_list()
+		
+				-- find any valid characters
+				for i = 0, mf_list:num_items() - 1 do
+					local current_general = mf_list:item_at(i):general_character()
+					local current_general_subtype = current_general:character_subtype_key()
+					local upgrade_details = greater_daemons.character_types[current_general_subtype]
+		
+					if current_general:rank() >= greater_daemons.required_level_for_dilemma and upgrade_details and current_general:has_region() and not current_general:is_besieging() and not current_general:is_faction_leader() then
+						
+						local original_character_cqi = current_general:command_queue_index()
+						local character_list = cm:get_saved_value("player_herald_lords_to_ignore_rankup") or {}
+						local character_is_valid = true
+		
+						-- check if the character has already been ignored by the player
+						for j = 1, #character_list do
+							if original_character_cqi == character_list[j] then
+								character_is_valid = false
+							end
+						end
+		
+						if character_is_valid and upgrade_details.dilemma then
+							-- Send successful event with character CQI.
+							core:trigger_event("ScriptEventHeraldUpgradeChance", cm:get_character_by_cqi(original_character_cqi))
+		
+							local function trigger_upgrade_dilemma()
+								cm:trigger_dilemma_with_targets(faction:command_queue_index(), upgrade_details.dilemma, 0, 0, original_character_cqi, 0, 0, 0)
+		
+								core:add_listener(
+									"wh3_main_dilemma_exalted_greater_daemon_choice",
+									"DilemmaChoiceMadeEvent",
+									function(context)
+										return greater_daemons.valid_dilemmas[context:dilemma()]
+									end,
+									function(context)
+										local choice = context:choice()
+										
+										if choice == 0 then
+											cm:callback(function() greater_daemons:upgrade_herald(current_general) end, 0.4)
+										else
+											if choice == 1 then
+												pttg_upkeep:add_callback("pttg_Idle", "pttg_character_rank_up_countdown", 
+													pttg_character_rank_up_countdown,
+													nil,
+													{9, original_character_cqi}
+												)
+											end
+											
+											-- keep track of this cqi to ask again later (or permanently ignore)
+											table.insert(character_list, original_character_cqi)
+											cm:set_saved_value("player_herald_lords_to_ignore_rankup", character_list)
+										end
+									end,
+									false
+								)
+							end
+							
+							if cm:is_multiplayer() then
+								trigger_upgrade_dilemma()
+							else
+								cm:trigger_transient_intervention(
+									"herald_upgrade_intervention",
+									function(intervention)
+										intervention:scroll_camera_for_intervention(
+											nil,
+											current_general:display_position_x(),
+											current_general:display_position_y(),
+											"",
+											nil,
+											nil,
+											nil,
+											function()
+												trigger_upgrade_dilemma()
+											end
+										)
+									end
+								)
+							end
+							-- just deal with one character per turn
+							break
+						end
+					end
+				end
+			end,
+			0.4
+		)
     end,
     true
 )

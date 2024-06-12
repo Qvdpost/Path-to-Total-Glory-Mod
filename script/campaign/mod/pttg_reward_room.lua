@@ -25,6 +25,7 @@ core:add_listener(
                 unique_only = false,
                 recruit_glory=pttg:get_state('glory_recruit_default')[cursor.z] 
             })
+            return true
         elseif context:choice_key() == 'SECOND' then -- WoM reward
             pttg:log("[pttg_RewardChosen] Increasing WoM.")
             pttg_mod_wom:increase(25)

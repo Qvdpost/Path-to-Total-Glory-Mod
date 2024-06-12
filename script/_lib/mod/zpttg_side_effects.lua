@@ -357,7 +357,7 @@ function pttg_side_effects:randomize_start(random_general)
             "",
             "",
             "",
-            true,			
+            false,			
             -- Generals created this way does not come with a trait and aren't immortal
             function(cqi)
                 pttg:log("[pttg_side_effects] Post processing new lord");

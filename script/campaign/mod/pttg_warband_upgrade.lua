@@ -83,4 +83,24 @@ core:add_listener(
     true
 )
 
+core:add_listener(
+    "upgrade_into_SEM_set_health",
+    "UnitConverted",
+    function(context)
+        local converted_unit_key = context:converted_unit():unit_key()
+
+        local converted_unit_cco = cco("CcoMainUnitRecord", converted_unit_key)
+
+        local initial_troop_count = converted_unit_cco:Call("UnitDetailsContext.NumEntitiesInitial")
+
+        return initial_troop_count == 1
+    end,
+    function(context)
+        local unit = context:unit()
+        cm:set_unit_hp_to_unary_of_maximum(context:converted_unit(), unit:percentage_proportion_of_full_strength() / 100)
+    end,
+    true
+)
+
+
 core:add_static_object("pttg_warband_upgrade", pttg_warband_upgrade);

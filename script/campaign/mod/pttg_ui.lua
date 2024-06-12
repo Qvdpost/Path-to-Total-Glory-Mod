@@ -465,9 +465,15 @@ core:add_listener(
         local cur_phase = pttg:get_state("cur_phase")
 
         if cur_phase == "pttg_Idle" then
+
+            local im = cm:get_intervention_manager()
+            if im:is_another_intervention_queued() then
+                im:start_next_intervention(true)
+                return
+            end
+
             if pttg:get_state("pending_reward") then
                 pttg:log("[pttg_ui] Pending reward found. Triggering rewards")
-                local im = cm:get_intervention_manager()
                 if im:is_another_intervention_queued() then
                     im:start_next_intervention(true)
                 else

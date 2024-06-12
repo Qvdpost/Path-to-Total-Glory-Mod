@@ -144,6 +144,18 @@ function pttg_glory_shop:populate_shop()
     self:populate_items(shop_sizes.units, pttg:get_state('recruit_chances')[cursor.z], 'units')
 end
 
+function pttg_glory_shop:populate_shop_custom(shop_sizes, merch_chances, units_chances)
+    pttg:log(string.format('[pttg_glory_shop] Populating shop with(merch: %i, units:%i)',
+        shop_sizes.merchandise,
+        shop_sizes.units)
+    )
+
+    local cursor = pttg:get_cursor()
+
+    self:populate_items(shop_sizes.merchandise, merch_chances, 'merchandise')
+    self:populate_items(shop_sizes.units, units_chances, 'units')
+end
+
 function pttg_glory_shop:disable_shop_button()
     pttg:log("[pttg_glory_shop] Disabling shop button.")
     local root = core:get_ui_root()

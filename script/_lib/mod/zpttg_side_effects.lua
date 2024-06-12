@@ -188,7 +188,7 @@ function pttg_side_effects:grant_characters_passive_levels(amount, step)
     end
 end
 
-function pttg_side_effects:character_ranged_mastery_training(general)
+function pttg_side_effects:character_ranged_mastery_training(character)
     if not character then
         character = cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()
     end

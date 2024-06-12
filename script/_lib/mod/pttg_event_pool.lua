@@ -60,6 +60,12 @@ function pttg_event_pool:init_events()
 
     self:add_event("pttg_HiringBoard", { weight = 25, callback=pttg_HiringBoard_callback, eligibility_callback=pttg_HiringBoard_eligibility_callback, type="incident" })
 
+    self:add_event("pttg_protect_the_caravan", { weight = 10, callback=pttg_protect_the_caravan_callback, eligibility_callback=pttg_protect_the_caravan_eligibility_callback, type="dilemma" })
+    self:add_event("pttg_ogre_feast", { weight = 10, callback=pttg_ogre_feast_callback, eligibility_callback=pttg_ogre_feast_eligibility_callback, type="dilemma" })
+    self:add_event("pttg_slaanesh_tempation", { weight = 10, callback=pttg_slaanesh_tempation_callback, eligibility_callback=pttg_slaanesh_tempation_eligibility_callback, type="dilemma" })
+    self:add_event("pttg_tzeentch_changer", { weight = 10, callback=pttg_tzeentch_changer_callback, eligibility_callback=pttg_tzeentch_changer_eligibility_callback, type="dilemma" })
+    self:add_event("pttg_khorne_pledge", { weight = 10, callback=pttg_khorne_pledge_callback, eligibility_callback=pttg_khorne_pledge_eligibility_callback, type="dilemma" })
+    self:add_event("pttg_nurgle_maze", { weight = 10, callback=pttg_nurgle_maze_callback, eligibility_callback=pttg_nurgle_maze_eligibility_callback, type="dilemma" })
 
     self.excluded_event_pool = pttg:get_state('excluded_event_pool')
 end

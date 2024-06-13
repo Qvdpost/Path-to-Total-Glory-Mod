@@ -2,7 +2,6 @@ local pttg = core:get_static_object("pttg");
 local pttg_glory = core:get_static_object("pttg_glory")
 local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
 local pttg_side_effects = core:get_static_object("pttg_side_effects")
-local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
 local pttg_events = core:get_static_object("pttg_event_pool")
 
 
@@ -176,23 +175,6 @@ function pttg_protect_the_caravan_callback(context)
 end
 
 function pttg_protect_the_caravan_eligibility_callback(context)
-	-- TODO: implement body of the callback; when is this event eligible for the player? e.g. acts, alignment, faction_set
-    
-    if context.act ~= 1 then -- only triggers in act 1
-        return false
-    end
-
-    -- Only triggers if the player has a chaotic alignment (greater than 20), but not too chaotic (less than 100)
-    if context.alignment < 20 or context.alignment > 100 then
-        return false
-    end
-
-    local faction_set='all' -- Allows to restrict the event to specific factions
-    if not context.faction:is_contained_in_faction_set(faction_set) then
-        return false
-    end
-
-    -- add in any restrictions you would like!
     return true
 end
 
@@ -204,7 +186,19 @@ function pttg_ogre_feast_callback(context)
 
 	end
 	if choice == 'FIRST' then -- Accept the invitation
-        cm:trigger_dilemma(context.faction(), "pttg_ogre_feast_1")
+        core:add_listener(
+            "pttg_ogre_feasting",
+            "DilemmaChoiceMadeEvent",
+            function(context)
+                return context:dilemma() == "pttg_ogre_feast_1"
+            end,
+            pttg_ogre_feast_1_callback,
+            false
+        )
+        cm:callback(
+            function() cm:trigger_dilemma(cm:get_local_faction_name(), "pttg_ogre_feast_1") end,
+            0.4
+        )
 	end
 end
 
@@ -228,37 +222,56 @@ end
 function pttg_ogre_feast_1_callback(context)
 	-- body of the callback; what should happen for each choice?
     local choice = context:choice_key()
+    cm:force_add_trait(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()), "pttg_ogre_feast", true, 1)
 
 	if choice == 'SECOND' then -- Time to go
-        cm:force_add_trait(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()), "pttg_ogre_feast", true, 1)
 
         core:add_listener(
             "pttg_ogres_angry",
             "IncidentOccuredEvent",
             function(context)
-                return context.string == "pttg_ogres_feast_angry"
+                return context:dilemma() == "pttg_ogres_feast_angry"
             end,
             function(context)
                 pttg_ogres_feast_angry_callback(context)
             end,
             false
         )
-        cm:trigger_incident(context.faction(), "pttg_ogres_feast_angry", true)
+        cm:callback(
+            function() cm:trigger_incident(cm:get_local_faction_name(), "pttg_ogres_feast_angry", true) end,
+            0.4
+        )
+        
 	end
 
-	if choice == 'FIRST' then -- Yes!
+	if choice == 'FIRST' then -- Yes!       
         local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
+        local character_cco = cco("CcoCampaignCharacter", force:general_character():command_queue_index())
         local char_count = force:character_list():num_items()
         local unit_count = force:unit_list():num_items()
-
-        local random_unit = force:unit_list():item_at(cm:random_number(unit_count-1, char_count))
-
-        cm:set_unit_hp_to_unary_of_maximum(random_unit, 0)
+        
+        character_cco:Call("MilitaryForceContext.UnitList["..tostring(cm:random_number(unit_count-1, char_count)).."].Disband")
+       
 
         if force:unit_list():num_items() - force:character_list():num_items() == 0 then
-            cm:trigger_incident(context.faction(), "pttg_ogres_feast_no_more_food", true)
+            cm:callback(
+                function() cm:trigger_incident(cm:get_local_faction_name(), "pttg_ogres_feast_no_more_food", true) end,
+                0.4
+            )
         else
-            cm:trigger_dilemma(context.faction(), "pttg_ogre_feast_2")
+            core:add_listener(
+                "pttg_ogre_feasting",
+                "DilemmaChoiceMadeEvent",
+                function(context)
+                    return context:dilemma() == "pttg_ogre_feast_2"
+                end,
+                pttg_ogre_feast_2_callback,
+                false
+            )
+            cm:callback(
+                function() cm:trigger_dilemma(cm:get_local_faction_name(), "pttg_ogre_feast_2") end,
+                0.4
+            )
         end
 	end
 end
@@ -270,21 +283,36 @@ function pttg_ogre_feast_2_callback(context)
     cm:force_add_trait(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()), "pttg_ogre_feast", true, 1)
 
 	if choice == 'SECOND' then -- Resist
-        cm:trigger_incident(context.faction(), "pttg_ogres_feast_departure", true)
+        cm:trigger_incident(cm:get_local_faction_name(), "pttg_ogres_feast_departure", true)
 	end
+
 	if choice == 'FIRST' then -- More!
         local force = cm:get_military_force_by_cqi(pttg:get_state('army_cqi'))
+        local character_cco = cco("CcoCampaignCharacter", force:general_character():command_queue_index())
         local char_count = force:character_list():num_items()
         local unit_count = force:unit_list():num_items()
-
-        local random_unit = force:unit_list():item_at(cm:random_number(unit_count-1, char_count))
-
-        cm:set_unit_hp_to_unary_of_maximum(random_unit, 0)
+        
+        character_cco:Call("MilitaryForceContext.UnitList["..tostring(cm:random_number(unit_count-1, char_count)).."].Disband")
 
         if force:unit_list():num_items() - force:character_list():num_items() == 0 then
-            cm:trigger_incident(context.faction(), "pttg_ogres_feast_no_more_food", true)
+            cm:callback(
+                function() cm:trigger_incident(cm:get_local_faction_name(), "pttg_ogres_feast_no_more_food", true) end,
+                0.4
+            )
         else
-            cm:trigger_dilemma(context.faction(), "pttg_ogre_feast_2")
+            core:add_listener(
+                "pttg_ogre_feating",
+                "DilemmaChoiceMadeEvent",
+                function(context)
+                    return context:dilemma() == "pttg_ogre_feast_2"
+                end,
+                pttg_ogre_feast_2_callback,
+                false
+            )
+            cm:callback(
+                function() cm:trigger_dilemma(cm:get_local_faction_name(), "pttg_ogre_feast_2") end,
+                0.4
+            )
         end
 	end
 end
@@ -302,6 +330,8 @@ function pttg_slaanesh_tempation_callback(context)
 	if choice == 'THIRD' then -- None of this
 	end
 	if choice == 'FIRST' then -- Just the wares, please.
+        local pttg_glory_shop = core:get_static_object("pttg_glory_shop")
+        pttg_glory_shop:enable_shop_button()
         pttg_glory_shop:populate_shop_custom({ merchandise = 6, units = 0 }, { 0, 0, 50, 100 }, {0, 0, 0})  
         local chances = pttg:get_state("shop_chances")
         chances[1] = 30
@@ -323,6 +353,8 @@ function pttg_tzeentch_changer_callback(context)
 
 	if choice == 'SECOND' then -- Exchange for Protective Magics 
         cm:apply_effect_bundle_to_force("pttg_tze_barrier", pttg:get_state('army_cqi'), -1)
+
+        -- TODO: add deceiver reduce stats??
 	end
 	if choice == 'THIRD' then -- Send them on their way
 
@@ -332,8 +364,10 @@ function pttg_tzeentch_changer_callback(context)
 
         for i = 0, force:character_list():num_items() do
             local character = force:character_list():item_at(i)
-            cm:force_add_trait(cm:char_lookup_str(character), "pttg_spell_mastery", true, 1)
+            cm:force_add_trait(cm:char_lookup_str(character), "pttg_spell_mastery", true, 2)
         end
+
+        -- TODO: add deceiver follow-up: Random Spells Cast
 
         pttg:set_state("wom_efficiency", pttg:get_state("wom_efficiency") + 25)
 	end
@@ -406,13 +440,21 @@ function pttg_nurgle_maze_callback(context)
     local choice = context:choice_key()
 
 	if choice == 'SECOND' then -- Fan out
+        -- Give a plague
+        -- Give attrition
+        -- chance to find regeneration for all army
 
+        cm:callback(
+            function() cm:trigger_dilemma(cm:get_local_faction_name(), "pttg_nurgle_maze_1") end,
+            0.4
+        )
 	end
 	if choice == 'THIRD' then -- Turn around
 
 	end
 	if choice == 'FIRST' then -- Go in alone
-
+        -- Upgrade general into a different one
+        -- give some nurgle love
 	end
 end
 
@@ -435,6 +477,18 @@ function pttg_nurgle_maze_eligibility_callback(context)
 
     -- add in any restrictions you would like!
     return true
+end
+
+function pttg_nurgle_maze_1_callback(context)
+	-- body of the callback; what should happen for each choice?
+    local choice = context:choice_key()
+
+	if choice == 'SECOND' then -- Turn back
+
+	end
+	if choice == 'FIRST' then -- Continue the search
+
+	end
 end
 
 -- Dark Elf/Vampirates event that adds army abilities

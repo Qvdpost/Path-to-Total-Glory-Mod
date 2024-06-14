@@ -210,6 +210,14 @@ function pttg_battle_templates:add_template(category, key, info)
     self.templates[template.key] = template
 end
 
+function pttg_battle_templates:add_custom_template(template, force)
+    if force then
+        self.templates[template.key] = template
+    elseif not self.templates[template.key] then
+        self.templates[template.key] = template
+    end
+end
+
 function pttg_battle_templates:get_random_battle_template(act)
     local random_encounter_alignment = cm:random_number(99) - math.clamp(pttg:get_state('alignment') / 4, -33, 33)
 
@@ -417,7 +425,7 @@ local function init()
         ["pttg_grn_spider_cult"] = { faction = "wh_main_grn_greenskins_qb1", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_greenskins", military_grouping = "wh2_main_rogue_black_spider_tribe", mandatory_units = {}, units = {}, alignment = 'neutral', act = 1 },
         ["pttg_greenskins"] = { faction = "wh_main_grn_greenskins_qb1", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_greenskins", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         ["pttg_savage_orcs"] = { faction = "wh_main_grn_greenskins_qb1", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_savage_orcs", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
-        ["pttg_norsca"] = { faction = "wh_main_nor_norsca_qb1", culture = "wh_dlc08_nor_norsca", subculture = "wh2_main_sc_hef_high_elves", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
+        ["pttg_norsca"] = { faction = "wh_main_nor_norsca_qb1", culture = "wh_dlc08_nor_norsca", subculture = "wh_dlc08_sc_nor_norsca", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },
         ["pttg_vampire_counts"] = { faction = "wh_main_vmp_vampire_counts_qb1", culture = "wh_main_vmp_vampire_counts", subculture = "wh_main_sc_vmp_vampire_counts", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         -- ["pttg_grn_greenskins_orcs_only"] = { faction = "pttg_grn_greenskins", culture = "wh_main_grn_greenskins", subculture = "wh_main_sc_grn_greenskins", mandatory_units = {}, units = {}, alignment = 'neutral', act = nil },
         -- ["pttg_khorne_spawned_armies"] = { faction = "pttg_kho_khorne", culture = "wh3_main_kho_khorne", subculture = "wh3_main_sc_kho_khorne", mandatory_units = {}, units = {}, alignment = 'chaos', act = nil },

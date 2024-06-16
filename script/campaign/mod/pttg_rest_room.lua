@@ -13,11 +13,9 @@ end
 
 local function upgrade_mercenary()
     pttg:log("[pttg_RestRoom] Upgrading mercenary: ")
-    local pttg_warband_upgrade = core:get_static_object("pttg_warband_upgrade")
-
+    
     local cursor = pttg:get_cursor()
     pttg_glory:add_warband_upgrade_glory(pttg:get_state("add_warband_upgrade_glory")[cursor.z])
-    pttg_warband_upgrade:highlight_warband(true)
     core:trigger_custom_event('pttg_Idle', {})
 end
 

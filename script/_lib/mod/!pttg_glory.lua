@@ -50,22 +50,34 @@ function pttg_glory:add_training_glory(amount)
     "pttg_glory_point_training", amount)
 end
 
-function pttg_glory:add_warband_upgrade_glory(amount)
+function pttg_glory:add_warband_upgrade_glory(amount, hidden)
     if amount < 0 then
         pttg:log("[pttg_glory] Cannot add negative glory.")
         return false
     end
     cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_warband_upgrade_glory",
     "pttg_glory_warband_upgrade", amount)
+
+    if not hidden then
+        local pttg_warband_upgrade = core:get_static_object("pttg_warband_upgrade")
+        pttg_warband_upgrade:highlight_warband(true)
+    end
 end
 
-function pttg_glory:add_tech_glory(amount)
+function pttg_glory:add_tech_glory(amount, hidden)
     if amount < 0 then
         pttg:log("[pttg_glory] Cannot add negative glory.")
         return false
     end
     cm:faction_add_pooled_resource(cm:get_local_faction():name(), "pttg_technology_glory",
     "pttg_glory_point_technology", amount)
+
+    if not hidden then
+        local tech_button = find_uicomponent(core:get_ui_root(), "hud_campaign", "faction_buttons_docker", "button_group_management", "button_technology")
+        if tech_button then
+            tech_button:Highlight(true)
+        end
+    end
 end
 
 function pttg_glory:remove_tech_glory(amount)

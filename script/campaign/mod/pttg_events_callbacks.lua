@@ -41,33 +41,37 @@ function pttg_HiringBoard_callback(context)
     for agent_type, _ in pairs(pttg_merc_pool:recruitable_agents(faction:name())) do 
         local agent_payload = cm:create_payload()
         if agent_type == 'champion' then
+            agent_payload:text_display(faction:name().."_champion")
 			hiring_board:add_choice_payload("FIRST", agent_payload);
             agent_payload:clear()
         elseif agent_type == 'dignitary' then
+            agent_payload:text_display(faction:name().."_dignitary")
 			hiring_board:add_choice_payload("SECOND", agent_payload);
             agent_payload:clear()
         elseif agent_type == 'engineer' then
+            agent_payload:text_display(faction:name().."_engineer")
 			hiring_board:add_choice_payload("THIRD", agent_payload);
             agent_payload:clear()
         elseif agent_type == 'runesmith' then
+            agent_payload:text_display(faction:name().."_runesmith")
 			hiring_board:add_choice_payload("FOURTH", agent_payload);
             agent_payload:clear()
         elseif agent_type == 'spy' then
+            agent_payload:text_display(faction:name().."_spy")
 			hiring_board:add_choice_payload("FIFTH", agent_payload);
             agent_payload:clear()
         elseif agent_type == 'wizard' then
+            agent_payload:text_display(faction:name().."_wizard")
 			hiring_board:add_choice_payload("SIXTH", agent_payload);
             agent_payload:clear()
         end
     end
 
     local hiring_payload = cm:create_payload()
-    -- hiring_payload:text_display("pttg_RecruitAgent_seventh");
     hiring_board:add_choice_payload("SEVENTH", hiring_payload);
     hiring_payload:clear()
 
     if cm:random_number(100, 1) < 5 then
-        -- hiring_payload:text_display("pttg_RecruitAgent_eighth");
         hiring_board:add_choice_payload("EIGHTH", hiring_payload);
         hiring_payload:clear()
     end
@@ -157,11 +161,58 @@ function pttg_ogres_feast_departure_eligibility_callback(context)
 	return false
 end
 
+function pttg_caravan_saviour_victory_callback(context)
+	-- body of the callback; what should happen for each choice?
+    local pttg_faction_effects = core:get_static_object("pttg_faction_effects")
+
+    pttg:set_state("tech_completion_rate", pttg:get_state("tech_completion_rate") + 1)
+    pttg_faction_effects:reward_faction_resource()
+end
+
+function pttg_caravan_betrayal_victory_callback(context)
+	-- body of the callback; what should happen for each choice?
+    local pttg_faction_effects = core:get_static_object("pttg_faction_effects")
+
+    pttg_glory:add_tech_glory(4)
+    pttg_faction_effects:reward_faction_resource()
+end
+
+function pttg_caravan_slayer_victory_callback(context)
+	-- body of the callback; what should happen for each choice?
+    local pttg_faction_effects = core:get_static_object("pttg_faction_effects")
+
+    pttg_glory:add_tech_glory(8)
+    pttg_faction_effects:reward_faction_resource()
+    pttg_faction_effects:reward_faction_resource()
+
+    pttg_glory:add_warband_upgrade_glory(pttg:get_state("add_warband_upgrade_glory")[2])
+end
+
+function pttg_caravan_ambush_scraps_callback(context)
+	-- body of the callback; what should happen for each choice?
+    local pttg_faction_effects = core:get_static_object("pttg_faction_effects")
+
+    pttg_glory:add_tech_glory(pttg:get_state('tech_completion_rate'))
+    pttg_faction_effects:reward_faction_resource()
+end
+
 function pttg_protect_the_caravan_callback(context)
 	-- body of the callback; what should happen for each choice?
     local choice = context:choice_key()
 
 	if choice == 'SECOND' then -- Betray them
+        
+        core:add_listener(
+            "pttg_caravan_betrayal_victory",
+            "IncidentOccuredEvent",
+            function(context)
+                return context:dilemma() == "pttg_caravan_betrayal_victory"
+            end,
+            function(context)
+                pttg_caravan_betrayal_victory_callback(context)
+            end,
+            false
+        )
         local cursor = pttg:get_cursor()
 
         local player_faction = cm:get_local_faction()
@@ -226,15 +277,32 @@ function pttg_protect_the_caravan_callback(context)
         )
 	end
 	if choice == 'FOURTH' then -- Loot the scraps
+        core:add_listener(
+            "pttg_caravan_ambush_scraps",
+            "IncidentOccuredEvent",
+            function(context)
+                return context:dilemma() == "pttg_caravan_ambush_scraps"
+            end,
+            function(context)
+                pttg_caravan_ambush_scraps_callback(context)
+            end,
+            false
+        )
         cm:trigger_incident(cm:get_local_faction_name(), "pttg_caravan_ambush_scraps", true)
 	end
-	if choice == 'THIRD' then -- Slay them all
-        local pttg = core:get_static_object("pttg");
-        local pttg_glory = core:get_static_object("pttg_glory")
-        local pttg_merc_pool = core:get_static_object("pttg_merc_pool")
-        local pttg_side_effects = core:get_static_object("pttg_side_effects")
-        local pttg_events = core:get_static_object("pttg_event_pool")
-        local pttg_battle_templates = core:get_static_object("pttg_battle_templates");        local cursor = pttg:get_cursor()
+	if choice == 'THIRD' then -- Slay them all    
+        core:add_listener(
+            "pttg_caravan_slayer_victory",
+            "IncidentOccuredEvent",
+            function(context)
+                return context:dilemma() == "pttg_caravan_slayer_victory"
+            end,
+            function(context)
+                pttg_caravan_slayer_victory_callback(context)
+            end,
+            false
+        )  
+        local cursor = pttg:get_cursor()
 
         local player_faction = cm:get_local_faction()
 
@@ -287,7 +355,7 @@ function pttg_protect_the_caravan_callback(context)
         end
 
         invasion_template_army.mandatory_units = generated_units
-        invasion_template_army.agents = pttg_merc_pool:get_random_agent(player_faction:name()).subtype
+        invasion_template_army.agents = { pttg_merc_pool:get_random_agent(player_faction:name()).subtype }
         
         local invasion_template = invasion_template_army.key
         local invasion_faction = invasion_template_army.faction
@@ -305,11 +373,11 @@ function pttg_protect_the_caravan_callback(context)
             invasion_faction,                       --	generated_force_faction
             invasion_template,                      --	generated_force_template
             18,                                     --	generated_force_size
-            invasion_power,                         --	generated_force_power
+            invasion_power + 2,                     --	generated_force_power
             false,                                  --	generated_force_is_attacker
             true,                                   --	destroy_generated_force_after_battle
             false,                                  --	is_ambush
-            "pttg_caravan_saviour_victory",        --	opt_player_victory_incident
+            "pttg_caravan_slayer_victory",        --	opt_player_victory_incident
             "pttg_battle_defeat",                   --	opt_player_defeat_incident
             invasion_template_army.general_subtype, --	opt_general_subtype
             general_level,                          --	opt_general_level
@@ -319,6 +387,18 @@ function pttg_protect_the_caravan_callback(context)
         )
 	end
 	if choice == 'FIRST' then -- Save them
+
+        core:add_listener(
+            "pttg_caravan_saviour_victory",
+            "IncidentOccuredEvent",
+            function(context)
+                return context:dilemma() == "pttg_caravan_saviour_victory"
+            end,
+            function(context)
+                pttg_caravan_saviour_victory_callback(context)
+            end,
+            false
+        )
         local cursor = pttg:get_cursor()
 
 
@@ -535,13 +615,15 @@ function pttg_tzeentch_changer_callback(context)
 	-- body of the callback; what should happen for each choice?
     local choice = context:choice_key()
 
-    -- TODO: add negatives
     -- TODO: add followups
 
 	if choice == 'SECOND' then -- Exchange for Protective Magics 
         cm:apply_effect_bundle_to_force("pttg_tze_barrier", pttg:get_state('army_cqi'), -1)
 
-        -- TODO: add deceiver reduce stats??
+        if cm:random_number(9) == 9 and not context.faction:is_contained_in_faction_set("tzeentchian_factions") then
+            cm:trigger_incident(cm:get_local_faction_name(), "pttg_tze_deceived_weakness", true)
+            cm:force_add_trait(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()), "pttg_tze_deceived_weakness", true, 1)
+        end
 	end
 	if choice == 'THIRD' then -- Send them on their way
 
@@ -554,14 +636,18 @@ function pttg_tzeentch_changer_callback(context)
             cm:force_add_trait(cm:char_lookup_str(character), "pttg_spell_mastery", true, 2)
         end
 
-        -- TODO: add deceiver follow-up: Random Spells Cast
+        -- TODO: add followup event. Silence wizards as the toll of their magics.
+
+        if cm:random_number(9) == 9 and not context.faction:is_contained_in_faction_set("tzeentchian_factions") then
+            cm:trigger_incident(cm:get_local_faction_name(), "pttg_tze_deceived_spellroulette", true)
+            cm:force_add_trait(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()), "pttg_tze_deceived_spellroulette", true, 1)
+        end
 
         pttg:set_state("wom_efficiency", pttg:get_state("wom_efficiency") + 25)
 	end
 end
 
 function pttg_tzeentch_changer_eligibility_callback(context)
-	-- TODO: implement body of the callback; when is this event eligible for the player? e.g. acts, alignment, faction_set
     
     if context.act < 2 then -- only triggers in act 1
         return false
@@ -587,9 +673,19 @@ function pttg_khorne_pledge_callback(context)
 
 
 	if choice == 'SECOND' then -- Refute the brute
-        -- TODO: add khorne army templates
+        -- TODO: later add Karanak to the armies if general is a wizard.
+        for i = 0, 15 do
+            pttg_battle_templates:add_template(
+                'random', 
+                "pttg_event_khorne_"..tostring(i),  
+                { 
+                    faction = "wh3_main_kho_khorne_qb1", culture = "wh3_main_kho_khorne", 
+                    subculture = "wh3_main_sc_kho_khorne", mandatory_units = {}, 
+                    units = {}, alignment = 'neutral', act = nil 
+                }
+            )
+        end
         cm:force_add_trait(cm:char_lookup_str(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character()), "pttg_khorne_scorned", true, 1)
-
 	end
 	if choice == 'THIRD' then -- Come to your senses
 
@@ -601,9 +697,7 @@ function pttg_khorne_pledge_callback(context)
 	end
 end
 
-function pttg_khorne_pledge_eligibility_callback(context)
-	-- TODO: implement body of the callback; when is this event eligible for the player? e.g. acts, alignment, faction_set
-    
+function pttg_khorne_pledge_eligibility_callback(context)    
     if context.act ~= 1 then -- only triggers in act 1
         return false
     end
@@ -649,7 +743,6 @@ function pttg_nurgle_maze_callback(context)
         ---@diagnostic disable-next-line: param-type-mismatch, redundant-parameter
         cm:spawn_plague_at_military_force(faction, force, selected_plague);
 
-
         pttg_side_effects:attrition_force(0.07, false)
 
         core:add_listener(
@@ -678,7 +771,7 @@ function pttg_nurgle_maze_callback(context)
 
         for faction, _ in pairs(pttg_merc_pool.faction_to_agents) do
             table.insert(factions, faction)
-        end
+        end     
 
         local random_general = pttg_merc_pool:get_random_general(factions[cm:random_number(#factions)])
         CUS:convert_character(cm:get_military_force_by_cqi(pttg:get_state('army_cqi')):general_character(), "general", random_general.subtype, 1)
@@ -692,7 +785,6 @@ function pttg_nurgle_maze_callback(context)
 end
 
 function pttg_nurgle_maze_eligibility_callback(context)
-	-- TODO: implement body of the callback; when is this event eligible for the player? e.g. acts, alignment, faction_set
     
     if context.act == 3 then 
         return false
@@ -712,6 +804,21 @@ function pttg_nurgle_maze_1_callback(context)
 	-- body of the callback; what should happen for each choice?
     local choice = context:choice_key()
 
+    local plagues = {
+        "wh3_dlc25_nur_random_plague_1",
+        "wh3_dlc25_nur_random_plague_2",
+        "wh3_dlc25_nur_random_plague_3",
+        "wh3_dlc25_nur_random_plague_4",
+        "wh3_dlc25_nur_random_plague_5",
+    }
+    local selected_plague = plagues[cm:random_number(#plagues)]
+
+    local faction = cm:get_faction("wh3_main_nur_nurgle_qb1")
+    local force = cm:get_military_force_by_cqi(pttg:get_state("army_cqi"))
+
+    ---@diagnostic disable-next-line: param-type-mismatch, redundant-parameter
+    cm:spawn_plague_at_military_force(faction, force, selected_plague);
+
     pttg_side_effects:attrition_force(0.07, false)
 
 	if choice == 'SECOND' then -- Turn back
@@ -722,7 +829,7 @@ function pttg_nurgle_maze_1_callback(context)
         if cm:random_number(7) == 7 then
             core:add_listener(
                 "pttg_nurgle_secret_found",
-                "DilemmaChoiceMadeEvent",
+                "IncidentOccuredEvent",
                 function(context)
                     return context:dilemma() == "pttg_nurgle_maze_found"
                 end,
@@ -731,14 +838,14 @@ function pttg_nurgle_maze_1_callback(context)
             )
 
             cm:callback(
-                function() cm:trigger_incident(cm:get_local_faction_name(), "pttg_nurgle_maze_found") end,
+                function() cm:trigger_incident(cm:get_local_faction_name(), "pttg_nurgle_maze_found", true) end,
                 0.4
             )
             return
         end
 
         core:add_listener(
-            "pttg_ogre_feating",
+            "pttg_nurgle_secret_searching",
             "DilemmaChoiceMadeEvent",
             function(context)
                 return context:dilemma() == "pttg_nurgle_maze_1"
@@ -755,5 +862,34 @@ function pttg_nurgle_maze_1_callback(context)
 	end
 end
 
+-- Chaos only:
+-- Chaos Dwarf: Improve warmachines or gunpowder weapons
+-- Skaven event that gives menace_below charges
+
+
+-- All:
 -- Dark Elf/Vampirates event that adds army abilities
--- 
+-- Greenskins
+--  Savage Orc event that gives rocks in two stages that fuse into Rogue Idol
+-- Khorne, Tzeentch, Nurgle, Slaanesh - done.
+-- Tomb Kings
+--      Settra: Improve chariots
+-- Vampire Counts: Blood Kiss event? Turn into vampire with stat boost?
+--      Necromancer: Give General raise dead spell
+-- Wood Elves: Improve archers or give strider to cavalry
+-- Ogre Kingdoms: Feast - done
+
+
+-- Order only:
+-- Brettonia
+--      Improve cavalry, weaken 'peasants'?
+-- Dwarfs: Improve gunpowder missiles or artillery 
+-- Lizardmen: Give magic reserves
+
+
+-- Negative events for opposite alignment, neutral for friendly allighment, opportunity for neutral alignment
+-- Beastmen
+-- Norsca
+-- High Elves
+-- Kislev
+-- Empire

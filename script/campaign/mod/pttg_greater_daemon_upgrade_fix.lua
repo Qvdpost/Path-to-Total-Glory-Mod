@@ -53,7 +53,8 @@ function CUS:convert_character(character, new_type, new_subtype, opt_inherited_l
 		parent_force = character:embedded_in_military_force(),
 		subtype = character:character_subtype_key(),
 		traits = {},
-		ap = character:action_points_remaining_percent()
+		ap = character:action_points_remaining_percent(),
+		is_faction_leader = character:is_faction_leader()
 	}
 
     for _, trait in pairs(character:all_traits()) do
@@ -62,11 +63,21 @@ function CUS:convert_character(character, new_type, new_subtype, opt_inherited_l
 
 	local new_character
 	if character:has_military_force() then
+		if old_char_details.is_faction_leader then
+			cm:set_character_immortality(cm:char_lookup_str(character), false)
+			cm:kill_character(cm:char_lookup_str(character), false)
+		end
 		new_character = cm:replace_general_in_force(old_char_details.mf, new_subtype)
+		if old_char_details.is_faction_leader then
+			local character_cco = cco("CcoCampaignCharacter", new_character:command_queue_index())
+	
+			character_cco:Call("MilitaryForceContext.UnitList["..tostring(1).."].Disband")
+		end
 	else
 		new_x, new_y = cm:find_valid_spawn_location_for_character_from_position(old_char_details.faction_key, x, y, false)
 		new_character = cm:create_agent(old_char_details.faction_key, new_type, new_subtype, new_x, new_y)
 	end
+
 
 	if new_character then
 		self:update_new_character(old_char_details, new_character, inherited_level_proportion)
@@ -193,7 +204,7 @@ core:add_listener(
 					local current_general_subtype = current_general:character_subtype_key()
 					local upgrade_details = greater_daemons.character_types[current_general_subtype]
 		
-					if current_general:rank() >= greater_daemons.required_level_for_dilemma and upgrade_details and current_general:has_region() and not current_general:is_besieging() and not current_general:is_faction_leader() then
+					if current_general:rank() >= greater_daemons.required_level_for_dilemma and upgrade_details and current_general:has_region() and not current_general:is_besieging() then
 						
 						local original_character_cqi = current_general:command_queue_index()
 						local character_list = cm:get_saved_value("player_herald_lords_to_ignore_rankup") or {}

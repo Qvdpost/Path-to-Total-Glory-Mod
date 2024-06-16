@@ -29,14 +29,10 @@ core:add_listener(
         elseif context:choice_key() == 'SECOND' then -- WoM reward
             pttg:log("[pttg_RewardChosen] Increasing WoM.")
             pttg_mod_wom:increase(25)
-        elseif context:choice_key() == 'THIRD' then -- Glory Reward
+        elseif context:choice_key() == 'THIRD' then -- Faction Reward
             pttg:log("[pttg_RewardChosen] Rewarding Glory")
             -- TODO award faction resource
             pttg_glory:add_tech_glory(pttg:get_state('tech_completion_rate'))
-            local tech_button = find_uicomponent(core:get_ui_root(), "hud_campaign", "faction_buttons_docker", "button_group_management", "button_technology")
-            if tech_button then
-                tech_button:Highlight(true)
-            end
 
             pttg_faction_effects:reward_faction_resource()
         else                                        -- Decide Later
